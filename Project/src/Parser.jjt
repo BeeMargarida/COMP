@@ -1,0 +1,75 @@
+options {
+	LOOKAHEAD=1;
+}
+
+PARSER_BEGIN(Parser)
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class Parser {
+	public static void main(String[] args) throws ParseException{
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String line = reader.readLine();
+	  
+		Parser parser = new Parser(line);
+		SimpleNode root = parser.Module();
+		root.dump("");
+	}
+}
+
+PARSER_END(Parser)
+
+<DEFAULT> SKIP : {
+	" "	| "\t"	| "\n" | "\r" | 
+	<"//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")> | 
+	<"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/"> 
+}
+
+/* Reserved words */
+<DEFAULT> TOKEN: {
+	<RELA_OP : ">" | "<" | "<=" | ">=" | "==" | "!=" >
+	| <ADDSUB_OP: "+" | "-">
+	| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>" >
+	| <BITWISE_OP: "&" | "|" | "^" >
+	| <NOT_OP: "!" >
+	| <WHILE: "while">
+	| <IF: "if" >
+	| <ELSE: "else">
+	| <ASSIGN: "=">
+	| <ASPA: "\"">
+	| <LPAR: "(" >
+	| <RPAR: ")" >
+	| <VIRG: "," >
+	| <PVIRG: ";" >
+	| <LCHAVETA: "{" >
+	| <RCHAVETA: "}" >
+	| <LBRACKET: "[" > //necessário?
+	| <RBRACKET: "]" > 
+	| <FUNCTION: "function" >
+	| <MODULE: "module" >
+	| <SIZE: "size">
+}
+
+<DEFAULT> TOKEN: {
+	<INTEGER: (<DIGIT>)+>
+	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
+	| <LETTER: ["$", "A"-"Z","_","a"-"z"]> //tirei os # - tecnicamente significam private ou algo do género
+	| <DIGIT: ["0"-"9"]>
+	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
+}
+
+SimpleNode Module(): {} {
+	<MODULE> <ID> < LCHAVETA > (Declaration())* (Function())* < RCHAVETA >{ return jjThis; }
+}
+
+void Declaration(): {Token element, size;} {
+	(element = < STRING > | element = < LETTER >)
+	(	  < ASSIGN > (( <LBRACKET> size = <INTEGER> <RBRACKET>) | (<ADDSUB_OP> )? <INTEGER>)
+	)? <PVIRG>	  //isto está mal
+}
+
+void Function(): { } {
+	< FUNCTION > <STRING > <LCHAVETA >
+}

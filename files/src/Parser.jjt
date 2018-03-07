@@ -1,0 +1,13 @@
+options {
+	LOOKAHEAD=1;
+}
+
+PARSER_BEGIN(Parser)
+
+import java.io.File;
+
+public class Parser() {
+	
+}
+
+PARSER_END(Parser)
