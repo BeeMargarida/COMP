@@ -1,19 +1,22 @@
 options {
-	LOOKAHEAD=1;
+	LOOKAHEAD=3; //melhorar para 1
 }
 
 PARSER_BEGIN(Parser)
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+/*import java.io.BufferedReader;
+import java.io.InputStreamReader; */
+import java.io.FileInputStream;
 
 public class Parser {
 	public static void main(String[] args) throws ParseException{
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		String line = reader.readLine();
+		/*BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		String line = reader.readLine();*/
+
+		String filename = args[0];
 	  
-		Parser parser = new Parser(line);
+		Parser parser = new Parser(new FileInputStream(filename));
 		SimpleNode root = parser.Module();
 		root.dump("");
 	}
@@ -43,9 +46,10 @@ PARSER_END(Parser)
 	| <RPAR: ")" >
 	| <VIRG: "," >
 	| <PVIRG: ";" >
+	| <DOT: "." > //Ã© para por isto?
 	| <LCHAVETA: "{" >
 	| <RCHAVETA: "}" >
-	| <LBRACKET: "[" > //necessário?
+	| <LBRACKET: "[" > //necessï¿½rio?
 	| <RBRACKET: "]" > 
 	| <FUNCTION: "function" >
 	| <MODULE: "module" >
@@ -55,21 +59,109 @@ PARSER_END(Parser)
 <DEFAULT> TOKEN: {
 	<INTEGER: (<DIGIT>)+>
 	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
-	| <LETTER: ["$", "A"-"Z","_","a"-"z"]> //tirei os # - tecnicamente significam private ou algo do género
+	| <LETTER: ["$", "A"-"Z","_","a"-"z"]> //tirei os # - tecnicamente significam private ou algo do gï¿½nero
 	| <DIGIT: ["0"-"9"]>
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
 SimpleNode Module(): {} {
-	<MODULE> <ID> < LCHAVETA > (Declaration())* (Function())* < RCHAVETA >{ return jjThis; }
+	<MODULE> <ID> < LCHAVETA > (Declaration())* (Function())* < RCHAVETA >
 }
 
 void Declaration(): {Token element, size;} {
-	(element = < STRING > | element = < LETTER >)
-	(	  < ASSIGN > (( <LBRACKET> size = <INTEGER> <RBRACKET>) | (<ADDSUB_OP> )? <INTEGER>)
-	)? <PVIRG>	  //isto está mal
+	(ArrayElement() | ScalarElement())
+	(	  < ASSIGN > (( <LBRACKET> ArraySize() <RBRACKET>) | (<ADDSUB_OP> )? <INTEGER>)
+	)? <PVIRG>	  //isto estï¿½ mal
 }
 
 void Function(): { } {
-	< FUNCTION > <STRING > <LCHAVETA >
+	(	  (	    < FUNCTION > (ArrayElement() | ScalarElement()) <ASSIGN> <ID>
+	    <LPAR> (VarList())? < RPAR >
+	  ) |
+	  (		< FUNCTION > <ID > <LPAR > (VarList())? < RPAR >
+	  )
+	) < LCHAVETA > Stmtlst() < RCHAVETA >
 }
+
+void VarList(): { } {
+	(	  ArrayElement() | ScalarElement()
+	)
+	(	  < VIRG > (ArrayElement() | ScalarElement() )
+	)*
+}
+
+void ArrayElement(): { } {
+	< ID > <RBRACKET > <LBRACKET >
+}
+
+void ScalarElement(): { } {
+	< ID >
+}
+
+void Stmtlst(): { } {
+	( Stmt() )*
+}
+
+void Stmt(): { } {
+	While() | If() | Assign() | Call() < PVIRG >
+}
+
+void Assign(): { } {
+	Lhs() <ASSIGN> Rhs() < PVIRG >
+}
+
+void Lhs(): { } {
+	ArrayAccess() | ScalarAccess()
+}
+
+void Rhs(): { } {
+	(	  Term() ((< ARITH_OP > | < BITWISE_OP > | < ADDSUB_OP >) Term())?
+	) | < RBRACKET > ArraySize() < LBRACKET >
+}
+
+void ArraySize(): { } {
+	ScalarAccess() | < INTEGER >
+}
+
+void Term(): { } {
+	( < ADDSUB_OP >)? (< INTEGER > | Call() | ArrayAccess() | ScalarAccess() )
+}
+
+void Exprtest(): { } {
+	< LPAR > Lhs() < RELA_OP > Rhs() <RPAR >
+}
+
+void While(): { } {
+	< WHILE > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA >
+}
+
+void If(): { } {
+	< IF > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA > (< ELSE > <LCHAVETA > Stmtlst() <RCHAVETA >)?
+}
+
+void Call(): { } {
+	< ID > ( < DOT > <ID >)? < LPAR > (ArgumentList() )? < RPAR >
+}
+
+void ArgumentList(): { } {
+	Argument() (< VIRG > Argument())*
+}
+
+void Argument(): { } {
+	( < ID > | < STRING > | < INTEGER > )
+}
+
+void ArrayAccess(): { } {
+	< ID > <RBRACKET > Index() < LBRACKET >
+}
+
+void ScalarAccess(): { } {
+	< ID > (<DOT > < SIZE >)?
+}
+
+void Index(): {} {
+	< ID > | < INTEGER >
+}
+
+
+
