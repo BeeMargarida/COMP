@@ -56,8 +56,6 @@ PARSER_END(Parser)
 	| <DOT: "." > //é para por isto?
 	| <LCHAVETA: "{" >
 	| <RCHAVETA: "}" >
-	| <LBRACKET: "[" > //necess�rio?
-	| <RBRACKET: "]" > 
 	| <FUNCTION: "function" >
 	| <MODULE: "module" >
 	| <SIZE: "size">
@@ -66,26 +64,33 @@ PARSER_END(Parser)
 <DEFAULT> TOKEN: {
 	<INTEGER: (<DIGIT>)+>
 	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
-	| <#LETTER: ["$", "A"-"Z","_","a"-"z"]> //tirei os # - tecnicamente significam private ou algo do g�nero
+	| <#LETTER: ["$", "A"-"Z","_","a"-"z"]>
 	| <#DIGIT: ["0"-"9"]>
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
 SimpleNode Module(): {} {
-	<MODULE> <ID> < LCHAVETA > (Declaration())* (Function())* < RCHAVETA > {  return jjtThis; }
+	<MODULE> <ID> < LCHAVETA > (Declaration())*/*(Declaration_Array() | Declaration_Scalar())**/ (Function())* < RCHAVETA > { return jjtThis; }
 }
 
-void Declaration(): {Token element, size;} {
-	(ArrayElement() | ScalarElement())
-	(	  < ASSIGN > (( <LBRACKET> ArraySize() <RBRACKET>) | (<ADDSUB_OP> )? <INTEGER>)
-	)? <PVIRG>	  //isto est� mal
+void Declaration(): {} {
+	( ArrayElement() | ScalarElement())
+	(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 }
+/*
+void Declaration_Array(): {} {
+	ArrayElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+}
+
+void Declaration_Scalar(): {} {
+	ScalarElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+}*/
 
 void Function(): { } {
 	(	  (	    < FUNCTION > (ArrayElement() | ScalarElement()) <ASSIGN> <ID>
 	    <LPAR> (VarList())? < RPAR >
 	  ) |
-	  (		< FUNCTION > <ID > <LPAR > (VarList())? < RPAR >
+	  (		< FUNCTION > <ID> <LPAR> (VarList())? <RPAR>
 	  )
 	) < LCHAVETA > Stmtlst() < RCHAVETA >
 }
@@ -98,7 +103,7 @@ void VarList(): { } {
 }
 
 void ArrayElement(): { } {
-	< ID > <RBRACKET > <LBRACKET >
+	< ID > "[" "]"
 }
 
 void ScalarElement(): { } {
@@ -123,7 +128,7 @@ void Lhs(): { } {
 
 void Rhs(): { } {
 	(	  Term() ((< ARITH_OP > | < BITWISE_OP > | < ADDSUB_OP >) Term())?
-	) | < RBRACKET > ArraySize() < LBRACKET >
+	) | "[" ArraySize() "]"
 }
 
 void ArraySize(): { } {
@@ -159,7 +164,7 @@ void Argument(): { } {
 }
 
 void ArrayAccess(): { } {
-	< ID > <RBRACKET > Index() < LBRACKET >
+	< ID > "[" Index() "]"
 }
 
 void ScalarAccess(): { } {
