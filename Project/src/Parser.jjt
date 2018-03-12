@@ -1,5 +1,5 @@
 options {
-	LOOKAHEAD=3; //melhorar para 1
+	LOOKAHEAD=1; //melhorar para 1
 }
  
 PARSER_BEGIN(Parser)
@@ -89,7 +89,7 @@ SimpleNode Module(): {} {
 
 void Declaration(): {} {
 	try {	
-		( ArrayElement() | ScalarElement())
+		< ID > (ArrayElement() | ScalarElement())
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -206,11 +206,11 @@ void Argument(): { } {
 }
 
 void ArrayAccess(): { } {
-	< ID > "[" Index() "]"
+	 "[" Index() "]"
 }
 
 void ScalarAccess(): { } {
-	< ID > (<DOT > < SIZE >)?
+	 (<DOT > < SIZE >)?
 }
 
 void Index(): {} {
