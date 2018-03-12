@@ -1,7 +1,7 @@
 options {
 	LOOKAHEAD=3; //melhorar para 1
 }
-
+ 
 PARSER_BEGIN(Parser)
 
 /*import java.io.BufferedReader;
@@ -12,10 +12,13 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 public class Parser {
+	static java.util.Stack argStack;
 	public static void main(String[] args) throws ParseException{
 
 		/*BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		String line = reader.readLine();*/
+		
+		 argStack = new java.util.Stack(); 
 
 		File filename = new File(args[0]);
 	  	try { 
@@ -70,20 +73,54 @@ PARSER_END(Parser)
 }
 
 SimpleNode Module(): {} {
-	<MODULE> <ID> < LCHAVETA > (Declaration())*/*(Declaration_Array() | Declaration_Scalar())**/ (Function())* < RCHAVETA > { return jjtThis; }
+	try {
+	<MODULE> <ID> <LCHAVETA> (Declaration())*/*(Declaration_Array() | Declaration_Scalar())**/ (Function())* < RCHAVETA > { return jjtThis; }
+	}
+	catch (ParseException e) {
+    	System.out.println("Erro no module, mais especificamente no " + exceptionCause(e));
+    	Token t;
+    	do {
+      		t = getNextToken();
+      		System.out.println("Estou a continuar? " + t.image);
+      		
+    	} while (t.kind != RCHAVETA);
+    	 return jjtThis;
+    	//e.printStackTrace();
+  	}
 }
 
 void Declaration(): {} {
-	( ArrayElement() | ScalarElement())
-	(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+	try {	
+		( ArrayElement() | ScalarElement())
+		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+	}
+	catch(ParseException e) {
+		System.out.println("Erro no declaration");
+	}
+
+}
+
+String exceptionCause(ParseException e):{} {
+	{return e.toString();}
 }
 /*
 void Declaration_Array(): {} {
-	ArrayElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+	try {
+		ArrayElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+	}
+	catch(ParseException e) {
+		System.out.println("Erro no declaration_array");
+	}
+	
 }
 
 void Declaration_Scalar(): {} {
-	ScalarElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+	try {
+		ScalarElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
+	}
+	catch(ParseException e) {
+		System.out.println("Erro no declaration_scalar");
+	}
 }*/
 
 void Function(): { } {
@@ -93,6 +130,7 @@ void Function(): { } {
 	  (		< FUNCTION > <ID> <LPAR> (VarList())? <RPAR>
 	  )
 	) < LCHAVETA > Stmtlst() < RCHAVETA >
+	
 }
 
 void VarList(): { } {
