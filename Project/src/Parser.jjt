@@ -4,6 +4,8 @@ options {
  
 PARSER_BEGIN(Parser)
 
+/*import java.io.BufferedReader;
+import java.io.InputStreamReader; */
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -13,10 +15,7 @@ public class Parser {
 	static java.util.Stack argStack;
 	public static void main(String[] args) throws ParseException{
 
-		/*BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		String line = reader.readLine();*/
-		
-		 argStack = new java.util.Stack(); 
+		argStack = new java.util.Stack(); 
 
 		File filename = new File(args[0]);
 	  	try { 
@@ -32,14 +31,14 @@ public class Parser {
 
 PARSER_END(Parser)
 
-<DEFAULT> SKIP : {
+SKIP : {
 	" "	| "\t"	| "\n" | "\r" | 
 	<"//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")> | 
 	<"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/"> 
 }
 
 /* Reserved words */
-<DEFAULT> TOKEN: {
+TOKEN: {
 	<RELA_OP : ">" | "<" | "<=" | ">=" | "==" | "!=" >
 	| <ADDSUB_OP: "+" | "-">
 	| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>" >
@@ -62,7 +61,7 @@ PARSER_END(Parser)
 	| <SIZE: "size">
 }
 
-<DEFAULT> TOKEN: {
+TOKEN: {
 	<INTEGER: (<DIGIT>)+>
 	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
 	| <#LETTER: ["$", "A"-"Z","_","a"-"z"]>
@@ -72,99 +71,80 @@ PARSER_END(Parser)
 
 SimpleNode Module(): {} {
 	try {
-	<MODULE> <ID> <LCHAVETA> (Declaration())*/*(Declaration_Array() | Declaration_Scalar())**/ (Function())* < RCHAVETA > { return jjtThis; }
+	<MODULE> <ID> <LCHAVETA>
+	 (Declaration())* 
+	 (Function())* 
+	 {System.out.println("3");}
+	 < RCHAVETA > { return jjtThis; }
 	}
 	catch (ParseException e) {
     	System.out.println("Erro no module, mais especificamente no " + exceptionCause(e));
+
+    	e.printStackTrace();
+
     	Token t;
     	do {
       		t = getNextToken();
       		System.out.println("Estou a continuar? " + t.image);
       		
     	} while (t.kind != RCHAVETA);
-    	 return jjtThis;
-    	//e.printStackTrace();
+    	
+    	return jjtThis;
   	}
 }
 
 void Declaration(): {} {
 	try {	
-		< ID > (ArrayElement() | ScalarElement())
+		<ID> (ArrayElement())?
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Erro no declaration");
 	}
-
 }
 
 String exceptionCause(ParseException e):{} {
 	{return e.toString();}
 }
-/*
-void Declaration_Array(): {} {
-	try {
-		ArrayElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
-	}
-	catch(ParseException e) {
-		System.out.println("Erro no declaration_array");
-	}
-	
-}
 
-void Declaration_Scalar(): {} {
-	try {
-		ScalarElement() ( < ASSIGN > (( "[" ArraySize() "]") | (<ADDSUB_OP> )? <INTEGER>))? <PVIRG>
-	}
-	catch(ParseException e) {
-		System.out.println("Erro no declaration_scalar");
-	}
-}*/
-
-void Function(): { } {
-	(
-	  (
-	    < FUNCTION > (ArrayElement() | ScalarElement()) <ASSIGN> <ID>
+void Function(): {} {
+	 <FUNCTION>  <ID> (
+	     ((ArrayElement())? <ASSIGN> <ID>)?
 	    <LPAR> (VarList())? < RPAR >
-	  ) |
-	  (
-		< FUNCTION > <ID> <LPAR> (VarList())? <RPAR>
-	  )
-	) < LCHAVETA > Stmtlst() < RCHAVETA >
+	)
+	< LCHAVETA > Stmtlst() < RCHAVETA >
 	
 }
 
 void VarList(): { } {
+	 <ID>(ArrayElement())?
 	(
-	  ArrayElement() | ScalarElement()
-	)
-	(
-	  < VIRG > (ArrayElement() | ScalarElement() )
+	  < VIRG > <ID> (ArrayElement())?
 	)*
 }
 
 void ArrayElement(): { } {
-	< ID > "[" "]"
-}
-
-void ScalarElement(): { } {
-	< ID >
+	"[" "]"
 }
 
 void Stmtlst(): { } {
 	( Stmt() )*
 }
 
-void Stmt(): { } {
-	While() | If() | Assign() | Call() < PVIRG >
+void Stmt(): {} {
+	 	While() | If() | (LOOKAHEAD(2) Assign() | (<ID> Call())) < PVIRG >
+}
+
+void Call(): { } {
+	( < DOT > <ID >)? < LPAR > (ArgumentList() )? < RPAR >
 }
 
 void Assign(): { } {
-	Lhs() <ASSIGN> Rhs() < PVIRG >
+	Lhs() <ASSIGN> Rhs()
 }
 
 void Lhs(): { } {
-	ArrayAccess() | ScalarAccess()
+	{System.out.print("lhs");} <ID> (ArrayAccess() | ScalarAccess()) {System.out.println("lhs2");}
 }
 
 void Rhs(): { } {
@@ -174,12 +154,13 @@ void Rhs(): { } {
 }
 
 void ArraySize(): { } {
-	ScalarAccess() | < INTEGER >
+	{System.out.print("arraysize1");}(<ID> ScalarAccess()) | < INTEGER > {System.out.println("arraysize2");}
 }
 
 void Term(): { } {
-	( < ADDSUB_OP >)? (< INTEGER > | Call() | ArrayAccess() | ScalarAccess() )
-}
+	( <ADDSUB_OP> )? 
+	( <INTEGER> | ( <ID> ( ArrayAccess() | (LOOKAHEAD(2) Call() | {System.out.print("Term1 ");}ScalarAccess() {System.out.print("Term2 ");}))))
+} 
 
 void Exprtest(): { } {
 	< LPAR > Lhs() < RELA_OP > Rhs() <RPAR >
@@ -193,24 +174,20 @@ void If(): { } {
 	< IF > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA > (< ELSE > <LCHAVETA > Stmtlst() <RCHAVETA >)?
 }
 
-void Call(): { } {
-	< ID > ( < DOT > <ID >)? < LPAR > (ArgumentList() )? < RPAR >
-}
-
 void ArgumentList(): { } {
 	Argument() (< VIRG > Argument())*
 }
 
 void Argument(): { } {
-	( < ID > | < STRING > | < INTEGER > )
+	 < ID > | < STRING > | < INTEGER > 
 }
 
 void ArrayAccess(): { } {
-	 "[" Index() "]"
+	"[" Index() "]"
 }
 
 void ScalarAccess(): { } {
-	 (<DOT > < SIZE >)?
+	(<DOT > < SIZE >)?
 }
 
 void Index(): {} {
