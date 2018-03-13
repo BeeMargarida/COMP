@@ -79,9 +79,6 @@ SimpleNode Module(): {} {
 	}
 	catch (ParseException e) {
     	System.out.println("Erro no module, mais especificamente no " + exceptionCause(e));
-
-    	e.printStackTrace();
-
     	Token t;
     	do {
       		t = getNextToken();
@@ -132,7 +129,7 @@ void Stmtlst(): { } {
 }
 
 void Stmt(): {} {
-	 	While() | If() | (LOOKAHEAD(2) Assign() | (<ID> Call())) < PVIRG >
+	 	While() | If() | (LOOKAHEAD(2) (Assign() | (<ID> Call()))) < PVIRG >
 }
 
 void Call(): { } {
@@ -143,8 +140,8 @@ void Assign(): { } {
 	Lhs() <ASSIGN> Rhs()
 }
 
-void Lhs(): { } {
-	{System.out.print("lhs");} <ID> (ArrayAccess() | ScalarAccess()) {System.out.println("lhs2");}
+void Lhs(): {} {
+	<ID>  (ArrayAccess() | ScalarAccess())
 }
 
 void Rhs(): { } {
@@ -154,12 +151,13 @@ void Rhs(): { } {
 }
 
 void ArraySize(): { } {
-	{System.out.print("arraysize1");}(<ID> ScalarAccess()) | < INTEGER > {System.out.println("arraysize2");}
+	(<ID> ScalarAccess()) | < INTEGER > 
 }
 
 void Term(): { } {
 	( <ADDSUB_OP> )? 
-	( <INTEGER> | ( <ID> ( ArrayAccess() | (LOOKAHEAD(2) Call() | {System.out.print("Term1 ");}ScalarAccess() {System.out.print("Term2 ");}))))
+	( <INTEGER> | ( <ID> ( ArrayAccess() | 
+		(LOOKAHEAD(2) Call() | {System.out.print("Term1 ");}ScalarAccess() {System.out.println("Term2 ");}))))
 } 
 
 void Exprtest(): { } {
