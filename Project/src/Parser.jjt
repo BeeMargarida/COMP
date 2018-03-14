@@ -71,23 +71,24 @@ TOKEN: {
 
 SimpleNode Module(): {} {
 	try {
-	<MODULE> <ID> <LCHAVETA>
-	 (Declaration())* 
-	 (Function())* 
-	 {System.out.println("3");}
-	 < RCHAVETA > { return jjtThis; }
+		<MODULE> <ID> <LCHAVETA>
+	} catch (ParseException e) {
+		System.out.println("Error on module start, with Exception thrown " + e.toString());
+		error_skipto(PVIRG);
 	}
-	catch (ParseException e) {
-    	System.out.println("Erro no module, mais especificamente no " + exceptionCause(e));
-    	Token t;
-    	do {
-      		t = getNextToken();
-      		System.out.println("Estou a continuar? " + t.image);
-      		
-    	} while (t.kind != RCHAVETA);
-    	
-    	return jjtThis;
-  	}
+	try {
+		(Declaration())* 
+		(Function())* 
+	} catch (ParseException e) {
+		System.out.println("Error on declaration or function, with Exception thrown " + e.toString());
+		error_skipto(PVIRG);
+	}
+	try {
+		< RCHAVETA > { return jjtThis; }
+	} catch (ParseException e) {
+		System.out.println("Error on module, with Exception thrown " + e.toString());
+		return jjtThis;	
+	}
 }
 
 void Declaration(): {} {
@@ -96,20 +97,22 @@ void Declaration(): {} {
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
-		System.out.println("Erro no declaration");
+		System.out.println("Error on declaration, with Exception thrown " + e.toString());
+		error_skipto(PVIRG);
 	}
 }
 
-String exceptionCause(ParseException e):{} {
-	{return e.toString();}
-}
-
 void Function(): {} {
-	 <FUNCTION>  <ID> (
-	     ((ArrayElement())? <ASSIGN> <ID>)?
-	    <LPAR> (VarList())? < RPAR >
-	)
-	< LCHAVETA > Stmtlst() < RCHAVETA >
+	try {
+	 	<FUNCTION>  <ID> (
+	     	((ArrayElement())? <ASSIGN> <ID>)?
+		    <LPAR> (VarList())? < RPAR >
+		)
+		< LCHAVETA > Stmtlst() < RCHAVETA >
+	} catch(ParseException e) {
+		System.out.println("Error on function statement, with Exception thrown " + e.toString());
+		error_skipto(PVIRG);
+	}
 	
 }
 
@@ -129,7 +132,7 @@ void Stmtlst(): { } {
 }
 
 void Stmt(): {} {
-	 	While() | If() | (LOOKAHEAD(2) (Assign() | (<ID> Call()))) < PVIRG >
+	 While() | If() | (<ID> (LOOKAHEAD(2) Call() | Assign())) < PVIRG >
 }
 
 void Call(): { } {
@@ -137,11 +140,15 @@ void Call(): { } {
 }
 
 void Assign(): { } {
-	Lhs() <ASSIGN> Rhs()
+	LhsNoID() <ASSIGN> Rhs()
 }
 
 void Lhs(): {} {
 	<ID>  (ArrayAccess() | ScalarAccess())
+}
+
+void LhsNoID(): {} {
+	(ArrayAccess() | ScalarAccess())
 }
 
 void Rhs(): { } {
@@ -157,7 +164,7 @@ void ArraySize(): { } {
 void Term(): { } {
 	( <ADDSUB_OP> )? 
 	( <INTEGER> | ( <ID> ( ArrayAccess() | 
-		(LOOKAHEAD(2) Call() | {System.out.print("Term1 ");}ScalarAccess() {System.out.println("Term2 ");}))))
+		(LOOKAHEAD(2) Call() | ScalarAccess() ))))
 } 
 
 void Exprtest(): { } {
@@ -190,6 +197,14 @@ void ScalarAccess(): { } {
 
 void Index(): {} {
 	< ID > | < INTEGER >
+}
+
+JAVACODE
+void error_skipto(int kind) {
+  Token t;
+  do {
+    t = getNextToken();
+  } while (t.kind != kind);
 }
 
 

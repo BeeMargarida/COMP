@@ -3,11 +3,9 @@ module array1
 {
 
 
-  function print_array(N)
-  {
+  function print_array(N)  {
 
-   a=[N];
-
+   a=[N]
 
    i=0;
    while(i < N)
@@ -15,6 +13,8 @@ module array1
    	a[i] = i;
 	i=i+1;
 	}
+
+	a.size=2;
 
 	i=0;
 	while(i < N) {
