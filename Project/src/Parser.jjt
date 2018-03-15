@@ -151,7 +151,7 @@ void ArrayElement(): { } {
 	"[" "]"
 }
 
-void Stmtlst(): { } {
+void Stmtlst(): {} {
 	try {
 		<LCHAVETA>
 	} 
@@ -161,10 +161,10 @@ void Stmtlst(): { } {
 	}
 
 	(Stmt())* 
-
+	
 	try {
 		<RCHAVETA>
-	} 
+	}	
 	catch (ParseException e) {
 		System.out.println("Error on statement list, closing bracket not detected."
 			+"\nSpecific exception: " + e.toString());
@@ -219,7 +219,7 @@ void Rhs(): { } {
 	) | "[" ArraySize() "]"
 	}
 	catch (ParseException e) {
-		System.out.println("Merda");
+		System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
 	}
 	
 }
@@ -236,7 +236,7 @@ void Term(): { } {
 		(LOOKAHEAD(2) Call() | ScalarAccess() ))))
 	}
 	catch (ParseException e) {
-		System.out.println("Outra Merda");
+		System.out.println("Erro on term.\nSpecific Exception: " + e.toString());
 	}
 
 } 
@@ -306,7 +306,7 @@ void error_skipto(int kind) {
   Token t;
   do {
     t = getNextToken();
-  } while (t.kind != kind);
+  } while (t.kind != kind || t.kind == FUNCTION || t.kind == RCHAVETA);
 }
 
 
