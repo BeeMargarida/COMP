@@ -107,7 +107,7 @@ void Function(): {} {
 	try {
 	 	<FUNCTION>  <ID> (
 	     	((ArrayElement())? <ASSIGN> <ID>)?
-		    <LPAR> (VarList())? < RPAR >
+		     (VarList()) 
 		)
 		Stmtlst() 
 			
@@ -119,10 +119,33 @@ void Function(): {} {
 }
 
 void VarList(): { } {
-	 <ID>(ArrayElement())?
-	(
-	  < VIRG > <ID> (ArrayElement())?
-	)*
+	try {
+		<LPAR>
+	} catch (ParseException e) {
+		System.out.println("Error on argument list, no opening parenthesis. \nSpecific Exception thrown: " + e.toString());
+	}
+	try {
+	 	(<ID>(ArrayElement())?
+		
+		(
+		< VIRG > <ID> (ArrayElement())?
+		)*)?
+	} catch (ParseException e) {
+		System.out.println("Error on argument list variables. \nSpecific Exception thrown: " + e.toString());
+	}
+	try {
+		<RPAR>
+	} catch (ParseException e) {
+		System.out.println("Error on argument list, no closing parenthesis. \nSpecific Exception thrown: " + e.toString());
+		try {
+			error_skipto(RPAR);
+		}
+		catch (ParseException e2) {
+			System.out.println("Skipping to the next line");
+			error_skipto(PVIRG);
+		}
+	}
+	 
 }
 
 void ArrayElement(): { } {
@@ -136,9 +159,6 @@ void Stmtlst(): { } {
 	catch (ParseException e) {
 		System.out.println("Error on statement list, opening bracket not detected."
 			+"\nSpecific exception: " + e.toString());
-
-		Token t = getToken(0);
-		System.out.println("Estou a analisar neste momento " + t.image);
 	}
 
 	(Stmt())* 

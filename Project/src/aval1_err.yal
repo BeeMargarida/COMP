@@ -8,5 +8,5 @@ module aval1_err {
    function a=f(b, c) {
      a = b*c;
    }
-
+   
 }
