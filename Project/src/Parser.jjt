@@ -231,14 +231,14 @@ void ArraySize(): {Token t; } {
 
 void Term(): { } {
 	try {
-	( <ADDSUB_OP> )? 
-	( <INTEGER> | ( <ID> ( ArrayAccess() | 
+		( <ADDSUB_OP> )? 
+		( <INTEGER> | ( <ID> ( ArrayAccess() | 
 		(LOOKAHEAD(2) Call() | ScalarAccess() ))))
 	}
 	catch (ParseException e) {
-		System.out.println("Erro on term.\nSpecific Exception: " + e.toString());
+		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
+		error_skipto(PVIRG);
 	}
-
 } 
 
 void Exprtest(): { } {
@@ -248,6 +248,7 @@ void Exprtest(): { } {
 	}
 	catch (ParseException e) {
 		System.out.println("Invalid comparison operation for while. \nSpecific Exception thrown: " + e.toString());
+		error_skipto(PVIRG);
 	}
 	try {
 		Rhs() <RPAR>
@@ -275,18 +276,33 @@ void While(): { } {
 
 void If(): { } {
 	try {
-		< IF > Exprtest() Stmtlst() (< ELSE > Stmtlst())?
+		< IF > Exprtest() Stmtlst() 
 	} catch (ParseException e) {
 		System.out.println("Error on if");
+	}
+
+	try {
+		(< ELSE > Stmtlst())?
+	}
+	catch (ParseException e) {
+		System.out.println("Error on else");
+		error_skipto(PVIRG);
 	}
 }
 
 void ArgumentList(): { } {
+	try {
 	Argument() (< VIRG > Argument())*
+	} catch (ParseException e) {
+		System.out.println("Invalid argument. \nSpecific Exception thrown: " + e.toString());
+		error_skipto(RPAR);
+	}
 }
 
 void Argument(): { } {
+	
 	 < ID > | < STRING > | < INTEGER > 
+	
 }
 
 void ArrayAccess(): { } {
@@ -306,7 +322,7 @@ void error_skipto(int kind) {
   Token t;
   do {
     t = getNextToken();
-  } while (t.kind != kind || t.kind == FUNCTION || t.kind == RCHAVETA);
+  } while (t.kind != kind);
 }
 
 
