@@ -74,22 +74,16 @@ SimpleNode Module(): {} {
 		<MODULE> <ID> <LCHAVETA>
 	} catch (ParseException e) {
 		System.out.println("Error on module start, with Exception thrown " + e.toString());
-		error_skipto(PVIRG);
+		Token t = getToken(0);
+		if (t.kind == LCHAVETA) 
+			getNextToken();
+		else
+			error_skipto(PVIRG);
 	}
 	
-	(try
-	 {Declaration()
-	 }
-	 catch(ParseException e) {
-	 	System.out.println("Error on teste, with Exception thrown " + e.toString());
-	 })* 
-	(try
-	 {Function()
-	 }
-	 catch(ParseException e) {
-	 	System.out.println("Error on teste, with Exception thrown " + e.toString());
-	 })* 
-
+	(Function() |
+	Declaration())*
+		
 	try {
 		< RCHAVETA > { return jjtThis; }
 	} catch (ParseException e) {
@@ -115,11 +109,12 @@ void Function(): {} {
 	     	((ArrayElement())? <ASSIGN> <ID>)?
 		    <LPAR> (VarList())? < RPAR >
 		)
-		< LCHAVETA > Stmtlst() < RCHAVETA >
+		Stmtlst() 
+			
 	} catch(ParseException e) {
 		System.out.println("Error on function statement, with Exception thrown " + e.toString());
 		error_skipto(PVIRG);
-	}
+	} 
 	
 }
 
@@ -135,11 +130,38 @@ void ArrayElement(): { } {
 }
 
 void Stmtlst(): { } {
-	( Stmt() )*
+	try {
+		<LCHAVETA>
+	} 
+	catch (ParseException e) {
+		System.out.println("Error on statement list, opening bracket not detected."
+			+"\nSpecific exception: " + e.toString());
+
+		Token t = getToken(0);
+		System.out.println("Estou a analisar neste momento " + t.image);
+	}
+
+	(Stmt())* 
+
+	try {
+		<RCHAVETA>
+	} 
+	catch (ParseException e) {
+		System.out.println("Error on statement list, closing bracket not detected."
+			+"\nSpecific exception: " + e.toString());
+		error_skipto(ID);
+	}
 }
 
 void Stmt(): {} {
-	 While() | If() | (<ID> (LOOKAHEAD(2) Call() | Assign())) < PVIRG >
+	try {
+		While() | If() | (<ID> (LOOKAHEAD(2) Call() | Assign())) < PVIRG >
+	}
+	catch (ParseException e) {
+		System.out.println("Error on statement."
+			+"\nSpecific exception: " + e.toString());
+		error_skipto(PVIRG);
+	}
 }
 
 void Call(): { } {
@@ -180,11 +202,11 @@ void Exprtest(): { } {
 }
 
 void While(): { } {
-	< WHILE > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA >
+	< WHILE > Exprtest()  Stmtlst() 
 }
 
 void If(): { } {
-	< IF > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA > (< ELSE > <LCHAVETA > Stmtlst() <RCHAVETA >)?
+	< IF > Exprtest() Stmtlst() (< ELSE > <LCHAVETA > Stmtlst() <RCHAVETA >)?
 }
 
 void ArgumentList(): { } {
