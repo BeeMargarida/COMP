@@ -76,17 +76,24 @@ SimpleNode Module(): {} {
 		System.out.println("Error on module start, with Exception thrown " + e.toString());
 		error_skipto(PVIRG);
 	}
-	try {
-		(Declaration())* 
-		(Function())* 
-	} catch (ParseException e) {
-		System.out.println("Error on declaration or function, with Exception thrown " + e.toString());
-		error_skipto(PVIRG);
-	}
+	
+	(try
+	 {Declaration()
+	 }
+	 catch(ParseException e) {
+	 	System.out.println("Error on teste, with Exception thrown " + e.toString());
+	 })* 
+	(try
+	 {Function()
+	 }
+	 catch(ParseException e) {
+	 	System.out.println("Error on teste, with Exception thrown " + e.toString());
+	 })* 
+
 	try {
 		< RCHAVETA > { return jjtThis; }
 	} catch (ParseException e) {
-		System.out.println("Error on module, with Exception thrown " + e.toString());
+		System.out.println("Error on module end, with Exception thrown " + e.toString());
 		return jjtThis;	
 	}
 }
@@ -157,8 +164,9 @@ void Rhs(): { } {
 	) | "[" ArraySize() "]"
 }
 
-void ArraySize(): { } {
-	(<ID> ScalarAccess()) | < INTEGER > 
+void ArraySize(): {Token t; } {
+	((t=<ID> ScalarAccess()) | t=< INTEGER >) 
+	{jjtThis.infoValue = t.image;}
 }
 
 void Term(): { } {
