@@ -1,5 +1,6 @@
 options {
 	LOOKAHEAD=1; //melhorar para 1
+	MULTI=true;
 }
  
 PARSER_BEGIN(Parser)
@@ -69,9 +70,13 @@ TOKEN: {
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
-SimpleNode Module(): {} {
+SimpleNode Module(): {Token moduleName;} {
 	try {
-		<MODULE> <ID> <LCHAVETA>
+		<MODULE> moduleName=<ID> 
+
+		{jjtThis.name = moduleName.image; }
+
+		<LCHAVETA>
 	} catch (ParseException e) {
 		System.out.println("Error on module start, with Exception thrown " + e.toString());
 		Token t = getToken(0);
@@ -92,24 +97,25 @@ SimpleNode Module(): {} {
 	}
 }
 
-void Declaration(): {} {
+void Declaration(): {String declaration; Token tmp;} {
+
 	try {	
 		<ID> (ArrayElement())?
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Error on declaration, with Exception thrown " + e.toString());
+
 		error_skipto(PVIRG);
 	}
 }
 
-void Function(): {} {
+void Function(): {Token name;} {
 	try {
-	 	<FUNCTION>  <ID> (
+	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
 	     	((ArrayElement())? <ASSIGN> <ID>)?
 		     (VarList()) 
-		)
-			
+		)	
 	} catch(ParseException e) {
 		System.out.println("Error on function statement, with Exception thrown " + e.toString());
 		error_skipto(PVIRG);
@@ -118,26 +124,35 @@ void Function(): {} {
 	Stmtlst() 
 }
 
-void VarList(): { } {
+void VarList(): {String variables; Token tmp;} { 
+	
+	{variables = "";}
+
 	try {
 		<LPAR>
 	} catch (ParseException e) {
 		System.out.println("Error on argument list, no opening parenthesis. \nSpecific Exception thrown: " + e.toString());
 	}
 	try {
-	 	(<ID>(ArrayElement())?
+	 	(tmp=<ID> {variables += " " + tmp.image;} (ArrayElement() {variables += "[]";})?
 		
-		(
-		< VIRG > <ID> (ArrayElement())?
-		)*)?
+		(< VIRG > tmp=<ID> 
+			{variables += ", " + tmp.image; }  
+			(ArrayElement() {variables += "[]";})?
+		)*)? 
+
 		<RPAR>
+
+		{jjtThis.varList = variables;}
+
 	} catch (ParseException e) {
 		System.out.println("Error on argument list variables or closing parenthesis. \nSpecific Exception thrown: " + e.toString());
+
 		error_skipto_unless(PVIRG, RPAR);
 	}
 }
 
-void ArrayElement(): { } {
+void ArrayElement() #void: { } {
 	"[" "]"
 }
 
@@ -194,12 +209,16 @@ void Assign(): { } {
 	}
 }
 
-void Lhs(): {} {
-	<ID>  (ArrayAccess() | ScalarAccess())
+// Left and Right terms
+
+String Lhs() #void: {String string; Token tmp;} {
+	tmp=<ID>  (string=ArrayAccess() | string=ScalarAccess()) 
+	{return tmp.image + string;}
 }
 
-void LhsNoID(): {} {
-	(ArrayAccess() | ScalarAccess())
+String LhsNoID(): {String string;} {
+	(string=ArrayAccess() | string=ScalarAccess())
+	{return string;}
 }
 
 void Rhs(): { } {
@@ -215,10 +234,6 @@ void Rhs(): { } {
 	
 }
 
-void ArraySize(): {Token t; } {
-	((t=<ID> ScalarAccess()) | t=< INTEGER >) 
-	{jjtThis.infoValue = t.image;}
-}
 
 void Term(): { } {
 	try {
@@ -248,6 +263,8 @@ void Exprtest(): { } {
 	}
 }
 
+// Logic Structures
+
 void While(): { } {
 	try {
 		< WHILE > Exprtest() Stmtlst() 
@@ -272,32 +289,58 @@ void If(): { } {
 	}
 }
 
-void ArgumentList(): { } {
+// Arguments
+
+void ArgumentList(): {String tmp; } {
 	try {
+
 	Argument() (< VIRG > Argument())*
+
 	} catch (ParseException e) {
+
 		System.out.println("Invalid argument. \nSpecific Exception thrown: " + e.toString());
 		error_skipto(RPAR);
+
 	}
 }
 
-void Argument(): { } {
-	
-	 < ID > | < STRING > | < INTEGER > 
-	
+String Argument() #void : {Token t; } {
+	 (t=<ID> | t=<STRING> | t=<INTEGER> ){return t.image;}
 }
 
-void ArrayAccess(): { } {
-	"[" Index() "]"
+// Access
+
+String ArraySize() #void: {String size; Token tmp; String tmpString;} {
+	{size = ""; tmpString="";}
+
+	tmp=<ID> 
+
+	{ size += tmp.image; }
+
+	 ((tmpString=ScalarAccess() {size += tmpString;}) | (tmp=< INTEGER > {size += tmp.image;}))
+
+	{System.out.println("Tentei tirar o size, com valor " + size); return size;} 
 }
 
-void ScalarAccess(): { } {
-	(<DOT > < SIZE >)?
+String ArrayAccess() #void :  {String index;} {
+	"[" index=Index() "]"
+	 {return "[" + index + "]"; }
 }
 
-void Index(): {} {
-	< ID > | < INTEGER >
+String ScalarAccess() #void :  {Token size; } {
+	(<DOT > size=< SIZE > {return "." + size.image;})?
+	{return "";}
 }
+
+
+String Index(): {Token value;} {
+	value=< ID > | value=< INTEGER >
+	{return value.image;}
+}
+
+
+// For Error Recovery
+
 
 JAVACODE
 void error_skipto(int kind) {
