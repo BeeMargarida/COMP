@@ -154,8 +154,7 @@ void Stmtlst(): {} {
 	
 	try {
 		<RCHAVETA>
-	}	
-	catch (ParseException e) {
+	} catch (ParseException e) {
 		System.out.println("Error on statement list, closing bracket not detected."
 			+"\nSpecific exception: " + e.toString());
 		error_skipto(ID);
@@ -210,6 +209,7 @@ void Rhs(): { } {
 	}
 	catch (ParseException e) {
 		System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
+		error_skipto_withoutconsuming(PVIRG);
 	}
 	
 }
