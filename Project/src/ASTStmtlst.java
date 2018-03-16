@@ -2,6 +2,8 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTStmtlst extends SimpleNode {
+  
+  public String value;
   public ASTStmtlst(int id) {
     super(id);
   }
@@ -9,6 +11,5 @@ class ASTStmtlst extends SimpleNode {
   public ASTStmtlst(Parser p, int id) {
     super(p, id);
   }
-
 }
 /* JavaCC - OriginalChecksum=8543c3d21476b95d301065aa404e9bd2 (do not edit this line) */

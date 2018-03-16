@@ -14,9 +14,9 @@ class ASTVarList extends SimpleNode {
 
   public String toString(String prefix) {
   	if (varList != null)
-  		return prefix + " VarList (" + varList + " )";
+  		return prefix + "VarList (" + varList + " )";
   	else
-  		return prefix + "Empty VarList";
+  		return "";
   }
 
 }

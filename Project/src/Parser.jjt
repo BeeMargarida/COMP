@@ -156,7 +156,7 @@ void ArrayElement() #void: { } {
 	"[" "]"
 }
 
-void Stmtlst(): {} {
+void Stmtlst() #void: {} {
 	try {
 		<LCHAVETA>
 	} 
@@ -178,33 +178,62 @@ void Stmtlst(): {} {
 	}
 }
 
-void Stmt(): {} {
+// Statements
+
+void Stmt() #void: {Token t;} {
 	try {
-		While() | If() | (<ID> (LOOKAHEAD(2) Call() | Assign())) < PVIRG >
+		
+		While() | If() | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
+
 	} catch (ParseException e) {
 		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." + e.toString());
 		error_skipto(PVIRG);
 	}
 }
 
-void Call(): { } {
+void Call(Token t): {String string; Token tmp;} {
 	try {
-		( < DOT > <ID >)? < LPAR > (ArgumentList() )? < RPAR >
-	}
-	catch (ParseException e) {
+
+		( < DOT > tmp=<ID > {jjtThis.calledFunction = tmp.image;})?  < LPAR > (ArgumentList() )? < RPAR >
+		{ jjtThis.value = t.image;  }
+	} catch (ParseException e) {
 		System.out.println("Error on call."
 			+"\nSpecific exception: " + e.toString());
 		error_skipto_unless(PVIRG, LCHAVETA);
 	}
 }
 
-void Assign(): { } {
+void Assign(Token t): {String string;} {
 	try {
 		LhsNoID() <ASSIGN> Rhs()
 	} catch (ParseException e) {
 		System.out.println("Error on assign."
 			+"\nSpecific exception: " + e.toString());
 		
+		error_skipto(PVIRG);
+	}
+}
+
+void While(): { } {
+	try {
+		< WHILE > Exprtest() Stmtlst() 
+	} catch (ParseException e) {
+		System.out.println("Error on while");
+	}
+}
+
+void If(): { } {
+	try {
+		< IF > Exprtest() Stmtlst() 
+	} catch (ParseException e) {
+		System.out.println("Error on if");
+	}
+
+	try {
+		(< ELSE > Stmtlst())?
+	}
+	catch (ParseException e) {
+		System.out.println("Error on else");
 		error_skipto(PVIRG);
 	}
 }
@@ -235,11 +264,11 @@ void Rhs(): { } {
 }
 
 
-void Term(): { } {
+void Term(): {Token t; } {
 	try {
 		( <ADDSUB_OP> )? 
-		( <INTEGER> | ( <ID> ( ArrayAccess() | 
-		(LOOKAHEAD(2) Call() | ScalarAccess() ))))
+		( <INTEGER> | ( t=<ID> ( ArrayAccess() | 
+		(LOOKAHEAD(2) Call(t) | ScalarAccess() ))))
 	}
 	catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
@@ -258,43 +287,21 @@ void Exprtest(): { } {
 		< RELA_OP >	Rhs() <RPAR>
 	}
 	catch (ParseException e) {
-		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: " + e.toString());
+		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
+		 + e.toString());
 			error_skipto_unless(PVIRG, RPAR);
 	}
 }
 
-// Logic Structures
-
-void While(): { } {
-	try {
-		< WHILE > Exprtest() Stmtlst() 
-	} catch (ParseException e) {
-		System.out.println("Error on while");
-	}
-}
-
-void If(): { } {
-	try {
-		< IF > Exprtest() Stmtlst() 
-	} catch (ParseException e) {
-		System.out.println("Error on if");
-	}
-
-	try {
-		(< ELSE > Stmtlst())?
-	}
-	catch (ParseException e) {
-		System.out.println("Error on else");
-		error_skipto(PVIRG);
-	}
-}
 
 // Arguments
 
-void ArgumentList(): {String tmp; } {
+void ArgumentList(): {String string; String tmp; } {
 	try {
 
-	Argument() (< VIRG > Argument())*
+	string=Argument() (< VIRG > tmp=Argument() {string += ", " + tmp;})*
+
+	{jjtThis.argumentList = string;}
 
 	} catch (ParseException e) {
 

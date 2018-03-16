@@ -14,10 +14,8 @@ class ASTArgumentList extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "merda";
+  	return prefix + "Argument List: " + argumentList;
   }
-
-
 
 }
 /* JavaCC - OriginalChecksum=e237b3360f6401ab7120f5cc19841021 (do not edit this line) */

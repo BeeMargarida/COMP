@@ -14,9 +14,8 @@ class ASTModule extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + " Module: " + name;
+  	return prefix + "Module: " + name;
   }
-
-
+  
 }
 /* JavaCC - OriginalChecksum=f67b96868b932ccf0f0b0edfdb7a7ae5 (do not edit this line) */

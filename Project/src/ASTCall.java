@@ -3,7 +3,9 @@
 public
 class ASTCall extends SimpleNode {
 
-
+  public String value;
+  public String calledFunction;
+  
   public ASTCall(int id) {
     super(id);
   }
@@ -13,7 +15,12 @@ class ASTCall extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "AstCall";
+  	if (value != null && calledFunction != null) 
+  		return prefix + value + " calls " + calledFunction;
+  	else if (value != null) 
+  		return prefix +"Called " + value;
+  	else 
+  		return "";
   }
 
 }
