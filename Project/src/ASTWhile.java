@@ -14,7 +14,7 @@ class ASTWhile extends SimpleNode {
   }
  
   public String toString(String prefix) {
-  	return prefix + "Estou num while, fam, com exprTest a " + exprTest;
+  	return prefix + "While statement: ( " + exprTest + ")";
   }
 
 }

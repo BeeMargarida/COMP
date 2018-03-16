@@ -70,6 +70,9 @@ TOKEN: {
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
+/**
+ * Main Module
+*/
 SimpleNode Module(): {Token moduleName;} {
 	try {
 		<MODULE> moduleName=<ID> 
@@ -97,19 +100,9 @@ SimpleNode Module(): {Token moduleName;} {
 	}
 }
 
-void Declaration(): {String declaration; Token tmp;} {
-
-	try {	
-		<ID> (ArrayElement())?
-		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
-	}
-	catch(ParseException e) {
-		System.out.println("Error on declaration, with Exception thrown " + e.toString());
-
-		error_skipto(PVIRG);
-	}
-}
-
+/**
+ * Function, where the file's statement list lies.
+*/
 void Function(): {Token name;} {
 	try {
 	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
@@ -124,9 +117,28 @@ void Function(): {Token name;} {
 	Stmtlst() 
 }
 
+/**
+ * Declaration, handling definitions and assignment of variables outside functions.
+*/
+void Declaration(): {String declaration; Token tmp;} {
+
+	try {	
+		<ID> (ArrayElement())?
+		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+	}
+	catch(ParseException e) {
+		System.out.println("Error on declaration, with Exception thrown " + e.toString());
+
+		error_skipto(PVIRG);
+	}
+}
+
+/**
+ * VarList, the set of variables of a specific function.
+*/
 void VarList(): {String variables; Token tmp;} { 
 	
-	{variables = "";}
+	{variables = "";} // Initialization of variable to avoid errors.
 
 	try {
 		<LPAR>
@@ -152,10 +164,11 @@ void VarList(): {String variables; Token tmp;} {
 	}
 }
 
-void ArrayElement() #void: { } {
-	"[" "]"
-}
-
+/**
+ * StmtList, the set of all statements inside a function. Opening and 
+ * closing brackets are inside this list, to better detect and isolate 
+ * exceptions thrown.
+*/
 void Stmtlst() #void: {} {
 	try {
 		<LCHAVETA>
@@ -178,8 +191,10 @@ void Stmtlst() #void: {} {
 	}
 }
 
-// Statements
-
+/**
+ * Statement, the main code unit inside a function. It includes the assign
+ * of variables, the call of functions, if/else blocks and while loops.
+*/
 void Stmt() #void: {Token t;} {
 	try {
 		
@@ -191,6 +206,9 @@ void Stmt() #void: {Token t;} {
 	}
 }
 
+/**
+ * Call, where a method is invoked.
+*/
 void Call(Token t): {String string; Token tmp;} {
 	try {
 
@@ -203,6 +221,9 @@ void Call(Token t): {String string; Token tmp;} {
 	}
 }
 
+/**
+ * Assign to handle all the assignment of variables, be they scalar or arrays.
+*/
 void Assign(Token t): {String string;} {
 	try {
 		string=LhsNoID()
@@ -217,6 +238,9 @@ void Assign(Token t): {String string;} {
 	}
 }
 
+/**
+ * While loop.
+*/
 void While(): {Token t; String tmp; } {
 	try { 
 		< WHILE > tmp=Exprtest() {jjtThis.exprTest = tmp;} Stmtlst() 
@@ -225,6 +249,9 @@ void While(): {Token t; String tmp; } {
 	}
 }
 
+/**
+ * If block.
+*/
 void If(): { String tmp; } {
 	try {
 		< IF > tmp=Exprtest() {jjtThis.ifValue = tmp;} Stmtlst() 
@@ -235,6 +262,9 @@ void If(): { String tmp; } {
 	
 }
 
+/**
+ * Else block, may or may not exist after if block,
+*/
 void Else(): {} {
 	try {
 		(< ELSE > Stmtlst())?
@@ -245,27 +275,39 @@ void Else(): {} {
 	}
 }
 
-// Left and Right terms
-
+/**
+ * Lhs, the left side of a two-sided operation, such as a comparison or assigment.
+ * @return String containing information of lhs block.
+*/
 String Lhs() #void: {String string; Token tmp;} {
 	tmp=<ID>  (string=ArrayAccess() | string=ScalarAccess()) 
 	{return tmp.image + string;}
 }
 
+/**
+ * LhsNoID, particular use of Lhs, specific for a function to remove ambiguity 
+ * while maintaining readability.
+ * @return String containing information of lhs block, excluding <ID>.
+*/
 String LhsNoID() #void: {String string;} {
 	(string=ArrayAccess() | string=ScalarAccess())
 	{ return string;}
 }
 
+/**
+ * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
+ * @return String containing information of right block.
+*/
 String Rhs() #void: { String string; Token tmp; String tmpString;} {
 	try {
 	(
-	(
-	string=Term() ((tmp=< ARITH_OP > | tmp=< BITWISE_OP > | tmp=< ADDSUB_OP >) tmpString=Term() {string += " " + tmp + " " + tmpString;})?
-	) | ("[" tmpString=ArraySize() "]" {string="["+tmpString+"]";})
+		(
+		string=Term()((tmp=< ARITH_OP > | tmp=< BITWISE_OP > | tmp=< ADDSUB_OP >) tmpString=Term() {string += " " + tmp.image + " " + tmpString;})?
+		) 
+		|
+		 ("[" tmpString=ArraySize() "]" {string="["+tmpString+"]";})
 	)
-	
-	{return string;}
+	 {return string;}
 
 	}
 	catch (ParseException e) {
@@ -275,24 +317,37 @@ String Rhs() #void: { String string; Token tmp; String tmpString;} {
 	
 }
 
-
-String Term() #void: {Token t; String string; } {
-	{string="";}
+/**
+ * Term, a subset of a Rhs.
+ * @return String containing information of term block.
+*/
+String Term() #void: {Token t; String string; String tmpString; } {
+	{string=""; tmpString="";}
 	try {
 		( t=<ADDSUB_OP> 
-			{string=t.image;} )? 
+			{string+=t.image;} )? 
 
-		( (t=<INTEGER> {string+=t.image;} ) 
-		 | ( t=<ID> ( ArrayAccess() | 
-		(LOOKAHEAD(2) Call(t) | ScalarAccess() ))))
+		( (t=<INTEGER> {string+= " " +t.image;}) 
+			|
+		 ( t=<ID> ( (tmpString=ArrayAccess() {string+= " " +t.image; string+= " " +tmpString;}) 
+		  	| 
+			(LOOKAHEAD(2) Call(t) | (tmpString=ScalarAccess() {string+= " " +t.image; string+= " " +tmpString;}))
+			)
+		 	)
+		 )
 
-		{return string;}
+		{string += tmpString; return string;}
+
 	} catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
 	}
 } 
 
+/**
+ * Exprtest, handles the small test block 
+ * @return String containing information of right block.
+*/
 String Exprtest() #void: {String string; Token t; String tmpString; } {
 	{string="";}	
 	try {
@@ -303,7 +358,7 @@ String Exprtest() #void: {String string; Token t; String tmpString; } {
 	}
 	try {
 		t=< RELA_OP >	
-		tmpString=Rhs() <RPAR> {return string + " " + t + " tmpString";}
+		tmpString=Rhs() <RPAR> {return string + " " + t.image + " " + tmpString;}
 	}
 	catch (ParseException e) {
 		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
@@ -343,9 +398,9 @@ String ArraySize() #void: {String size; Token tmp; String tmpString;} {
 
 	{ size += tmp.image; }
 
-	 ((tmpString=ScalarAccess() {size += tmpString;}) | (tmp=< INTEGER > {size += tmp.image;}))
+	 ((tmp=< INTEGER > {size += tmp.image;}) | ((tmpString=ScalarAccess()) {size += tmpString;}))
 
-	{System.out.println("Tentei tirar o size, com valor " + size); return size;} 
+	{return size;} 
 }
 
 String ArrayAccess() #void :  {String index;} {
@@ -354,14 +409,18 @@ String ArrayAccess() #void :  {String index;} {
 }
 
 String ScalarAccess() #void :  {Token size; } {
-	(<DOT > size=< SIZE > {return "." + size.image;})?
+	(<DOT > size=< SIZE > {return "." + size;})?
 	{return "";}
 }
 
 
-String Index(): {Token value;} {
+String Index() #void: {Token value;} {
 	value=< ID > | value=< INTEGER >
 	{return value.image;}
+}
+
+void ArrayElement() #void: { } {
+	"[" "]"
 }
 
 

@@ -15,7 +15,7 @@ class ASTIf extends SimpleNode {
 
   public String toString(String prefix) {
   	String finalResult;
-  	finalResult = prefix +  "If statement " + ifValue;
+  	finalResult = prefix +  "If statement: ( " + ifValue + ")";
 
   	return finalResult;
   }
