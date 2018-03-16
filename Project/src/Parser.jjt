@@ -217,9 +217,9 @@ void Assign(Token t): {String string;} {
 	}
 }
 
-void While(): { } {
-	try {
-		< WHILE > Exprtest() Stmtlst() 
+void While(): {Token t; String tmp; } {
+	try { 
+		< WHILE > tmp=Exprtest() {jjtThis.exprTest = tmp;} Stmtlst() 
 	} catch (ParseException e) {
 		System.out.println("Error on while");
 	}
@@ -273,7 +273,6 @@ String Rhs() #void: { String string; Token tmp; String tmpString;} {
 
 
 String Term() #void: {Token t; String string; } {
-
 	{string="";}
 	try {
 		( t=<ADDSUB_OP> 
@@ -284,22 +283,23 @@ String Term() #void: {Token t; String string; } {
 		(LOOKAHEAD(2) Call(t) | ScalarAccess() ))))
 
 		{return string;}
-	}
-	catch (ParseException e) {
+	} catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
 	}
 } 
 
-void Exprtest(): { } {
+String Exprtest() #void: {String string; Token t; String tmpString; } {
+	{string="";}	
 	try {
-		< LPAR > Lhs() 
+		< LPAR > string=Lhs() 
 	} catch (ParseException e) {
 		System.out.println("Invalid opening condition for structure. \nSpecific Exception thrown: " + e.toString());
 		error_skipto_withoutconsuming(RELA_OP);
 	}
 	try {
-		< RELA_OP >	Rhs() <RPAR>
+		t=< RELA_OP >	
+		tmpString=Rhs() <RPAR> {return string + " " + t + " tmpString";}
 	}
 	catch (ParseException e) {
 		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
