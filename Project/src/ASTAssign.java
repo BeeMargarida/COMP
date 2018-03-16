@@ -2,12 +2,18 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTAssign extends SimpleNode {
+
+  public String value1, value2;	
   public ASTAssign(int id) {
     super(id);
   }
 
   public ASTAssign(Parser p, int id) {
     super(p, id);
+  }
+
+  public String toString(String prefix) {
+  	return prefix + value1 + "(=)" + value2;
   }
 
 }

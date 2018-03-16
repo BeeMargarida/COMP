@@ -205,7 +205,10 @@ void Call(Token t): {String string; Token tmp;} {
 
 void Assign(Token t): {String string;} {
 	try {
-		LhsNoID() <ASSIGN> Rhs()
+		string=LhsNoID()
+		{jjtThis.value1= t.image+" "+string;} <ASSIGN> 
+		string=Rhs()
+		{jjtThis.value2=string;}
 	} catch (ParseException e) {
 		System.out.println("Error on assign."
 			+"\nSpecific exception: " + e.toString());
@@ -245,16 +248,21 @@ String Lhs() #void: {String string; Token tmp;} {
 	{return tmp.image + string;}
 }
 
-String LhsNoID(): {String string;} {
+String LhsNoID() #void: {String string;} {
 	(string=ArrayAccess() | string=ScalarAccess())
-	{return string;}
+	{ return string;}
 }
 
-void Rhs(): { } {
+String Rhs() #void: { String string; Token tmp; String tmpString;} {
 	try {
 	(
-	Term() ((< ARITH_OP > | < BITWISE_OP > | < ADDSUB_OP >) Term())?
-	) | "[" ArraySize() "]"
+	(
+	string=Term() ((tmp=< ARITH_OP > | tmp=< BITWISE_OP > | tmp=< ADDSUB_OP >) tmpString=Term() {string += " " + tmp + " " + tmpString;})?
+	) | ("[" tmpString=ArraySize() "]" {string="["+tmpString+"]";})
+	)
+	
+	{return string;}
+
 	}
 	catch (ParseException e) {
 		System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
@@ -264,11 +272,18 @@ void Rhs(): { } {
 }
 
 
-void Term(): {Token t; } {
+String Term() #void: {Token t; String string; } {
+
+	{string="";}
 	try {
-		( <ADDSUB_OP> )? 
-		( <INTEGER> | ( t=<ID> ( ArrayAccess() | 
+		( t=<ADDSUB_OP> 
+			{string=t.image;} )? 
+
+		( (t=<INTEGER> {string+=t.image;} ) 
+		 | ( t=<ID> ( ArrayAccess() | 
 		(LOOKAHEAD(2) Call(t) | ScalarAccess() ))))
+
+		{return string;}
 	}
 	catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
