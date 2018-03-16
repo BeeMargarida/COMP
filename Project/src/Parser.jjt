@@ -135,7 +135,6 @@ void VarList(): { } {
 		System.out.println("Error on argument list variables or closing parenthesis. \nSpecific Exception thrown: " + e.toString());
 		error_skipto_unless(PVIRG, RPAR);
 	}
-	
 }
 
 void ArrayElement(): { } {
@@ -228,31 +227,23 @@ void Term(): { } {
 	}
 	catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
-		error_skipto(PVIRG);
+		error_skipto_withoutconsuming(PVIRG);
 	}
 } 
 
 void Exprtest(): { } {
-	< LPAR > Lhs() 
 	try {
-		< RELA_OP > 
-	}
-	catch (ParseException e) {
-		System.out.println("Invalid comparison operation for while. \nSpecific Exception thrown: " + e.toString());
-		error_skipto(PVIRG);
+		< LPAR > Lhs() 
+	} catch (ParseException e) {
+		System.out.println("Invalid opening condition for while. \nSpecific Exception thrown: " + e.toString());
+		error_skipto_unless(PVIRG, RPAR);
 	}
 	try {
-		Rhs() <RPAR>
+		< RELA_OP >	Rhs() <RPAR>
 	}
 	catch (ParseException e) {
-		System.out.println("Invalid ending condition for while. \nSpecific Exception thrown: " + e.toString());
-
-		try {
-			error_skipto(RPAR);
-		} catch (ParseException e2) {
-			System.out.println("Skipping to right parenthesis.");
-			error_skipto(PVIRG);
-		}
+		System.out.println("Invalid comparison operation or ending condition for while. \nSpecific Exception thrown: " + e.toString());
+			error_skipto_unless(PVIRG, RPAR);
 	}
 }
 
@@ -322,5 +313,19 @@ void error_skipto_unless(int kind, int stopKind) {
   do {
     t = getNextToken();
   } while (t.kind != kind && t.kind != stopKind);
+}
+
+JAVACODE
+void error_skipto_withoutconsuming(int kind) {
+  Token t;
+
+  boolean hasReached = false;
+  while (!hasReached) {
+  	t = getToken(1);
+  	if (t.kind == kind)
+  		hasReached = true;
+  	else 
+  		getNextToken();
+  }
 }
 
