@@ -183,7 +183,7 @@ void Stmtlst() #void: {} {
 void Stmt() #void: {Token t;} {
 	try {
 		
-		While() | If() | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
+		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
 
 	} catch (ParseException e) {
 		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." + e.toString());
@@ -225,13 +225,17 @@ void While(): {Token t; String tmp; } {
 	}
 }
 
-void If(): { } {
+void If(): { String tmp; } {
 	try {
-		< IF > Exprtest() Stmtlst() 
+		< IF > tmp=Exprtest() {jjtThis.ifValue = tmp;} Stmtlst() 
 	} catch (ParseException e) {
 		System.out.println("Error on if");
 	}
 
+	
+}
+
+void Else(): {} {
 	try {
 		(< ELSE > Stmtlst())?
 	}

@@ -2,6 +2,9 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTIf extends SimpleNode {
+  
+  public String ifValue;
+
   public ASTIf(int id) {
     super(id);
   }
@@ -11,7 +14,10 @@ class ASTIf extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "ASTIf";
+  	String finalResult;
+  	finalResult = prefix +  "If statement " + ifValue;
+
+  	return finalResult;
   }
 
 }
