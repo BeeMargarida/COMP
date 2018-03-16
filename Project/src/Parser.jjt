@@ -70,6 +70,8 @@ TOKEN: {
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
+// MAIN BLOCKS OF INFORMATION
+
 /**
  * Main Module
 */
@@ -191,6 +193,8 @@ void Stmtlst() #void: {} {
 	}
 }
 
+// STATEMENT INFORMATION
+
 /**
  * Statement, the main code unit inside a function. It includes the assign
  * of variables, the call of functions, if/else blocks and while loops.
@@ -208,6 +212,7 @@ void Stmt() #void: {Token t;} {
 
 /**
  * Call, where a method is invoked.
+ * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
 	try {
@@ -223,6 +228,7 @@ void Call(Token t): {String string; Token tmp;} {
 
 /**
  * Assign to handle all the assignment of variables, be they scalar or arrays.
+ * @param Token t contains ID information for printing.
 */
 void Assign(Token t): {String string;} {
 	try {
@@ -313,6 +319,7 @@ String Rhs() #void: { String string; Token tmp; String tmpString;} {
 	catch (ParseException e) {
 		System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
+		return null;
 	}
 	
 }
@@ -341,11 +348,12 @@ String Term() #void: {Token t; String string; String tmpString; } {
 	} catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
+		return null;
 	}
 } 
 
 /**
- * Exprtest, handles the small test block 
+ * Exprtest, handles the small comparison block, present in the while and if blocks.
  * @return String containing information of right block.
 */
 String Exprtest() #void: {String string; Token t; String tmpString; } {
@@ -364,12 +372,15 @@ String Exprtest() #void: {String string; Token t; String tmpString; } {
 		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
 		 + e.toString());
 			error_skipto_unless(PVIRG, RPAR);
+		return null;
 	}
 }
 
+// ARGUMENTS
 
-// Arguments
-
+/**
+ * Argument List, storing the information of the arguments passed inside a call, for example.
+*/
 void ArgumentList(): {String string; String tmp; } {
 	try {
 
@@ -385,12 +396,20 @@ void ArgumentList(): {String string; String tmp; } {
 	}
 }
 
+/**
+ * Argument, could be an ID, String or integer. 
+ * @return String containing information of argument.
+*/
 String Argument() #void : {Token t; } {
 	 (t=<ID> | t=<STRING> | t=<INTEGER> ){return t.image;}
 }
 
-// Access
+// ACCESS
 
+/**
+ * Array Size. Contains the information of the size of an array
+ * @return String with the information of the array size.
+*/
 String ArraySize() #void: {String size; Token tmp; String tmpString;} {
 	{size = ""; tmpString="";}
 
@@ -403,30 +422,48 @@ String ArraySize() #void: {String size; Token tmp; String tmpString;} {
 	{return size;} 
 }
 
+/**
+ * Array Access, accessing information of an array.
+ * @return String containing information of array access, specifically the index..
+*/
 String ArrayAccess() #void :  {String index;} {
 	"[" index=Index() "]"
 	 {return "[" + index + "]"; }
 }
 
+/**
+ * Scalar Access.
+ * @return String containing information of size, or nothing if no '.' is found.
+*/
 String ScalarAccess() #void :  {Token size; } {
 	(<DOT > size=< SIZE > {return "." + size;})?
 	{return "";}
 }
 
 
+/**
+ * Index of an array.
+ * @return String with index.
+*/
 String Index() #void: {Token value;} {
 	value=< ID > | value=< INTEGER >
 	{return value.image;}
 }
 
+/**
+ * Array Element, checks to see if the element is correctly formatted, important for
+ * error recovery.
+*/
 void ArrayElement() #void: { } {
 	"[" "]"
 }
 
 
-// For Error Recovery
+// ERROR RECOVERY
 
-
+/**
+ * Skips all tokens until a specific character is found.
+*/
 JAVACODE
 void error_skipto(int kind) {
   Token t;
@@ -436,6 +473,10 @@ void error_skipto(int kind) {
 }
 
 
+/**
+ * Skips all tokens until a specific character is found, or another more important
+ * but less likely token appears unexpectedly.
+*/
 JAVACODE
 void error_skipto_unless(int kind, int stopKind) {
   Token t;
@@ -444,6 +485,9 @@ void error_skipto_unless(int kind, int stopKind) {
   } while (t.kind != kind && t.kind != stopKind);
 }
 
+/**
+ * Skips all tokens until a specific character, without consuming that specific token.
+*/
 JAVACODE
 void error_skipto_withoutconsuming(int kind) {
   Token t;
