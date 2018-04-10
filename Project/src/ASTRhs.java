@@ -10,5 +10,10 @@ class ASTRhs extends SimpleNode {
     super(p, id);
   }
 
+  public String toString(String prefix) {
+      String toReturn = prefix + "Rhs ";
+      return toReturn;
+  }
+
 }
 /* JavaCC - OriginalChecksum=9e8e08102ca50579db5e2882e58e6298 (do not edit this line) */

@@ -250,18 +250,20 @@ void Assign(Token t): {String string;} {
 */
 void While(): {Token t; String tmp; } {
 	try { 
-		< WHILE > tmp=Exprtest() {jjtThis.exprTest = tmp;} Stmtlst() 
+		< WHILE > Exprtest() Stmtlst() 
 	} catch (ParseException e) {
 		System.out.println("Error on while");
 	}
 }
+
+
 
 /**
  * If block.
 */
 void If(): { String tmp; } {
 	try {
-		< IF > tmp=Exprtest() {jjtThis.ifValue = tmp;} Stmtlst() 
+		< IF > Exprtest() Stmtlst() 
 	} catch (ParseException e) {
 		System.out.println("Error on if");
 	}
@@ -357,23 +359,22 @@ String Term() #void: {Token t; String string; String tmpString; } {
  * Exprtest, handles the small comparison block, present in the while and if blocks.
  * @return String containing information of right block.
 */
-String Exprtest() #void: {String string; Token t; String tmpString; } {
+void Exprtest(): {String string; Token t; String tmpString; Node lhs; Node rhs; } {
 	{string="";}	
 	try {
-		< LPAR > string=Lhs() 
+		< LPAR > lhs=Lhs() {jjtThis.addChild(lhs);}
 	} catch (ParseException e) {
 		System.out.println("Invalid opening condition for structure. \nSpecific Exception thrown: " + e.toString());
 		error_skipto_withoutconsuming(RELA_OP);
 	}
 	try {
 		t=< RELA_OP >	
-		tmpString=Rhs() <RPAR> {return string + " " + t.image + " " + tmpString;}
+		rhs=Rhs() {jjtThis.relOp = t.image; jjtThis.addChild(rhs);} <RPAR> 
 	}
 	catch (ParseException e) {
 		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
 		 + e.toString());
 			error_skipto_unless(PVIRG, RPAR);
-		return null;
 	}
 }
 

@@ -3,8 +3,6 @@
 public
 class ASTWhile extends SimpleNode {
 
-  public String exprTest; 
-
   public ASTWhile(int id) {
     super(id);
   }
@@ -14,7 +12,7 @@ class ASTWhile extends SimpleNode {
   }
  
   public String toString(String prefix) {
-  	return prefix + "While statement: ( " + exprTest + ")";
+  	return prefix + "While statement: ";
   }
 
 }

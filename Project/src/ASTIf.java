@@ -3,8 +3,6 @@
 public
 class ASTIf extends SimpleNode {
   
-  public String ifValue;
-
   public ASTIf(int id) {
     super(id);
   }
@@ -14,10 +12,7 @@ class ASTIf extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	String finalResult;
-  	finalResult = prefix +  "If statement: ( " + ifValue + ")";
-
-  	return finalResult;
+  	return prefix +  "If statement: ";
   }
 
 }

@@ -11,8 +11,9 @@ class ASTLhs extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "ASTLhs";
-  }
+    String toReturn = prefix + "Lhs ";
+    return toReturn;
+}
 
 }
 /* JavaCC - OriginalChecksum=8917a341c6a2ee41a277aa7de2652499 (do not edit this line) */
