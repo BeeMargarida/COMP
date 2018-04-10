@@ -106,7 +106,7 @@ SimpleNode Module(): {Token moduleName;} {
 void Function(): {Token name;} {
 	try {
 	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
-	     	((ArrayElement())? <ASSIGN> <ID>)?
+	     	((ArrayElement())? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
 	} catch(ParseException e) {
