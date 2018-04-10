@@ -146,16 +146,19 @@ void VarList(): {String variables; Token tmp;} {
 		System.out.println("Error on argument list, no opening parenthesis. \nSpecific Exception thrown: " + e.toString());
 	}
 	try {
-	 	(tmp=<ID> {variables += " " + tmp.image;} (ArrayElement() {variables += "[]";})?
+		 	{String var = "";}
+		 	(tmp=<ID> {var += tmp.image;} (ArrayElement() {var += "[]";})?
+		 
+		 	{jjtThis.variables.push(tmp);}
 		
-		(< VIRG > tmp=<ID> 
-			{variables += ", " + tmp.image; }  
-			(ArrayElement() {variables += "[]";})?
-		)*)? 
+			(< VIRG > tmp=<ID> {var="";}
+				{var += tmp.image; }  
+				(ArrayElement() {var += "[]";})? 
+			)*
+		)? 
 
 		<RPAR>
 
-		{jjtThis.varList = variables;}
 
 	} catch (ParseException e) {
 		System.out.println("Error on argument list variables or closing parenthesis. \nSpecific Exception thrown: " + e.toString());
