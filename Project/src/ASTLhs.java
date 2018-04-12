@@ -2,6 +2,8 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTLhs extends SimpleNode {
+  public String lhsContent;
+
   public ASTLhs(int id) {
     super(id);
   }
@@ -11,7 +13,7 @@ class ASTLhs extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    return prefix + toString();
+    return prefix + lhsContent;
   }
 
 }
