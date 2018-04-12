@@ -143,13 +143,13 @@ void VarList(): {String variables; Token tmp;} {
 	try {
 		<LPAR>
 	} catch (ParseException e) {
-		System.out.println("Error on argument list, no opening parenthesis. \nSpecific Exception thrown: " + e.toString());
+		System.out.println("Error on argument list, no opening parenthesis.");
+		System.out.println("Specific Exception thrown:" + e.toString());
+		
 	}
 	try {
 		 	{String var = "";}
 		 	(tmp=<ID> {var += tmp.image;} (ArrayElement() {var += "[]";})?
-		 
-		 	{jjtThis.variables.push(tmp);}
 		
 			(< VIRG > tmp=<ID> {var="";}
 				{var += tmp.image; }  
@@ -161,7 +161,9 @@ void VarList(): {String variables; Token tmp;} {
 
 
 	} catch (ParseException e) {
-		System.out.println("Error on argument list variables or closing parenthesis. \nSpecific Exception thrown: " + e.toString());
+		System.out.println("Error on argument list variables or closing parenthesis.");
+		System.out.println("Specific Exception thrown: "+ e.toString());
+		 
 
 		error_skipto_unless(PVIRG, RPAR);
 	}
@@ -206,7 +208,8 @@ void Stmt() #void: {Token t;} {
 		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
 
 	} catch (ParseException e) {
-		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." + e.toString());
+		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." 
+		+ e.toString());
 		error_skipto(PVIRG);
 	}
 }
@@ -233,10 +236,9 @@ void Call(Token t): {String string; Token tmp;} {
 */
 void Assign(Token t): {String string;} {
 	try {
-		string=LhsNoID()
-		{jjtThis.value1= t.image+" "+string;} <ASSIGN> 
-		string=Rhs()
-		{jjtThis.value2=string;}
+		LhsNoID()
+		<ASSIGN> 
+		Rhs()
 	} catch (ParseException e) {
 		System.out.println("Error on assign."
 			+"\nSpecific exception: " + e.toString());
@@ -288,9 +290,8 @@ void Else(): {} {
  * Lhs, the left side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of lhs block.
 */
-String Lhs() #void: {String string; Token tmp;} {
-	tmp=<ID>  (string=ArrayAccess() | string=ScalarAccess()) 
-	{return tmp.image + string;}
+void Lhs() : {} {
+	<ID>  (ArrayAccess() | ScalarAccess()) 
 }
 
 /**
@@ -298,60 +299,57 @@ String Lhs() #void: {String string; Token tmp;} {
  * while maintaining readability.
  * @return String containing information of lhs block, excluding <ID>.
 */
-String LhsNoID() #void: {String string;} {
-	(string=ArrayAccess() | string=ScalarAccess())
-	{ return string;}
+void LhsNoID(): {} {
+	(ArrayAccess() | ScalarAccess())
 }
 
 /**
  * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of right block.
 */
-String Rhs() #void: { String string; Token tmp; String tmpString;} {
+void Rhs(): {Token t;} {
 	try {
 	(
 		(
-		string=Term()((tmp=< ARITH_OP > | tmp=< BITWISE_OP > | tmp=< ADDSUB_OP >) tmpString=Term() {string += " " + tmp.image + " " + tmpString;})?
+		Term()((t=< ARITH_OP > | t=< BITWISE_OP > | t=< ADDSUB_OP >) Term() 
+			{jjtThis.operator= t.image;})?
 		) 
 		|
-		 ("[" tmpString=ArraySize() "]" {string="["+tmpString+"]";})
+		 ("[" ArraySize() "]")
 	)
-	 {return string;}
+	 
 
 	}
 	catch (ParseException e) {
 		System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
-		return null;
 	}
 	
 }
 
 /**
  * Term, a subset of a Rhs.
- * @return String containing information of term block.
 */
-String Term() #void: {Token t; String string; String tmpString; } {
-	{string=""; tmpString="";}
+void Term(): {Token t;  } {
 	try {
 		( t=<ADDSUB_OP> 
-			{string+=t.image;} )? 
+			{jjtThis.operator=t.image;} )? 
 
-		( (t=<INTEGER> {string+= " " +t.image;}) 
+		( (<INTEGER> ) 
 			|
-		 ( t=<ID> ( (tmpString=ArrayAccess() {string+= " " +t.image; string+= " " +tmpString;}) 
+		 ( <ID> ( (ArrayAccess() ) 
 		  	| 
-			(LOOKAHEAD(2) Call(t) | (tmpString=ScalarAccess() {string+= " " +t.image; string+= " " +tmpString;}))
+			(LOOKAHEAD(2) Call(t) | (ScalarAccess()
+			 ))
 			)
 		 	)
 		 )
 
-		{string += tmpString; return string;}
+		
 
 	} catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
-		return null;
 	}
 } 
 
@@ -359,21 +357,23 @@ String Term() #void: {Token t; String string; String tmpString; } {
  * Exprtest, handles the small comparison block, present in the while and if blocks.
  * @return String containing information of right block.
 */
-void Exprtest(): {String string; Token t; String tmpString; Node lhs; Node rhs; } {
-	{string="";}	
+void Exprtest(): {Token t; } {
+	
 	try {
-		< LPAR > lhs=Lhs() {jjtThis.addChild(lhs);}
+		< LPAR > Lhs() 
 	} catch (ParseException e) {
-		System.out.println("Invalid opening condition for structure. \nSpecific Exception thrown: " + e.toString());
+		System.out.println("Invalid opening condition for structure. \nSpecific Exception thrown: "
+		 + e.toString());
 		error_skipto_withoutconsuming(RELA_OP);
 	}
 	try {
-		t=< RELA_OP >	
-		rhs=Rhs() {jjtThis.relOp = t.image; jjtThis.addChild(rhs);} <RPAR> 
+		t=< RELA_OP > {jjtThis.relOp = t.image;}
+		Rhs()  <RPAR> 
 	}
 	catch (ParseException e) {
-		System.out.println("Invalid comparison operation or ending condition for structure. \nSpecific Exception thrown: "
-		 + e.toString());
+		System.out.println("Invalid comparison operation or ending condition for structure");
+		 System.out.println("Specific exception thrown: " + e.toString());
+		 
 			error_skipto_unless(PVIRG, RPAR);
 	}
 }

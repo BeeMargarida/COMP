@@ -11,7 +11,7 @@ class ASTLhsNoID extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "ASTLhsNoID";
+  	return prefix + toString();
   }
 
 }

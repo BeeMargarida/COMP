@@ -13,7 +13,7 @@ class ASTAssign extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + value1 + "(=) " + value2;
+  	return prefix + "(=) " ;
   }
 
 }

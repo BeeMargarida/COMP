@@ -2,12 +2,18 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTTerm extends SimpleNode {
+  public String operator;
+
   public ASTTerm(int id) {
     super(id);
   }
 
   public ASTTerm(Parser p, int id) {
     super(p, id);
+  }
+
+  public String toString(String prefix) {
+      return prefix + operator;
   }
 
 }
