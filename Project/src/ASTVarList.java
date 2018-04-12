@@ -5,31 +5,17 @@ import java.util.ArrayList;
 
 public class ASTVarList extends SimpleNode {
 
-  public ArrayList<String> variables;
   public ASTVarList(int id) {
     super(id);
   }
 
   public ASTVarList(Parser p, int id) {
     super(p, id);
-    variables = new ArrayList<>();
+    
   }
 
   public String toString(String prefix) {
-    String toReturn = prefix;
-  	if (variables.size() > 0) {
-      toReturn += "VarList ( ";
-      for (int i = 0 ; i < variables.size() ; i++) {
-        if (i != 0)
-          toReturn += ",";
-        
-          toReturn += variables.get(i);
-      }
-      return toReturn + " )";
-    }
-    else
-    
-  		return "";
+    return  prefix + "VarList: ";
   }
 
 }

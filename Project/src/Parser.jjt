@@ -14,7 +14,10 @@ public class Parser {
 	static java.util.Stack argStack;
 	public static void main(String[] args) throws ParseException{
 
+
+
 		argStack = new java.util.Stack(); 
+
 
 		File filename = new File(args[0]);
 	  	try { 
@@ -205,7 +208,7 @@ void Stmtlst() #void: {} {
 void Stmt() #void: {Token t;} {
 	try {
 		
-		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
+		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign())) < PVIRG >
 
 	} catch (ParseException e) {
 		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." 
@@ -220,7 +223,6 @@ void Stmt() #void: {Token t;} {
 */
 void Call(Token t): {String string; Token tmp;} {
 	try {
-
 		( < DOT > tmp=<ID > {jjtThis.calledFunction = tmp.image;})?  < LPAR > (ArgumentList() )? < RPAR >
 		{ jjtThis.value = t.image;  }
 	} catch (ParseException e) {
@@ -234,7 +236,7 @@ void Call(Token t): {String string; Token tmp;} {
  * Assign to handle all the assignment of variables, be they scalar or arrays.
  * @param Token t contains ID information for printing.
 */
-void Assign(Token t): {String string;} {
+void Assign(): {String string;} {
 	try {
 		LhsNoID()
 		<ASSIGN> 
@@ -337,7 +339,7 @@ void Term(): {Token t;  } {
 
 		( (<INTEGER> ) 
 			|
-		 ( <ID> ( (ArrayAccess() ) 
+		 ( t=<ID> ( (ArrayAccess() ) 
 		  	| 
 			(LOOKAHEAD(2) Call(t) | (ScalarAccess()
 			 ))
