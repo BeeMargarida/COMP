@@ -1,7 +1,7 @@
 
 module array1
 {
-  function print_array(N) 
+  function print_array(N) {
 
    	a=[N];
 

@@ -86,10 +86,14 @@ SimpleNode Module(): {Token moduleName;} {
 	} catch (ParseException e) {
 		System.out.println("Error on module start, with Exception thrown " + e.toString());
 		Token t = getToken(0);
-		if (t.kind == LCHAVETA) 
-			getNextToken();
-		else
-			error_skipto(PVIRG);
+		try {
+			if (t.kind == LCHAVETA) 
+				getNextToken();
+			else
+				error_skipto(PVIRG);
+		} catch (ParseException e2) {
+			System.out.println("Error on module");
+		}
 	}
 	
 	(Declaration())*
@@ -114,7 +118,11 @@ void Function(): {Token name;} {
 		)	
 	} catch(ParseException e) {
 		System.out.println("Error on function statement, with Exception thrown " + e.toString());
-		error_skipto(PVIRG);
+		try {
+			error_skipto(PVIRG);
+		} catch (ParseException e2) {
+			System.out.println("Error on function");
+		}
 	} 
 	
 	Stmtlst() 
@@ -303,6 +311,7 @@ void Lhs() : {Token t;String tmpString;} {
  * @return String containing information of lhs block, excluding <ID>.
 */
 void LhsNoID(): {String tmp; } {
+
 	(tmp=ArrayAccess() | tmp=ScalarAccess()) {jjtThis.lhsNoIDContent = tmp;}
 }
 
@@ -310,15 +319,15 @@ void LhsNoID(): {String tmp; } {
  * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of right block.
 */
-void Rhs(): {Token t;} {
+void Rhs(): {Token t; String tmp;} {
 	try {
 	(
 		(
-		Term()((t=< ARITH_OP > | t=< BITWISE_OP > | t=< ADDSUB_OP >) Term() 
+		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term() 
 			{jjtThis.operator= t.image;})?
 		) 
 		|
-		 ("[" ArraySize() "]")
+		 ("[" tmp=ArraySize() "]" {jjtThis.rhsContent = tmp;})
 	)
 	 
 
@@ -338,9 +347,9 @@ void Term(): {Token t;  } {
 		( t=<ADDSUB_OP> 
 			{jjtThis.operator=t.image;} )? 
 
-		( (<INTEGER> ) 
+		( (t=<INTEGER> {jjtThis.termContent = t.image;}) 
 			|
-		 ( t=<ID> ( (ArrayAccess() ) 
+		 ( t=<ID> {jjtThis.termContent = t.image;} ( (ArrayAccess() ) 
 		  	| 
 			(LOOKAHEAD(2) Call(t) | (ScalarAccess()
 			 ))
@@ -442,16 +451,15 @@ String ArrayAccess() #void :  {String index;} {
 */
 String ScalarAccess() #void :  {Token size; } {
 	(<DOT > size=< SIZE > {return "." + size;})?
-	{return "";}
+	{return null;}
 }
-
 
 /**
  * Index of an array.
  * @return String with index.
 */
 String Index() #void: {Token value;} {
-	value=< ID > | value=< INTEGER >
+	(value=< ID > | value=< INTEGER >)
 	{return value.image;}
 }
 
@@ -459,10 +467,9 @@ String Index() #void: {Token value;} {
  * Array Element, checks to see if the element is correctly formatted, important for
  * error recovery.
 */
-void ArrayElement() #void: { } {
+void ArrayElement(): { } {
 	"[" "]"
 }
-
 
 // ERROR RECOVERY
 
