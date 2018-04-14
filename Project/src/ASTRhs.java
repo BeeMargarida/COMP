@@ -2,7 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTRhs extends SimpleNode {
-  public String operator, rhsContent;
+  public String operator;
 
   public ASTRhs(int id) {
     super(id);
@@ -15,9 +15,9 @@ class ASTRhs extends SimpleNode {
   
   public String toString(String prefix) {
     if(operator != null)
-      return prefix + "Rhs Op: " + operator;
+      return prefix + operator;
     else
-      return prefix + "Rhs: " + rhsContent;
+      return null;
   } 
 
 }

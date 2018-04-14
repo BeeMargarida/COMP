@@ -292,10 +292,9 @@ void Else(): {} {
  * Lhs, the left side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of lhs block.
 */
-void Lhs() : {Token t; String string;} {
-	t=<ID> 
-	{jjtThis.lhsID = t.image;} 
-	
+void Lhs() #void: {Token t;} {
+	t=<ID>
+
 	(ArrayAccess(t) | ScalarAccess(t)) 	
 }
 
@@ -304,7 +303,7 @@ void Lhs() : {Token t; String string;} {
  * while maintaining readability.
  * @return String containing information of lhs block, excluding <ID>.
 */
-void LhsNoID(Token t): {String tmp; } {
+void LhsNoID(Token t) #void: {String tmp; } {
 	(ArrayAccess(t) | ScalarAccess(t)) 
 }
 
@@ -312,7 +311,7 @@ void LhsNoID(Token t): {String tmp; } {
  * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of right block.
 */
-void Rhs(): {Token t; String tmp;} {
+void Rhs() : {Token t; String tmp;} {
 	try {
 	(
 		(
@@ -352,7 +351,7 @@ void Term(): {Token t;} {
 
 		( (t=<INTEGER> {jjtThis.termContent = t.image;}) 
 			|
-		 ( t=<ID> {jjtThis.termContent = t.image;} ( (ArrayAccess(t) ) 
+		 ( t=<ID> ( (ArrayAccess(t) ) 
 		  	| 
 			(LOOKAHEAD(2) Call(t) | (ScalarAccess(t)
 			 ))
@@ -423,19 +422,12 @@ String Argument() #void : {Token t; } {
  * Array Size. Contains the information of the size of an array
  * @return String with the information of the array size.
 */
-void ArraySize() : {String size; Token tmp; String tmpString;} {
+void ArraySize() #void: { Token tmp; Token tmp2;} {
 	tmp=<ID> 
-
-	{ size = tmp.image; }
-
 	(
-		 (tmp=< INTEGER > {size += tmp.image;}) 
-		 | 
-		 (
-			 (
-				ScalarAccess(tmp)
-			 ) 
-		 )
+		(tmp2=< INTEGER>) 
+		| 
+		(ScalarAccess(tmp))
 	)
 }
 
