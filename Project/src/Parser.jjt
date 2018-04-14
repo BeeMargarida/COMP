@@ -109,7 +109,7 @@ SimpleNode Module(): {Token moduleName;} {
 void Function(): {Token name;} {
 	try {
 	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
-	     	((ArrayElement())? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
+	     	((ArrayElement(name))? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
 	} catch(ParseException e) {
@@ -130,7 +130,7 @@ void Function(): {Token name;} {
 void Declaration(): {String declaration; Token tmp;} {
 
 	try {	
-		<ID> (ArrayElement())?
+		tmp=<ID> (ArrayElement(tmp))?
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -144,24 +144,17 @@ void Declaration(): {String declaration; Token tmp;} {
  * VarList, the set of variables of a specific function.
 */
 void VarList(): {String variables; Token tmp;} { 
-	
-	{variables = "";} // Initialization of variable to avoid errors.
-
 	try {
 		<LPAR>
 	} catch (ParseException e) {
 		System.out.println("Error on argument list, no opening parenthesis.");
 		System.out.println("Specific Exception thrown:" + e.toString());
-		
 	}
 	try {
-		 	{String var = "";}
-		 	(tmp=<ID> {var += tmp.image;} (ArrayElement() {var += "[]";})?
 		
-			(< VIRG > tmp=<ID> {var="";}
-				{var += tmp.image; }  
-				(ArrayElement() {var += "[]";})? 
-			)*
+		(Var() 
+			(< VIRG > Var()
+			)*	
 		)? 
 
 		<RPAR>
@@ -458,12 +451,19 @@ String Index() #void: {Token value;} {
 	{return value.image;}
 }
 
+
+void Var() : {Token t; String tmp;} {
+	t=<ID> {jjtThis.content = t.image;} 
+	
+	(ArrayElement(t) {jjtThis.content = null;})?
+}
+
 /**
  * Array Element, checks to see if the element is correctly formatted, important for
  * error recovery.
 */
-void ArrayElement(): { } {
-	"[" "]"
+String ArrayElement(Token t): { } {
+	"[" "]" {jjtThis.content = t.image; return t.image;}
 }
 
 // ERROR RECOVERY
