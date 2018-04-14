@@ -14,7 +14,7 @@ class ASTTerm extends SimpleNode {
 
   public String toString(String prefix) {
     if (operator != null)
-      return prefix + operator + " Term " + termContent;
+      return prefix + operator + " " + termContent;
     else
       return prefix + termContent;
     

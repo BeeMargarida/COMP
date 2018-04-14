@@ -2,8 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTLhsNoID extends SimpleNode {
-  public String lhsNoIDContent;
-
+  
   public ASTLhsNoID(int id) {
     super(id);
   }
@@ -12,9 +11,10 @@ class ASTLhsNoID extends SimpleNode {
     super(p, id);
   }
 
+  
   public String toString(String prefix) {
-  	return prefix + "noId" + lhsNoIDContent;
-  }
+  	return prefix + "Lhs: ";
+  } 
 
 }
 /* JavaCC - OriginalChecksum=1d02fa7c1600eedd97bbbe22c860fede (do not edit this line) */

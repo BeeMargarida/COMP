@@ -12,12 +12,13 @@ class ASTRhs extends SimpleNode {
     super(p, id);
   }
 
+  
   public String toString(String prefix) {
     if(operator != null)
-      return prefix + "rhs op " + operator;
+      return prefix + "Rhs Op: " + operator;
     else
-      return prefix + "rhs con " + rhsContent;
-  }
+      return prefix + "Rhs: " + rhsContent;
+  } 
 
 }
 /* JavaCC - OriginalChecksum=9e8e08102ca50579db5e2882e58e6298 (do not edit this line) */

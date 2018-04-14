@@ -13,11 +13,7 @@ import java.io.FileNotFoundException;
 public class Parser {
 	static java.util.Stack argStack;
 	public static void main(String[] args) throws ParseException{
-
-
-
 		argStack = new java.util.Stack(); 
-
 
 		File filename = new File(args[0]);
 	  	try { 
@@ -216,7 +212,7 @@ void Stmtlst() #void: {} {
 void Stmt() #void: {Token t;} {
 	try {
 		
-		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign())) < PVIRG >
+		While() | (If() Else()) | (t=<ID> (LOOKAHEAD(2) Call(t) | Assign(t))) < PVIRG >
 
 	} catch (ParseException e) {
 		System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception thrown: ." 
@@ -244,9 +240,9 @@ void Call(Token t): {String string; Token tmp;} {
  * Assign to handle all the assignment of variables, be they scalar or arrays.
  * @param Token t contains ID information for printing.
 */
-void Assign(): {String string;} {
+void Assign(Token t): {String string;} {
 	try {
-		LhsNoID()
+		LhsNoID(t)
 		<ASSIGN> 
 		Rhs()
 	} catch (ParseException e) {
@@ -296,13 +292,11 @@ void Else(): {} {
  * Lhs, the left side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of lhs block.
 */
-void Lhs() : {Token t;String tmpString;} {
+void Lhs() : {Token t; String string;} {
 	t=<ID> 
-	{tmpString="";} 
+	{jjtThis.lhsID = t.image;} 
 	
-	(tmpString=ArrayAccess() | tmpString=ScalarAccess()) 
-	
-	{jjtThis.lhsContent = t.image + " " +tmpString;}
+	(ArrayAccess(t) | ScalarAccess(t)) 	
 }
 
 /**
@@ -310,9 +304,8 @@ void Lhs() : {Token t;String tmpString;} {
  * while maintaining readability.
  * @return String containing information of lhs block, excluding <ID>.
 */
-void LhsNoID(): {String tmp; } {
-
-	(tmp=ArrayAccess() | tmp=ScalarAccess()) {jjtThis.lhsNoIDContent = tmp;}
+void LhsNoID(Token t): {String tmp; } {
+	(ArrayAccess(t) | ScalarAccess(t)) 
 }
 
 /**
@@ -327,9 +320,19 @@ void Rhs(): {Token t; String tmp;} {
 			{jjtThis.operator= t.image;})?
 		) 
 		|
-		 ("[" tmp=ArraySize() "]" {jjtThis.rhsContent = tmp;})
+		 ("[" ArraySize() "]" )
 	)
 	 
+	/*
+	(
+		(
+		string=Term()((tmp=< ARITH_OP > | tmp=< BITWISE_OP > | tmp=< ADDSUB_OP >) tmpString=Term() {string += " " + tmp.image + " " + tmpString;})?
+		) 
+		|
+		 ("[" tmpString=ArraySize() "]" {string="["+tmpString+"]";})
+	)
+		{return string;} 
+	*/
 
 	}
 	catch (ParseException e) {
@@ -342,23 +345,20 @@ void Rhs(): {Token t; String tmp;} {
 /**
  * Term, a subset of a Rhs.
 */
-void Term(): {Token t;  } {
+void Term(): {Token t;} {
 	try {
 		( t=<ADDSUB_OP> 
 			{jjtThis.operator=t.image;} )? 
 
 		( (t=<INTEGER> {jjtThis.termContent = t.image;}) 
 			|
-		 ( t=<ID> {jjtThis.termContent = t.image;} ( (ArrayAccess() ) 
+		 ( t=<ID> {jjtThis.termContent = t.image;} ( (ArrayAccess(t) ) 
 		  	| 
-			(LOOKAHEAD(2) Call(t) | (ScalarAccess()
+			(LOOKAHEAD(2) Call(t) | (ScalarAccess(t)
 			 ))
 			)
 		 	)
 		 )
-
-		
-
 	} catch (ParseException e) {
 		System.out.println("Error on term.\nSpecific Exception: " + e.toString());
 		error_skipto_withoutconsuming(PVIRG);
@@ -369,8 +369,7 @@ void Term(): {Token t;  } {
  * Exprtest, handles the small comparison block, present in the while and if blocks.
  * @return String containing information of right block.
 */
-void Exprtest(): {Token t; } {
-	
+void Exprtest(): {Token t; } {	
 	try {
 		< LPAR > Lhs() 
 	} catch (ParseException e) {
@@ -384,9 +383,9 @@ void Exprtest(): {Token t; } {
 	}
 	catch (ParseException e) {
 		System.out.println("Invalid comparison operation or ending condition for structure");
-		 System.out.println("Specific exception thrown: " + e.toString());
+		System.out.println("Specific exception thrown: " + e.toString());
 		 
-			error_skipto_unless(PVIRG, RPAR);
+		error_skipto_unless(PVIRG, RPAR);
 	}
 }
 
@@ -424,34 +423,38 @@ String Argument() #void : {Token t; } {
  * Array Size. Contains the information of the size of an array
  * @return String with the information of the array size.
 */
-String ArraySize() #void: {String size; Token tmp; String tmpString;} {
-	{size = ""; tmpString="";}
-
+void ArraySize() : {String size; Token tmp; String tmpString;} {
 	tmp=<ID> 
 
-	{ size += tmp.image; }
+	{ size = tmp.image; }
 
-	 ((tmp=< INTEGER > {size += tmp.image;}) | ((tmpString=ScalarAccess()) {size += tmpString;}))
-
-	{return size;} 
+	(
+		 (tmp=< INTEGER > {size += tmp.image;}) 
+		 | 
+		 (
+			 (
+				ScalarAccess(tmp)
+			 ) 
+		 )
+	)
 }
 
 /**
  * Array Access, accessing information of an array.
  * @return String containing information of array access, specifically the index..
 */
-String ArrayAccess() #void :  {String index;} {
+void ArrayAccess(Token content) :  {String index;} {
 	"[" index=Index() "]"
-	 {return "[" + index + "]"; }
+	{jjtThis.value = content.image;
+		jjtThis.index = index; }
 }
 
 /**
  * Scalar Access.
  * @return String containing information of size, or nothing if no '.' is found.
 */
-String ScalarAccess() #void :  {Token size; } {
-	(<DOT > size=< SIZE > {return "." + size;})?
-	{return null;}
+void ScalarAccess(Token content) :  {Token size; } {
+	{jjtThis.value = content.image;} (<DOT > size=< SIZE > {jjtThis.size = size.image;})? 
 }
 
 /**
