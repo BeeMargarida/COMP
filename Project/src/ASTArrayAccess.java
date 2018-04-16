@@ -13,7 +13,10 @@ class ASTArrayAccess extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    return prefix + value + "[" + index + "]";
+    if (value != null)
+      return prefix + value + "[" + index + "]";
+    else
+      return prefix + "[" + index + "]";
   }
 
 }

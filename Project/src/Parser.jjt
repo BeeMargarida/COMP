@@ -312,7 +312,7 @@ void Rhs() : {Token t; String tmp;} {
 			{jjtThis.operator= t.image;})?
 		) 
 		|
-		 ("[" ArraySize() "]" )
+		 ( ArrayInstantion() )
 	)
 	 
 	/*
@@ -432,6 +432,11 @@ void ArrayAccess(Token content) :  {String index;} {
 	"[" index=Index() "]"
 	{jjtThis.value = content.image;
 		jjtThis.index = index; }
+}
+
+void ArrayInstantion() : {String size;} {
+	"[" size=Index() "]"
+	{ jjtThis.size = size; }
 }
 
 /**
