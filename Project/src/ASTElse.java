@@ -12,7 +12,7 @@ class ASTElse extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "Else Statement: ";
+  	return prefix + "Else Statement: "; 
   }
 
 }
