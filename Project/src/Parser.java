@@ -703,7 +703,13 @@ jjtn000.operator= t.image;
           break;
           }
         case 32:{
+<<<<<<< HEAD
           ArrayInstantion();
+=======
+          jj_consume_token(32);
+          ArraySize();
+          jj_consume_token(33);
+>>>>>>> master
           break;
           }
         default:
@@ -993,6 +999,7 @@ if (jjtc000) {
     }
 }
 
+<<<<<<< HEAD
   static final public void ArrayInstantion() throws ParseException {/*@bgen(jjtree) ArrayInstantion */
                           ASTArrayInstantion jjtn000 = new ASTArrayInstantion(JJTARRAYINSTANTION);
                           boolean jjtc000 = true;
@@ -1025,6 +1032,8 @@ if (jjtc000) {
     }
 }
 
+=======
+>>>>>>> master
 /**
  * Scalar Access.
  * @return String containing information of size, or nothing if no '.' is found.
