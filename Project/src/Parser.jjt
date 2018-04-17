@@ -21,7 +21,13 @@ public class Parser {
 			SimpleNode root = parser.Module();
 
 			SymbolTable symbolTable = new SymbolTable();
+			symbolTable.fillSymbols(root, 0);
+
 			root.dump("");
+
+			symbolTable.semanticAnalysis();
+
+
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");
 		}

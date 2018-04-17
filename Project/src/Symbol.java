@@ -1,11 +1,9 @@
 public class Symbol {
     private int scope;
-    private Token value;
-    private boolean isScalar;
-
-    public Symbol(Token value, boolean isScalar, int scope) {
+    private SimpleNode value;
+    
+    public Symbol(SimpleNode value, int scope) {
         this.value = value; 
-        this.isScalar = isScalar;
         this.scope = scope;
     }
 
@@ -13,11 +11,7 @@ public class Symbol {
         return scope;
     }
 
-    public Token getValue() {
+    public SimpleNode getValue() {
         return value;
-    }
-
-    public boolean getIsScalar() {
-        return isScalar;
     }
 }

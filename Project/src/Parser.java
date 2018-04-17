@@ -14,7 +14,15 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                 try {
                         Parser parser = new Parser(new FileInputStream(filename));
                         SimpleNode root = parser.Module();
+
+                        SymbolTable symbolTable = new SymbolTable();
+                        symbolTable.fillSymbols(root, 0);
+
                         root.dump("");
+
+                        symbolTable.semanticAnalysis();
+
+
                 } catch(FileNotFoundException e) {
                         System.out.println("Exception found");
                 }
@@ -1203,24 +1211,6 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_1()
- {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_9()
- {
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_8()
- {
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_10()
  {
     Token xsp;
@@ -1257,6 +1247,24 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1()
+ {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_9()
+ {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_8()
+ {
+    if (jj_3R_9()) return true;
     return false;
   }
 

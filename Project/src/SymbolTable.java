@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SymbolTable {
 
@@ -11,30 +10,45 @@ public class SymbolTable {
         symbols = new ArrayList<>();
     }
 
-    public boolean lookup(Token t, boolean isScalar) {
+    public boolean lookup(Symbol symbolToEvaluate) {
         for (Symbol symbol : symbols) {
-            if (symbol.getValue() == t && symbol.getIsScalar() == isScalar 
-                    && symbol.getScope() <= currentScope)
+            if (symbol.getValue() == symbolToEvaluate.getValue()  
+                    && symbol.getScope() >= symbolToEvaluate.getScope())
                 return true;
         }
         
         return false;
     }
 
-    public boolean push(Token t, boolean isScalar) {
-        if (lookup(t, isScalar))
-            return false;
-        else {
+    public boolean push(Symbol symbol) {
 
-        }
+		// Maybe do check here? Dunno tbh
+		symbols.add(symbol);
+        
         return true;
     }
 
-    public void beginScope() {
-        currentScope = 0;
-    }
+	/**
+	 * Adds all symbols to array.
+	 */
+    public void fillSymbols(SimpleNode node, int currentScope) {
+		push(new Symbol(node, currentScope));
 
-    public void semanticAnalysis(SimpleNode node) {
+		if (node.jjtGetNumChildren() != 0) {
+		  for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
+			SimpleNode n = (SimpleNode)node.jjtGetChild(i);
+			if (n != null) {
+			  fillSymbols((SimpleNode)node.jjtGetChild(i), currentScope + 1);
+			}
+		  }
+		}
+		  
+	}
+
+    public void semanticAnalysis() {
+		for (int i = 0 ; i < symbols.size(); i++) {
+			System.out.println(symbols.get(i).getScope());
+		}
         
     }
 }

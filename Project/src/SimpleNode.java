@@ -9,8 +9,6 @@ class SimpleNode implements Node {
   protected Object value;
   protected Parser parser;
 
-  protected Integer scope;
-
   public SimpleNode(int i) {
     id = i;
   }
@@ -64,7 +62,6 @@ class SimpleNode implements Node {
 
   /* Override this method if you want to customize how the node dumps
      out its children. */
-
   public void dump(String prefix) {
     if (toString(prefix) != null)
       System.out.println(toString(prefix));
@@ -74,6 +71,7 @@ class SimpleNode implements Node {
         SimpleNode n = (SimpleNode)children[i];
         if (n != null) {
           n.dump(prefix + " ");
+          //System.out.println(prefix + "Scope: " + (currentScope + 1));
         }
       }
     }
