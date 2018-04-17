@@ -16,7 +16,6 @@ public interface ParserTreeConstants
   public int JJTEXPRTEST = 12;
   public int JJTARGUMENTLIST = 13;
   public int JJTARRAYACCESS = 14;
-<<<<<<< HEAD
   public int JJTARRAYINSTANTION = 15;
   public int JJTSCALARACCESS = 16;
   public int JJTVAR = 17;
@@ -24,14 +23,6 @@ public interface ParserTreeConstants
   public int JJTERROR_SKIPTO = 19;
   public int JJTERROR_SKIPTO_UNLESS = 20;
   public int JJTERROR_SKIPTO_WITHOUTCONSUMING = 21;
-=======
-  public int JJTSCALARACCESS = 15;
-  public int JJTVAR = 16;
-  public int JJTARRAYELEMENT = 17;
-  public int JJTERROR_SKIPTO = 18;
-  public int JJTERROR_SKIPTO_UNLESS = 19;
-  public int JJTERROR_SKIPTO_WITHOUTCONSUMING = 20;
->>>>>>> master
 
 
   public String[] jjtNodeName = {
@@ -50,10 +41,7 @@ public interface ParserTreeConstants
     "Exprtest",
     "ArgumentList",
     "ArrayAccess",
-<<<<<<< HEAD
     "ArrayInstantion",
-=======
->>>>>>> master
     "ScalarAccess",
     "Var",
     "ArrayElement",
@@ -62,8 +50,4 @@ public interface ParserTreeConstants
     "error_skipto_withoutconsuming",
   };
 }
-<<<<<<< HEAD
 /* JavaCC - OriginalChecksum=f5c85a1d86a36f037a4cfba4542b5fc9 (do not edit this line) */
-=======
-/* JavaCC - OriginalChecksum=53b6e80fa03993c283177042200eeb7c (do not edit this line) */
->>>>>>> master

@@ -19,6 +19,8 @@ public class Parser {
 	  	try { 
 			Parser parser = new Parser(new FileInputStream(filename));
 			SimpleNode root = parser.Module();
+
+			SymbolTable symbolTable = new SymbolTable();
 			root.dump("");
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");

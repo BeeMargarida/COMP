@@ -9,6 +9,8 @@ class SimpleNode implements Node {
   protected Object value;
   protected Parser parser;
 
+  protected Integer scope;
+
   public SimpleNode(int i) {
     id = i;
   }
