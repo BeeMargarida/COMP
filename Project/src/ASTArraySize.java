@@ -3,7 +3,7 @@
 public
 class ASTArraySize extends SimpleNode {
   public ASTArraySize(int id) {
-    super(id);
+    super(id, "Array");
   }
 
   public ASTArraySize(Parser p, int id) {

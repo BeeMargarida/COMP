@@ -36,6 +36,7 @@ public class SymbolTable {
 
 		if (node.jjtGetNumChildren() != 0) {
 		  for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
+			System.out.println("Type is " + node.getType());
 			SimpleNode n = (SimpleNode)node.jjtGetChild(i);
 			if (n != null) {
 			  fillSymbols((SimpleNode)node.jjtGetChild(i), currentScope + 1);
@@ -47,7 +48,12 @@ public class SymbolTable {
 
     public void semanticAnalysis() {
 		for (int i = 0 ; i < symbols.size(); i++) {
-			System.out.println(symbols.get(i).getScope());
+			String type = symbols.get(i).getType();
+			if (type != null)
+				if (type == "Assign") { // Check children
+
+				}
+
 		}
         
     }

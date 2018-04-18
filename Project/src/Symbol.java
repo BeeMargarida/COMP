@@ -14,4 +14,8 @@ public class Symbol {
     public SimpleNode getValue() {
         return value;
     }
+
+    public String getType() {
+        return value.getType();
+    }
 }

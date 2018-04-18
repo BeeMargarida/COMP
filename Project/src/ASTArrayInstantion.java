@@ -5,7 +5,7 @@ class ASTArrayInstantion extends SimpleNode {
   public String size;
   
   public ASTArrayInstantion(int id) {
-    super(id);
+    super(id, "Array");
   }
 
   public ASTArrayInstantion(Parser p, int id) {

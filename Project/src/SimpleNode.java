@@ -9,13 +9,26 @@ class SimpleNode implements Node {
   protected Object value;
   protected Parser parser;
 
-  public SimpleNode(int i) {
+  protected String type;
+
+  public SimpleNode(int i){
     id = i;
+  }
+
+  public SimpleNode(int i, String type) {
+    id = i;
+    this.type = type;
   }
 
   public SimpleNode(Parser p, int i) {
     this(i);
     parser = p;
+  }
+  
+  public SimpleNode(Parser p, int i, String type) {
+    this(i);
+    parser = p;
+    this.type = type;
   }
 
   public void jjtOpen() {
@@ -79,6 +92,10 @@ class SimpleNode implements Node {
 
   public int getId() {
     return id;
+  }
+
+  public String getType() {
+    return type;
   }
 }
 

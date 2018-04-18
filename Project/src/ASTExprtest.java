@@ -4,7 +4,7 @@ public class ASTExprtest extends SimpleNode {
   public String relOp;
 
   public ASTExprtest(int id) {
-    super(id);
+    super(id, "Operation");
   }
 
   public ASTExprtest(Parser p, int id) {
