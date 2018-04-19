@@ -3,6 +3,8 @@
 public
 class ASTArgument extends SimpleNode {
 
+  public String content; 
+
   public ASTArgument(int id) {
     super(id);
   }
@@ -12,7 +14,8 @@ class ASTArgument extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + " ASTArgument";
+    value = content;
+  	return prefix + content;
   }
 }
 /* JavaCC - OriginalChecksum=7ea2693101e6b88b1fa4c45533b9d64f (do not edit this line) */

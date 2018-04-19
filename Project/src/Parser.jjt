@@ -394,12 +394,10 @@ void Exprtest(): {Token t; } {
 /**
  * Argument List, storing the information of the arguments passed inside a call, for example.
 */
-void ArgumentList(): {String string; String tmp; } {
+void ArgumentList(): {} {
 	try {
 
-	string=Argument() (< VIRG > tmp=Argument() {string += ", " + tmp;})*
-
-	{jjtThis.argumentList = string;}
+	Argument() (< VIRG > Argument() )*
 
 	} catch (ParseException e) {
 
@@ -413,8 +411,8 @@ void ArgumentList(): {String string; String tmp; } {
  * Argument, could be an ID, String or integer. 
  * @return String containing information of argument.
 */
-String Argument() #void : {Token t; } {
-	 (t=<ID> | t=<STRING> | t=<INTEGER> ){return t.image;}
+void Argument() : {Token t; } {
+	 (t=<ID> | t=<STRING> | t=<INTEGER> ){jjtThis.content = t.image;}
 }
 
 // ACCESS
@@ -438,7 +436,7 @@ void ArraySize() #void: { Token tmp; Token tmp2;} {
 */
 void ArrayAccess(Token content) :  {String index;} {
 	"[" index=Index() "]"
-	{jjtThis.value = content.image;
+	{jjtThis.content = content.image;
 		jjtThis.index = index; }
 }
 
@@ -452,7 +450,7 @@ void ArrayInstantion() : {String size;} {
  * @return String containing information of size, or nothing if no '.' is found.
 */
 void ScalarAccess(Token content) :  {Token size; } {
-	{jjtThis.value = content.image;} (<DOT > size=< SIZE > {jjtThis.size = size.image;})? 
+	{jjtThis.content = content.image;} (<DOT > size=< SIZE > {jjtThis.size = size.image;})? 
 }
 
 /**

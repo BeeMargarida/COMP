@@ -13,7 +13,8 @@ class ASTArrayInstantion extends SimpleNode {
   }
  
   public String toString(String prefix) {
-    return prefix + "[" + size + "]";
+    value = "[" + size + "]";
+    return prefix + value;
   }
 
 }

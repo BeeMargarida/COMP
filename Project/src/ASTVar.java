@@ -13,8 +13,10 @@ class ASTVar extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    if (content != null)
-      return prefix + content;
+    if (content != null) {
+      value = content;
+      return prefix + value;
+    }
     else
       return null;
   }

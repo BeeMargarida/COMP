@@ -2,7 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTArrayAccess extends SimpleNode {
-  public String value, index;
+  public String content, index;
 
   public ASTArrayAccess(int id) {
     super(id, "Array");
@@ -13,10 +13,12 @@ class ASTArrayAccess extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    if (value != null)
-      return prefix + value + "[" + index + "]";
+    if (content != null)
+      value = content + "[" + index + "]";
     else
-      return prefix + "[" + index + "]";
+      value = "[" + index + "]";
+    
+    return prefix + (String) value;
   }
 
 }

@@ -871,12 +871,12 @@ if (jjtc000) {
  * Argument List, storing the information of the arguments passed inside a call, for example.
 */
   static final public void ArgumentList() throws ParseException {/*@bgen(jjtree) ArgumentList */
-                      ASTArgumentList jjtn000 = new ASTArgumentList(JJTARGUMENTLIST);
-                      boolean jjtc000 = true;
-                      jjtree.openNodeScope(jjtn000);String string; String tmp;
+  ASTArgumentList jjtn000 = new ASTArgumentList(JJTARGUMENTLIST);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
     try {
       try {
-        string = Argument();
+        Argument();
         label_5:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -889,10 +889,8 @@ if (jjtc000) {
             break label_5;
           }
           jj_consume_token(VIRG);
-          tmp = Argument();
-string += ", " + tmp;
+          Argument();
         }
-jjtn000.argumentList = string;
       } catch (ParseException e) {
 System.out.println("Invalid argument. \nSpecific Exception thrown: " + e.toString());
                 error_skipto(RPAR);
@@ -922,27 +920,37 @@ if (jjtc000) {
  * Argument, could be an ID, String or integer. 
  * @return String containing information of argument.
 */
-  static final public String Argument() throws ParseException {Token t;
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case ID:{
-      t = jj_consume_token(ID);
-      break;
+  static final public void Argument() throws ParseException {/*@bgen(jjtree) Argument */
+                   ASTArgument jjtn000 = new ASTArgument(JJTARGUMENT);
+                   boolean jjtc000 = true;
+                   jjtree.openNodeScope(jjtn000);Token t;
+    try {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case ID:{
+        t = jj_consume_token(ID);
+        break;
+        }
+      case STRING:{
+        t = jj_consume_token(STRING);
+        break;
+        }
+      case INTEGER:{
+        t = jj_consume_token(INTEGER);
+        break;
+        }
+      default:
+        jj_la1[25] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    case STRING:{
-      t = jj_consume_token(STRING);
-      break;
-      }
-    case INTEGER:{
-      t = jj_consume_token(INTEGER);
-      break;
-      }
-    default:
-      jj_la1[25] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
+jjtree.closeNodeScope(jjtn000, true);
+                                               jjtc000 = false;
+jjtn000.content = t.image;
+    } finally {
+if (jjtc000) {
+             jjtree.closeNodeScope(jjtn000, true);
+           }
     }
-{if ("" != null) return t.image;}
-    throw new Error("Missing return statement in function");
 }
 
 // ACCESS
@@ -978,7 +986,7 @@ if (jjtc000) {
       jj_consume_token(33);
 jjtree.closeNodeScope(jjtn000, true);
           jjtc000 = false;
-jjtn000.value = content.image;
+jjtn000.content = content.image;
                 jjtn000.index = index;
     } catch (Throwable jjte000) {
 if (jjtc000) {
@@ -1042,7 +1050,7 @@ if (jjtc000) {
                                      boolean jjtc000 = true;
                                      jjtree.openNodeScope(jjtn000);Token size;
     try {
-jjtn000.value = content.image;
+jjtn000.content = content.image;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case DOT:{
         jj_consume_token(DOT);
@@ -1211,20 +1219,6 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_10()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(28)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(31)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
-    }
-    }
-    return false;
-  }
-
   static private boolean jj_3_2()
  {
     if (jj_3R_6()) return true;
@@ -1247,6 +1241,20 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(28)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(31)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(27)) return true;
+    }
+    }
     return false;
   }
 

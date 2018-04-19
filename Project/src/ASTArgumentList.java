@@ -2,9 +2,6 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTArgumentList extends SimpleNode {
-
-  public String argumentList;
-
   public ASTArgumentList(int id) {
     super(id);
   }
@@ -14,7 +11,7 @@ class ASTArgumentList extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	return prefix + "Argument List: " + argumentList;
+  	return prefix + "Argument List: ";
   }
 
 }

@@ -13,15 +13,20 @@ class ASTTerm extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    if (operator != null  && termContent != null)
-      return prefix + operator+ " " + termContent;
-    else if (operator != null)
-      return prefix + operator;
-    else if(termContent != null)
-      return prefix + termContent;
-      return null;
+    if (operator != null  && termContent != null) {
+      value = operator+ " " + termContent;
+      return prefix + value;
+    }
+    else if (operator != null) {
+      value = operator;
+      return prefix + value;
+    }
+    else if(termContent != null) {
+      value = termContent;
+      return prefix + value;
+    }
     
+    return null;   
   }
-
 }
 /* JavaCC - OriginalChecksum=83d1bbf70069cf6a66041edc517e41db (do not edit this line) */

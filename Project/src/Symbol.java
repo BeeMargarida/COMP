@@ -1,10 +1,13 @@
 public class Symbol {
     private int scope;
+    private boolean isInitialized;
+
     private SimpleNode value;
     
     public Symbol(SimpleNode value, int scope) {
         this.value = value; 
         this.scope = scope;
+        isInitialized = false;
     }
 
     public int getScope() {

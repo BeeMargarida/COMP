@@ -97,6 +97,10 @@ class SimpleNode implements Node {
   public String getType() {
     return type;
   }
+
+  public String getValue() {
+    return (String) value;
+  }
 }
 
 /* JavaCC - OriginalChecksum=f398187138cbfa082990e15bf3bb4e06 (do not edit this line) */
