@@ -5,6 +5,7 @@ class ASTWhile extends SimpleNode {
 
   public ASTWhile(int id) {
     super(id);
+    type = Utils.COND_STRUCTS;
   }
 
   public ASTWhile(Parser p, int id) {

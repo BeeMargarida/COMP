@@ -5,7 +5,8 @@ class ASTArrayElement extends SimpleNode {
   public String content; 
 
   public ASTArrayElement(int id) {
-    super(id, "Array");
+    super(id);
+    type = Utils.ARRAY;
   }
 
   public ASTArrayElement(Parser p, int id) {

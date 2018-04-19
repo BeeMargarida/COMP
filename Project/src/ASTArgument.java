@@ -2,11 +2,11 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTArgument extends SimpleNode {
-
   public String content; 
 
   public ASTArgument(int id) {
     super(id);
+    type = Utils.ARG;
   }
 
   public ASTArgument(Parser p, int id) {

@@ -3,11 +3,12 @@
 public
 class ASTCall extends SimpleNode {
 
-  public String value;
+  public String content;
   public String calledFunction;
   
   public ASTCall(int id) {
     super(id);
+    type = Utils.CALL;
   }
 
   public ASTCall(Parser p, int id) {
@@ -15,10 +16,14 @@ class ASTCall extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	if (value != null && calledFunction != null) 
-  		return prefix + value + " calls " + calledFunction;
-  	else if (value != null) 
-  		return prefix +"Called " + value;
+  	if (content != null && calledFunction != null) {
+      value = content + "." + calledFunction;
+      return prefix + value + " calls " + calledFunction;
+    }
+  	else if (content != null)  {
+      value = content;
+      return prefix +"Called " + content;
+    }
   	else 
   		return "";
   }

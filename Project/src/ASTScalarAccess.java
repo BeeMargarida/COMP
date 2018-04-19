@@ -5,7 +5,8 @@ class ASTScalarAccess extends SimpleNode {
   public String content, size;
 
   public ASTScalarAccess(int id) {
-    super(id, "Scalar");
+    super(id);
+    type = Utils.SCALAR;
   }
 
   public ASTScalarAccess(Parser p, int id) {

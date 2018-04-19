@@ -5,7 +5,7 @@ class ASTTerm extends SimpleNode {
   public String operator, termContent;
 
   public ASTTerm(int id) {
-    super(id);
+    super(id); 
   }
 
   public ASTTerm(Parser p, int id) {
@@ -14,12 +14,8 @@ class ASTTerm extends SimpleNode {
 
   public String toString(String prefix) {
     if (operator != null  && termContent != null) {
-      value = operator+ " " + termContent;
-      return prefix + value;
-    }
-    else if (operator != null) {
-      value = operator;
-      return prefix + value;
+      value = termContent;
+      return prefix + operator + value;
     }
     else if(termContent != null) {
       value = termContent;

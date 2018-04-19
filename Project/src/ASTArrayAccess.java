@@ -5,7 +5,7 @@ class ASTArrayAccess extends SimpleNode {
   public String content, index;
 
   public ASTArrayAccess(int id) {
-    super(id, "Array");
+    super(id);
   }
 
   public ASTArrayAccess(Parser p, int id) {

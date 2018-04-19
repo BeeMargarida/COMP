@@ -3,7 +3,9 @@
 public
 class ASTAssign extends SimpleNode {
   public ASTAssign(int id) {
-    super(id, "Assign");
+    super(id);
+    type = Utils.ASSIGN;
+
   }
 
   public ASTAssign(Parser p, int id) {

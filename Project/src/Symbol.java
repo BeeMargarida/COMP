@@ -1,17 +1,11 @@
 public class Symbol {
-    private int scope;
-    private boolean isInitialized;
+    private String type;
 
     private SimpleNode value;
     
-    public Symbol(SimpleNode value, int scope) {
+    public Symbol(SimpleNode value) {
         this.value = value; 
-        this.scope = scope;
-        isInitialized = false;
-    }
-
-    public int getScope() {
-        return scope;
+        type = value.getType();
     }
 
     public SimpleNode getValue() {
@@ -19,6 +13,7 @@ public class Symbol {
     }
 
     public String getType() {
-        return value.getType();
+        return type;
     }
+
 }
