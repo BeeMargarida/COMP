@@ -15,12 +15,13 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                         Parser parser = new Parser(new FileInputStream(filename));
                         SimpleNode root = parser.Module();
 
-                        SymbolTable symbolTable = new SymbolTable();
-                        symbolTable.fillSymbols(root, 0);
-
                         root.dump("");
 
-                        symbolTable.semanticAnalysis();
+                        SymbolTable symbolTable = new SymbolTable();
+
+                        symbolTable.fillSymbols(root, "");
+
+                        symbolTable.analyseCalls();
 
 
                 } catch(FileNotFoundException e) {
@@ -446,7 +447,6 @@ jjtn000.calledFunction = tmp.image;
           ;
         }
         jj_consume_token(RPAR);
-jjtn000.value = t.image;
       } catch (ParseException e) {
 System.out.println("Error on call."
                         +"\nSpecific exception: " + e.toString());
@@ -667,80 +667,56 @@ if (jjtc000) {
  * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of right block.
 */
-  static final public void Rhs() throws ParseException {/*@bgen(jjtree) Rhs */
-              ASTRhs jjtn000 = new ASTRhs(JJTRHS);
-              boolean jjtc000 = true;
-              jjtree.openNodeScope(jjtn000);Token t; String tmp;
+  static final public void Rhs() throws ParseException {Token t; String tmp;
     try {
-      try {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case ADDSUB_OP:
+      case INTEGER:
+      case ID:{
+        Term();
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case ADDSUB_OP:
-        case INTEGER:
-        case ID:{
-          Term();
+        case ARITH_OP:
+        case BITWISE_OP:{
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-          case ADDSUB_OP:
-          case ARITH_OP:
-          case BITWISE_OP:{
-            switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-            case ARITH_OP:{
-              t = jj_consume_token(ARITH_OP);
-              break;
-              }
-            case BITWISE_OP:{
-              t = jj_consume_token(BITWISE_OP);
-              break;
-              }
-            case ADDSUB_OP:{
-              t = jj_consume_token(ADDSUB_OP);
-              break;
-              }
-            default:
-              jj_la1[18] = jj_gen;
-              jj_consume_token(-1);
-              throw new ParseException();
+          case ARITH_OP:{
+            t = jj_consume_token(ARITH_OP);
+            break;
             }
-            Term();
-jjtn000.operator= t.image;
+          case BITWISE_OP:{
+            t = jj_consume_token(BITWISE_OP);
+            break;
+            }
+          case ADDSUB_OP:{
+            t = jj_consume_token(ADDSUB_OP);
             break;
             }
           default:
-            jj_la1[19] = jj_gen;
-            ;
+            jj_la1[18] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
           }
-          break;
-          }
-        case 32:{
-          ArrayInstantion();
+          Term();
           break;
           }
         default:
-          jj_la1[20] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+          jj_la1[19] = jj_gen;
+          ;
         }
-      } catch (ParseException e) {
+        break;
+        }
+      case 32:{
+        ArrayInstantion();
+        break;
+        }
+      default:
+        jj_la1[20] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } catch (ParseException e) {
 System.out.println("Error on rhs.\nSpecific Exception thrown: " + e.toString());
                 error_skipto_withoutconsuming(PVIRG);
-      }
-    } catch (Throwable jjte000) {
-if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            {if (true) throw (RuntimeException)jjte000;}
-          }
-          if (jjte000 instanceof ParseException) {
-            {if (true) throw (ParseException)jjte000;}
-          }
-          {if (true) throw (Error)jjte000;}
-    } finally {
-if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
     }
 }
 
@@ -1219,9 +1195,9 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_2()
+  static private boolean jj_3R_9()
  {
-    if (jj_3R_6()) return true;
+    if (jj_3R_10()) return true;
     return false;
   }
 
@@ -1244,6 +1220,12 @@ try {Token t;
     return false;
   }
 
+  static private boolean jj_3_2()
+ {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
   static private boolean jj_3R_10()
  {
     Token xsp;
@@ -1261,12 +1243,6 @@ try {Token t;
   static private boolean jj_3_1()
  {
     if (jj_3R_6()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_9()
- {
-    if (jj_3R_10()) return true;
     return false;
   }
 

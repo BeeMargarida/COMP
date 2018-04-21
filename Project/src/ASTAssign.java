@@ -4,7 +4,7 @@ public
 class ASTAssign extends SimpleNode {
   public ASTAssign(int id) {
     super(id);
-    type = Utils.ASSIGN;
+    type = Utils.OP;
 
   }
 

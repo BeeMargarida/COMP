@@ -2,8 +2,6 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTCall extends SimpleNode {
-
-  public String content;
   public String calledFunction;
   
   public ASTCall(int id) {
@@ -16,16 +14,11 @@ class ASTCall extends SimpleNode {
   }
 
   public String toString(String prefix) {
-  	if (content != null && calledFunction != null) {
-      value = content + "." + calledFunction;
-      return prefix + value + " calls " + calledFunction;
+  	if (calledFunction != null) {
+      value = calledFunction;
+      return prefix + "Called " + calledFunction;
     }
-  	else if (content != null)  {
-      value = content;
-      return prefix +"Called " + content;
-    }
-  	else 
-  		return "";
+    return null;
   }
 
 }

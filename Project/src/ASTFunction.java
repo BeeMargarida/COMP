@@ -13,6 +13,7 @@ public class ASTFunction extends SimpleNode {
   }
 
   public String toString(String prefix) {
+    value = functionName;
   	return prefix + "Function " + functionName;
   }
 

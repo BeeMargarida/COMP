@@ -11,19 +11,18 @@ public interface ParserTreeConstants
   public int JJTWHILE = 7;
   public int JJTIF = 8;
   public int JJTELSE = 9;
-  public int JJTRHS = 10;
-  public int JJTTERM = 11;
-  public int JJTEXPRTEST = 12;
-  public int JJTARGUMENTLIST = 13;
-  public int JJTARGUMENT = 14;
-  public int JJTARRAYACCESS = 15;
-  public int JJTARRAYINSTANTION = 16;
-  public int JJTSCALARACCESS = 17;
-  public int JJTVAR = 18;
-  public int JJTARRAYELEMENT = 19;
-  public int JJTERROR_SKIPTO = 20;
-  public int JJTERROR_SKIPTO_UNLESS = 21;
-  public int JJTERROR_SKIPTO_WITHOUTCONSUMING = 22;
+  public int JJTTERM = 10;
+  public int JJTEXPRTEST = 11;
+  public int JJTARGUMENTLIST = 12;
+  public int JJTARGUMENT = 13;
+  public int JJTARRAYACCESS = 14;
+  public int JJTARRAYINSTANTION = 15;
+  public int JJTSCALARACCESS = 16;
+  public int JJTVAR = 17;
+  public int JJTARRAYELEMENT = 18;
+  public int JJTERROR_SKIPTO = 19;
+  public int JJTERROR_SKIPTO_UNLESS = 20;
+  public int JJTERROR_SKIPTO_WITHOUTCONSUMING = 21;
 
 
   public String[] jjtNodeName = {
@@ -37,7 +36,6 @@ public interface ParserTreeConstants
     "While",
     "If",
     "Else",
-    "Rhs",
     "Term",
     "Exprtest",
     "ArgumentList",
@@ -52,4 +50,4 @@ public interface ParserTreeConstants
     "error_skipto_withoutconsuming",
   };
 }
-/* JavaCC - OriginalChecksum=838e8110612cfb72fb5551c709deaec0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=b7dfae1159c3275516b98e992ec54727 (do not edit this line) */

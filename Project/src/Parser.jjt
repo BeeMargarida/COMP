@@ -16,16 +16,17 @@ public class Parser {
 		argStack = new java.util.Stack(); 
 
 		File filename = new File(args[0]);
-	  	try { 
+		try { 
 			Parser parser = new Parser(new FileInputStream(filename));
 			SimpleNode root = parser.Module();
-
-			SymbolTable symbolTable = new SymbolTable();
-			symbolTable.fillSymbols(root, 0);
-
+			
 			root.dump("");
-
-			symbolTable.semanticAnalysis();
+			
+			SymbolTable symbolTable = new SymbolTable();
+			
+			symbolTable.fillSymbols(root, "");
+			
+			symbolTable.analyseCalls();
 
 
 		} catch(FileNotFoundException e) {
@@ -229,7 +230,6 @@ void Stmt() #void: {Token t;} {
 void Call(Token t): {String string; Token tmp;} {
 	try {
 		( < DOT > tmp=<ID > {jjtThis.calledFunction = tmp.image;})?  < LPAR > (ArgumentList() )? < RPAR >
-		{ jjtThis.content = t.image;  }
 	} catch (ParseException e) {
 		System.out.println("Error on call."
 			+"\nSpecific exception: " + e.toString());
@@ -312,12 +312,11 @@ void LhsNoID(Token t) #void: {String tmp; } {
  * Rhs, the right side of a two-sided operation, such as a comparison or assigment.
  * @return String containing information of right block.
 */
-void Rhs() : {Token t; String tmp;} {
+void Rhs() #void : {Token t; String tmp;} {
 	try {
 	(
 		(
-		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term() 
-			{jjtThis.operator= t.image;})?
+		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term())?
 		) 
 		|
 		 ( ArrayInstantion() )

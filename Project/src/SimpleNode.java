@@ -8,16 +8,19 @@ class SimpleNode implements Node {
   protected int id;
   protected Object value;
   protected Parser parser;
-
+  
+  protected boolean isInitialized;
   protected String type;
 
   public SimpleNode(int i){
     id = i;
+    isInitialized = false;
   }
 
   public SimpleNode(Parser p, int i) {
     this(i);
     parser = p;
+    isInitialized = false;
   }
 
   public void jjtOpen() {
@@ -89,6 +92,22 @@ class SimpleNode implements Node {
 
   public String getValue() {
     return (String) value;
+  }
+
+  public boolean isInitialized() {
+    return isInitialized;
+  }
+
+  public void initialize() {
+    isInitialized = true;
+  }
+
+  public void setType(String newType)  {
+    type = newType;
+  }
+
+  public boolean equals(SimpleNode nodeToCompare) {
+    return value == nodeToCompare.getValue() && type == nodeToCompare.getType();
   }
 }
 
