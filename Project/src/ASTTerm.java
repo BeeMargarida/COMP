@@ -6,7 +6,7 @@ class ASTTerm extends SimpleNode {
 
   public ASTTerm(int id) {
     super(id); 
-    type = Utils.RIGHT_TERM;
+    type = Utils.TERM;
   }
 
   public ASTTerm(Parser p, int id) {

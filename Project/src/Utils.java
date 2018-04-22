@@ -8,7 +8,7 @@ public class Utils {
     public static String CALL = "Call";
     public static String ARG = "Argument";
     public static String OP = "Operation";
-    public static String RIGHT_TERM = "Right_Term";
+    public static String TERM = "Term";
 
     // Checks if there is a node on array with the same value
     public static boolean contains(ArrayList<SimpleNode> array, SimpleNode node) {
@@ -19,4 +19,19 @@ public class Utils {
         
         return false;
     }
+
+    public static void dumpType(String prefix, SimpleNode node) {
+        if (node.getType() != null)
+          System.out.println(prefix + node.getType() +" " + node.getValue());
+          
+        if (node.jjtGetNumChildren() != 0) {
+          for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
+            SimpleNode n = (SimpleNode)node.jjtGetChild(i);
+            if (n != null) {
+              dumpType(prefix + " ", n);
+              //System.out.println(prefix + "Scope: " + (currentScope + 1));
+            }
+          }
+        }
+      }
 }

@@ -69,8 +69,12 @@ public class SymbolTable {
 
 			// If it is an operation, do a semantic analysis
 			if (nodeToAnalyse.getType() == Utils.OP) { // Is operation
-				System.out.println("IS IN OPERATION " + nodeToAnalyse.getValue());
+				System.out.println("Is in operation");
+				nodeToAnalyse.dump("");
 				analyseOperation(nodeToAnalyse);
+
+				// No need to continue checking children, already analized
+				return;
 			} else {
 				
 				// Inside a new function, belongs to another scope
@@ -103,52 +107,71 @@ public class SymbolTable {
 
 	// Semantically analise operations
 	public void analyseOperation(SimpleNode node) {
-		System.out.println("Iteration " + node + " Type " + node.getType());
-
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 		
 		// In case RHS has some hidden operations
-		if (rightChild.getType() == Utils.RIGHT_TERM || rightChild.getType() == Utils.OP) { 
+		if (rightChild.getType() == Utils.OP) { 
 			String rightType = recursiveOperationAnalysis(rightChild);
 
-			if (rightType == null)
+			if (rightType == null) {
+				// Error was detected in rhs, error was already reported
 				return;
+			} else if (leftChild.getType() != rightType) {
+				// Incompatibility between lhs and rhs
+				System.out.println("Semantical Error using variable " + leftChild.getValue() +".");
+				System.out.println("Attempted operation with variables of type " + rightType +".");
+			} else {
+				// No problem was detected, adding to symbol table
+				push(leftChild);
+			}
 
 		} else if (rightChild.getType() == Utils.CALL) {
 			// Is a call, cannot analyse here
 			calls.add(rightChild);
-			return;
+			
 		} else {
 			// Direct check between two operatives
 			analyseTwoNodesOperation(leftChild, rightChild);
 		}		
 	}
 
-	// TODO ACABAR ISTO
+
 	private String recursiveOperationAnalysis(SimpleNode rightChild) {
 		SimpleNode leftNode = (SimpleNode) rightChild.jjtGetChild(0);
 
-		for (int i = 1 ; i < rightChild.jjtGetNumChildren() ; i++) {
-			String rightType = recursiveOperationAnalysis((SimpleNode) rightChild.jjtGetChild(i));
-
-			// Something went wrong further down, no need to analyse, error already reported
-			if (rightType == null)
+		// Operation-ception
+		if (leftNode.getType() == Utils.OP) { 
+			return recursiveOperationAnalysis(leftNode);
+		} else { // Actually two different nodes, may be scalar or not
+			if (leftNode.getType() == Utils.CALL) {
+				// Call in the middle of operations, cannot analyse here
+				calls.add(leftNode);
 				return null;
-			
-		}
+			} else {
+				// If type is term, inside it may contain scalar or array
+				if (leftNode.getType() == Utils.TERM) 
+					leftNode = (SimpleNode) leftNode.jjtGetChild(0);
+				
+				SimpleNode rightNode = (SimpleNode) rightChild.jjtGetChild(1);
+				if (rightNode.getType() == Utils.TERM)
+					rightNode = (SimpleNode) rightNode.jjtGetChild(0);
 
-		return leftNode.getType();
+				// Are scalar or array, start analysing here
+				return analyseTwoNodesOperation(leftNode, rightNode);
+			}
+		} 
 
 	}
 
-	private void analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild) {
+	private String analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild) {
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 		
-		if (!lookup(rightChild)) { // Right Hand Side variable was not initialized
+		// Right Hand Side variable was not initialized, semantic error (maybe problem with ints)
+		if (!lookup(rightChild) && rightType == Utils.ARRAY) { 
 			System.out.println("Variable " + rightChild.getValue() + " was not initialized.");
-			return;
+			return null;
 		}
 
 		if (lookup(leftChild)) { // Was already declared
@@ -158,22 +181,19 @@ public class SymbolTable {
 				if (leftChild.getType() != rightChild.getType()) {
 					System.out.println("Semantic Error: Left Hand Side Value " + leftChild.getValue()
 							+ " and Right Hand Side Value " + rightChild.getValue());
-					return;
+					return null;
 				}
 			}
 		} else // Was not present, new initialization
 			leftChild.setType(rightChild.getType());		
 
 		leftChild.initialize();
+
+		return leftChild.getType();
 	}
 
 	public void analyseCalls() {
-		/*
-		System.out.println("Declarations " + declarations.toString());
-		System.out.println("Functions " + functions.toString());	
-		System.out.println("Calls " + calls.toString());
-		System.out.println("Symbol Trees " + symbolTrees.toString());
-		*/
+		// Only called after symbol table is complete
 
 		for (int i = 0; i < calls.size() ; i++) {
 

@@ -6,7 +6,7 @@ class ASTRhs extends SimpleNode {
 
   public ASTRhs(int id) {
     super(id);
-    type = Utils.RIGHT_TERM;
+    type = Utils.TERM;
   }
 
   public ASTRhs(Parser p, int id) {
