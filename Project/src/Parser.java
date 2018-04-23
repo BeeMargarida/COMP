@@ -766,7 +766,7 @@ jjtn000.operator=t.image;
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case INTEGER:{
           t = jj_consume_token(INTEGER);
-jjtn000.termContent = t.image;
+jjtn000.type = Utils.NUMBER;
           break;
           }
         case ID:{
@@ -1098,11 +1098,11 @@ if (jjtc000) {
               jjtree.openNodeScope(jjtn000);Token t; String tmp;
     try {
       t = jj_consume_token(ID);
-jjtn000.content = t.image;
+jjtn000.content = t.image; jjtn000.type = Utils.SCALAR;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 32:{
         ArrayElement(t);
-jjtn000.content = null;
+jjtn000.content = null; jjtn000.type = Utils.ARRAY;
         break;
         }
       default:

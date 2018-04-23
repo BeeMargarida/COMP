@@ -350,7 +350,7 @@ void Term(): {Token t;} {
 		( t=<ADDSUB_OP> 
 			{jjtThis.operator=t.image;} )? 
 
-		( (t=<INTEGER> {jjtThis.termContent = t.image;}) 
+		( (t=<INTEGER> {jjtThis.type = Utils.NUMBER;}) 
 			|
 		 ( t=<ID> ( (ArrayAccess(t) ) 
 		  	| 
@@ -464,9 +464,9 @@ String Index() #void: {Token value;} {
 
 
 void Var() : {Token t; String tmp;} {
-	t=<ID> {jjtThis.content = t.image;} 
+	t=<ID> {jjtThis.content = t.image; jjtThis.type = Utils.SCALAR; } 
 	
-	(ArrayElement(t) {jjtThis.content = null;})?
+	(ArrayElement(t) {jjtThis.content = null; jjtThis.type = Utils.ARRAY; })?
 }
 
 /**

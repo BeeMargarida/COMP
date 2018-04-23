@@ -8,4 +8,5 @@ module aval1 {
    function a=f(b, c) {
      a = b*c;
    }
+   
 }
