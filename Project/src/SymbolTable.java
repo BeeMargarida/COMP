@@ -96,6 +96,9 @@ public class SymbolTable {
 					// Encountered a call, will analyse later
 					calls.add(nodeToAnalyse);
 
+					// No need to analyse children
+					return;
+
 				} else if (nodeToAnalyse.getType() == Utils.ARGSLIST) {
 					ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
 
@@ -129,7 +132,11 @@ public class SymbolTable {
 		if (rightChild.getType() == Utils.OP) { 
 			String rightType = recursiveOperationAnalysis(rightChild);
 
-			if (rightType == null) {
+			if (rightType == Utils.WAS_CALLED) {
+				calls.add(node);
+				return;
+			}
+			else if (rightType == null) {
 				// Error was detected in rhs, error was already reported
 				return;
 			} else if (leftChild.getType() != rightType) {
@@ -164,8 +171,8 @@ public class SymbolTable {
 		else { // Actually two different nodes, may be scalar or not
 			if (leftNode.getType() == Utils.CALL) {
 				// Call in the middle of operations, cannot analyse here
-				calls.add(leftNode);
-				return null;
+				
+				return Utils.WAS_CALLED;
 			} else {
 				// If type is term, inside it may contain scalar or array
 				if (leftNode.getType() == Utils.TERM) 
@@ -176,13 +183,7 @@ public class SymbolTable {
 					rightNode = (SimpleNode) rightNode.jjtGetChild(0);
 
 				// Are scalar or array, start analysing here
-				/*System.out.println("Entered analyse operation, nodeLeft is ");
-				Utils.dumpType("", leftNode);
-				System.out.println("Entered analyse operation, nodeRight is ");
-				Utils.dumpType("", rightNode);*/
-				String afterAnalysis = analyseTwoNodesOperation(leftNode, rightNode);
-				//System.out.println("Type was " + afterAnalysis);
-				return afterAnalysis;
+				return analyseTwoNodesOperation(leftNode, rightNode);
 			}
 		} 
 
@@ -192,24 +193,31 @@ public class SymbolTable {
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 
-		// Is comparing against a number, isn't array, or isn't initialized
-		if (rightType == Utils.NUMBER && (leftType != Utils.ARRAY || !leftChild.isInitialized())) {
-			leftChild.initialize();
-			leftChild.setType(Utils.SCALAR);
-			return Utils.SCALAR;
+		// Is comparing against a number
+		if (rightType == Utils.NUMBER) {
+			// Isn't array
+			if (leftType != Utils.ARRAY) {
+				leftChild.initialize();
+				leftChild.setType(Utils.SCALAR);
+				return Utils.SCALAR;
+			} else {
+				System.out.println("Semantic Error: Trying to do operation between number and " 
+					+ leftChild.getValue() + ".");
+				return null;
+			}
 		}
 
-		// Right Hand Side variable was not initialized, semantic error (maybe problem with ints)
-		if (!lookup(rightChild) && rightType != Utils.NUMBER) { 
+		// Right Hand Side variable was not initialized, semantic error
+		if ((!lookup(rightChild) || !rightChild.isInitialized()) && rightType != Utils.NUMBER) { 
 			System.out.println("Variable " + rightChild + " was not initialized.");
 			return null;
 		}
 
 		if (lookup(leftChild)) { // Was already declared
 			// If they are scalars or arrays
-			if ((leftType == "Scalar" || leftType == "Array") && 
-			(rightType == "Scalar" || rightType == "Array")) {
-				if (leftChild.getType() != rightChild.getType()) {
+			if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY)) && 
+				(rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
+				if (!leftType.equals(rightType)) {
 					System.out.println("Semantic Error: Left Hand Side Value " + leftChild.getValue()
 							+ " and Right Hand Side Value " + rightChild.getValue());
 					return null;
