@@ -40,17 +40,38 @@ public class Sampler {
     }
 
     public void startModule(String moduleName) {
-        print(".class public "); print(moduleName);
+        print(".class public "); println(moduleName);
         println(".super java/lang/Object");
+        println("");
+        println("");
     }
 
-    public void function(String functionName, String parameters) {
+    public void functionBegin(String functionName, String[] params) {
         if(functionName.equals("main")){
             println(".method public static main([Ljava/lang/String;)V");
-
+        }
+        else if(params == null){
+            println(".method public static " + functionName + "()I");
+            //missing stack
         }
         else {
-            println(".method public static " + functionName); // missing types of parameters
+            print(".method public static " + functionName + "(");
+            for(int i = 0; i < params.length; i++){
+                if(params[i].equals("Scalar"))
+                    print("I");
+                else if(params[i].equals("Array"))
+                    print("[I");
+            }
+            println(")I");
+            
         }
+        pw.flush();
+    }
+
+    public void functionEnd() {
+        System.out.println("AH");
+        println(".end method");
+        println("");
+        println("");
     }
 }

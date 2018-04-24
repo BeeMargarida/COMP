@@ -28,6 +28,13 @@ public class Parser {
 			
 			symbolTable.analyseCalls();
 
+			Sampler sampler = new Sampler("array1_1.j");
+			Generator generator = new Generator(sampler);
+			
+			ASTModule rootModule = (ASTModule) root;
+			rootModule.generatorVisit(generator);
+			//root.visitChildren(generator);
+
 
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");

@@ -25,7 +25,9 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                         Sampler sampler = new Sampler("array1_1.j");
                         Generator generator = new Generator(sampler);
 
-                        root.visitChildren(generator);
+                        ASTModule rootModule = (ASTModule) root;
+                        rootModule.generatorVisit(generator);
+                        //root.visitChildren(generator);
 
 
                 } catch(FileNotFoundException e) {
@@ -1208,11 +1210,6 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_8() {
     if (jj_3R_9()) return true;
     return false;
@@ -1255,6 +1252,11 @@ try {Token t;
     if (jj_scan_token(27)) return true;
     }
     }
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
