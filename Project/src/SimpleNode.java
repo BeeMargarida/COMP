@@ -70,7 +70,7 @@ class SimpleNode implements Node {
   public void dump(String prefix) {
     if (toString(prefix) != null)
       System.out.println(toString(prefix));
-      
+
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
         SimpleNode n = (SimpleNode)children[i];
@@ -80,6 +80,32 @@ class SimpleNode implements Node {
         }
       }
     }
+  }
+
+  public Object generatorVisit(Generator generator) {
+      return generator.visit(this);
+  }
+
+/*
+  public void visitChildren(Generator generator) {
+
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+
+          generator.visit(n);
+
+          n.visitChildren(generator);
+          
+          //System.out.println(prefix + "Scope: " + (currentScope + 1));
+        }
+      }
+    }
+  }*/
+
+  public Node[] getChildren() {
+    return children;
   }
 
   public int getId() {
