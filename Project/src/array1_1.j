@@ -7,3 +7,6 @@
 
 
 .method public static f(II)I
+.end method
+
+

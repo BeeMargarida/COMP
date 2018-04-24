@@ -25,16 +25,23 @@ public class Generator {
     
     }
 
-
+    // Module Node
     public Object visit(ASTModule node) {
+
+        // prints Module yasmin code
         sampler.startModule(node.name);
+
+        // visits Module nodes
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
             SimpleNode n = (SimpleNode) node.jjtGetChild(i);
             n.generatorVisit(this);
         }
+
+        sampler.close();
         return null;
     }
 
+    // Function Node
     public Object visit(ASTFunction node) {
         int childN = 0;
         if(node.functionName.equals("main")){
@@ -55,13 +62,15 @@ public class Generator {
             childN++; 
         }
 
-        
+       
+        // prints yasmin Function endline
         sampler.functionEnd();
 
         System.out.println("Function: " + node.functionName);
         return null;
     }
 
+    // gets all the types of vars
     public Object visit(ASTVarList node) {
         int numChildren = node.jjtGetNumChildren();
         String[] vars = new String[numChildren];
@@ -69,10 +78,10 @@ public class Generator {
         for(int i = 0; i < numChildren; i++){
             vars[i] = visit((ASTVar) node.jjtGetChild(i));
         }
-
         return vars;
     }
 
+    // returns type of Var
     public String visit(ASTVar node) {
         System.out.println("Node: " + node.getValue() + " TYPE: " + node.getType());
         return node.getType();

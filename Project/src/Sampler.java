@@ -65,13 +65,15 @@ public class Sampler {
             println(")I");
             
         }
-        pw.flush();
     }
 
     public void functionEnd() {
-        System.out.println("AH");
         println(".end method");
         println("");
         println("");
+    }
+
+    public void close() {
+        pw.flush();
     }
 }
