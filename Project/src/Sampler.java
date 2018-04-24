@@ -43,4 +43,14 @@ public class Sampler {
         print(".class public "); print(moduleName);
         println(".super java/lang/Object");
     }
+
+    public void function(String functionName, String parameters) {
+        if(functionName.equals("main")){
+            println(".method public static main([Ljava/lang/String;)V");
+
+        }
+        else {
+            println(".method public static " + functionName); // missing types of parameters
+        }
+    }
 }
