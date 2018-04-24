@@ -82,6 +82,23 @@ class SimpleNode implements Node {
     }
   }
 
+  public void beingVisited(Generator generator) {
+    
+  }
+
+  public void visitChildren(Generator generator) {
+    if (children != null) {
+      for (int i = 0; i < children.length; ++i) {
+        SimpleNode n = (SimpleNode)children[i];
+        if (n != null) {
+          n.visitChildren(generator);
+          
+          //System.out.println(prefix + "Scope: " + (currentScope + 1));
+        }
+      }
+    }
+  }
+
   public int getId() {
     return id;
   }
