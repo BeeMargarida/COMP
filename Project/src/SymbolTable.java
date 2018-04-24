@@ -21,7 +21,7 @@ public class SymbolTable {
 		currentScope = "";
 	}
 
-	public boolean lookup(SimpleNode node) {
+	public SimpleNode lookup(SimpleNode node) {
 		if (currentScope == "")  // Is outside all functions
 			return Utils.contains(declarations, node);
 		
@@ -86,7 +86,7 @@ public class SymbolTable {
 					symbolTrees.put(scope, newNodesInScope);
 
 					// Function Name was already encountered before
-					if (Utils.contains(functions, nodeToAnalyse)) {
+					if (Utils.contains(functions, nodeToAnalyse) != null) {
 						System.out.println("There are more than one function with name " + 
 							nodeToAnalyse.getValue() + ".");
 					} else 
@@ -107,10 +107,9 @@ public class SymbolTable {
 						newNode.initialize();
 						nodesInScope.add(newNode);
 					}
-
-					symbolTrees.replace(currentScope, nodesInScope);
+					symbolTrees.put(currentScope, nodesInScope);
 				}
-				else if (!lookup(nodeToAnalyse))
+				else if (lookup(nodeToAnalyse) == null)
 					push(nodeToAnalyse);
 				
 			}
@@ -126,10 +125,9 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 		
-		/* */
-
 		// In case RHS has some hidden operations
-		if (rightChild.getType() == Utils.OP) { 
+		if (rightChild.getType() == Utils.OP || (rightChild.getType() == Utils.RHS &&
+			rightChild.jjtGetNumChildren() > 1)) { 
 			String rightType = recursiveOperationAnalysis(rightChild);
 
 			if (rightType == Utils.WAS_CALLED) {
@@ -164,11 +162,10 @@ public class SymbolTable {
 
 		System.out.println("LeftNode " + leftNode + " type " + leftNode.getType());
 
-		// Operation-ception
+		// Operation-ception, or rhs with terms within
 		if (leftNode.getType() == Utils.OP) { 
 			return recursiveOperationAnalysis(leftNode);
-		}
-		else { // Actually two different nodes, may be scalar or not
+		} else { // Actually two different nodes, may be scalar or not
 			if (leftNode.getType() == Utils.CALL) {
 				// Call in the middle of operations, cannot analyse here
 				
@@ -193,8 +190,13 @@ public class SymbolTable {
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 
+		SimpleNode previousRightNode = lookup(rightChild);
+		SimpleNode previousLeftNode = lookup(leftChild);
+
+		if (rightType == Utils.RHS)
+
 		// Is comparing against a number
-		if (rightType == Utils.NUMBER) {
+		if (rightType == Utils.NUMBER) { 
 			// Isn't array
 			if (leftType != Utils.ARRAY) {
 				leftChild.initialize();
@@ -206,14 +208,17 @@ public class SymbolTable {
 				return null;
 			}
 		}
-
+		
 		// Right Hand Side variable was not initialized, semantic error
-		if ((!lookup(rightChild) || !rightChild.isInitialized()) && rightType != Utils.NUMBER) { 
-			System.out.println("Variable " + rightChild + " was not initialized.");
+		if ((previousRightNode == null || !previousRightNode.isInitialized()) 
+			&& rightType != Utils.NUMBER) { 
+			
+			System.out.println("Variable " + rightChild.getValue() + " was not initialized. Dumping:");
+			Utils.dumpType("", rightChild);
 			return null;
 		}
 
-		if (lookup(leftChild)) { // Was already declared
+		if (previousLeftNode != null) { // Was already declared
 			// If they are scalars or arrays
 			if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY)) && 
 				(rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
@@ -223,10 +228,12 @@ public class SymbolTable {
 					return null;
 				}
 			}
-		} else // Was not present, new initialization
+		} else { // Was not present, new initialization
 			leftChild.setType(rightChild.getType());		
+			leftChild.initialize();
+			push(leftChild);
+		}
 
-		leftChild.initialize();
 
 		return leftChild.getType();
 	}
@@ -237,7 +244,6 @@ public class SymbolTable {
 		System.out.println("Calls " + calls.toString());
 		System.out.println("Declarations " + declarations.toString());
 		System.out.println("Symbols " + symbolTrees.toString());
-
 
 		for (int i = 0; i < calls.size() ; i++) {
 
