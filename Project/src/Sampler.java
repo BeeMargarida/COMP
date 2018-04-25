@@ -67,6 +67,23 @@ public class Sampler {
         }
     }
 
+    public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
+        print("invokestatic " + moduleName+ "/" + functionName + "(");
+        for(int i = 0; i < params.length; i++){
+            print(params[i]);
+        }   
+        println(")" + returnType);
+        println("");
+    }
+
+    public void printVoidReturn() {
+        println("return");
+    }
+    
+    public void printIntReturn(){
+        println("ireturn");
+    }
+
     public void functionEnd() {
         println(".end method");
         println("");

@@ -1,10 +1,12 @@
 public class Generator {
 
     private Sampler sampler;
+    private SymbolTable table;
     private String moduleName;
 
-    public Generator(Sampler sampler) {
+    public Generator(Sampler sampler, SymbolTable table) {
         this.sampler = sampler;
+        this.table = table;
     }  
 
     public Object visit(SimpleNode node) {
@@ -41,7 +43,7 @@ public class Generator {
     // Function Node
     public Object visit(ASTFunction node) {
         int childN = 0;
-        System.out.println("Function: " + node.functionName);
+        System.out.println("Function: " + node.functionName + " RETURN: " + node.getReturnType());
         if(node.functionName.equals("main")){
             // if the function is the main one
             sampler.functionBegin(node.functionName, null);
@@ -66,7 +68,14 @@ public class Generator {
         for(int i = childN; i < node.jjtGetNumChildren(); i++){
             checkFunctionChildren((SimpleNode) node.jjtGetChild(i));
         }
-       
+
+
+        //prints return types
+        if(node.getReturnType().equals("Void")){
+            sampler.printVoidReturn();
+        }
+        else
+            sampler.printIntReturn();
         // prints yasmin Function endline
         sampler.functionEnd();
 
@@ -100,26 +109,94 @@ public class Generator {
     }
 
     public Object visit(ASTCall node) {
+        System.out.println("CALL " + node.getValue());
+
         SimpleNode varList = (SimpleNode) node.jjtGetChild(0);
 
-        for(int i = 0; i < node.jjtGetNumChildren(); i++){
-            System.out.println("CHILDREN   AH: " + node.toString());
-        }
+        String[] params = new String[varList.jjtGetNumChildren()];
 
+        // Get parameters of the function called
         for(int i = 0; i < varList.jjtGetNumChildren(); i++){
             ASTArgument arg = (ASTArgument) varList.jjtGetChild(i);
-            System.out.println("CHILDREN: " + arg.content);
-            for(int a = 0; a < arg.jjtGetNumChildren(); a++){
-                System.out.println("CHILDREN 2: " + arg.jjtGetChild(a).toString());
+
+            //checks type of parameters passed
+            boolean isInteger;
+            try {
+                Integer.parseInt(arg.content);
+                isInteger = true;
+            }
+            catch(NumberFormatException e) {
+                isInteger = false;
+            }
+
+            // check if parameter is integer or a variable
+            if(isInteger){
+                // if parameter is a integer
+                params[i] = "I";
+                sampler.println("iconst_" + arg.content);
+            }
+            else {
+                // go check the stack and do iload_<number> and its type
+                
             }
         }
-        //sampler.print("invokestatic " + this.moduleName+ "/" + node.calledFunction); //missing type of arguments and return
+
+        // go check the type of return of the function
+        String returnType;
+        if(!node.getValue().equals("println")){
+            ASTFunction function = this.table.getFunction(node.getValue());
+            if(function == null){
+                System.out.println("Function doesn't exist");
+                return -1;
+            }
+            
+            if(function.getReturnType().equals("Void")){
+                returnType = "V";
+            }
+            else
+                returnType = "I";
+        }
+        else {
+            returnType = "V";
+        }
+        
+        // prints function invocation
+        sampler.printFunctionInvocation(this.moduleName, node.getValue(), params, returnType);
 
         return null;
     }
 
     public Object visit(ASTAssign node) {
         System.out.println("ASSIGN");
+        
+        //Remove later
+        for(int i = 0; i < node.jjtGetNumChildren(); i++) {
+            System.out.println("ASSIGN NODE CHILDREN: " + node.jjtGetChild(i).toString());
+        }
+
+        // RHS
+        ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
+        
+        for(int i = 0; i < rhs.jjtGetNumChildren(); i++) {
+
+            System.out.println("RHS CHILDREN: " + rhs.jjtGetChild(i).toString());
+
+            SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
+
+            for(int a = 0; a < chil.jjtGetNumChildren(); a++) {
+
+                if(chil.jjtGetChild(a).toString().equals("Call")){
+                    visit((ASTCall) chil.jjtGetChild(a));
+                }
+                else {
+                    // Scalar or Array Access
+                }
+            }
+        }
+
+        // LHS
+        //if(node.jjtGetChild(0).toString().equals())
+
         return null;
     }
 
