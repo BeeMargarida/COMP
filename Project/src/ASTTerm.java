@@ -11,6 +11,7 @@ class ASTTerm extends SimpleNode {
 
   public ASTTerm(Parser p, int id) {
     super(p, id);
+    type = Utils.TERM;
   }
 
   public String toString(String prefix) {

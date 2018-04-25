@@ -6,7 +6,7 @@ class ASTCall extends SimpleNode {
   
   public ASTCall(int id) {
     super(id);
-    type = Utils.CALL;
+    setType(Utils.CALL);
   }
 
   public ASTCall(Parser p, int id) {

@@ -5,7 +5,7 @@ module aval1 {
 	  io.println(r); // print 6
    }
 
-   function a=f(b, c) {
+   function a=f(c) {
      a = b*c;
    }
    

@@ -6,7 +6,7 @@
 .end method
 
 
-.method public static f(II)I
+.method public static f(I)I
 .end method
 
 
