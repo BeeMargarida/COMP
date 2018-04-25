@@ -23,10 +23,17 @@ public class Parser {
 			root.dump("");
 			
 			SymbolTable symbolTable = new SymbolTable();
+
+			System.out.println("\n\nCommencing Semantic Analysis.");
+			System.out.println("Checking Operations.\n");
 			
 			symbolTable.fillSymbols(root, "");
+
+			System.out.println("Checking Calls.\n");
 			
 			symbolTable.analyseCalls();
+
+			System.out.println("\n\nCommencing Code Generation.\n\n");
 
 			Sampler sampler = new Sampler("array1_1.j");
 			Generator generator = new Generator(sampler);
@@ -124,8 +131,8 @@ SimpleNode Module(): {Token moduleName;} {
 */
 void Function(): {Token name;} {
 	try {
-	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
-	     	((ArrayElement(name))? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
+	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image; jjtThis.returnType = Utils.SCALAR; } (
+	     	((ArrayElement(name) {jjtThis.returnType = Utils.ARRAY; })? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
 	} catch(ParseException e) {
@@ -235,8 +242,10 @@ void Stmt() #void: {Token t;} {
  * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
+	{jjtThis.value = t.image;}
 	try {
 		( < DOT > tmp=<ID > {jjtThis.calledFunction = tmp.image;})?  < LPAR > (ArgumentList() )? < RPAR >
+		
 	} catch (ParseException e) {
 		System.out.println("Error on call."
 			+"\nSpecific exception: " + e.toString());
@@ -324,7 +333,7 @@ void Rhs() : {Token t; String tmp;} {
 	(
 		(
 		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term() 
-			{jjtThis.type = Utils.OP;})?
+			{jjtThis.setType(Utils.OP);})?
 		) 
 		|
 		 ( ArrayInstantion() )
@@ -357,7 +366,7 @@ void Term(): {Token t;} {
 		( t=<ADDSUB_OP> 
 			{jjtThis.operator=t.image;} )? 
 
-		( (t=<INTEGER> {jjtThis.type = Utils.NUMBER;}) 
+		( (t=<INTEGER> {jjtThis.setType(Utils.NUMBER); jjtThis.value = t.image;}) 
 			|
 		 ( t=<ID> ( (ArrayAccess(t) ) 
 		  	| 
@@ -471,9 +480,9 @@ String Index() #void: {Token value;} {
 
 
 void Var() : {Token t; String tmp;} {
-	t=<ID> {jjtThis.content = t.image; jjtThis.type = Utils.SCALAR; } 
+	t=<ID> {jjtThis.content = t.image; jjtThis.setType(Utils.SCALAR); } 
 	
-	(ArrayElement(t) {jjtThis.content = null; jjtThis.type = Utils.ARRAY; })?
+	(ArrayElement(t) {jjtThis.content = null; jjtThis.setType(Utils.ARRAY); })?
 }
 
 /**

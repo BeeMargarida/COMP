@@ -6,7 +6,7 @@ class ASTCall extends SimpleNode {
   
   public ASTCall(int id) {
     super(id);
-    type = Utils.CALL;
+    setType(Utils.CALL);
   }
 
   public ASTCall(Parser p, int id) {
@@ -20,6 +20,8 @@ class ASTCall extends SimpleNode {
     }
     return null;
   }
+
+  
 
 }
 /* JavaCC - OriginalChecksum=5206d28e366ee8ca4b52058e60679d46 (do not edit this line) */
