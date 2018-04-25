@@ -43,7 +43,6 @@ public class Sampler {
         print(".class public "); println(moduleName);
         println(".super java/lang/Object");
         println("");
-        println("");
     }
 
     public void functionBegin(String functionName, String[] params) {
@@ -67,12 +66,29 @@ public class Sampler {
         }
     }
 
+    public void printLocalsLimit(int limit){
+        println(".limit locals " + limit);
+    }
+
+    public void printStackLimit(int limit){
+        println(".limit stack " + limit);
+    }
+
     public void printConst(String arg){
         println("iconst_" + arg);
     }
 
     public void printLoad(int arg){
         println("iload_" + arg);
+    }
+
+    public void printStore(int arg){
+        println("istore_" + arg);
+        println("");
+    }
+
+    public void printOperator(String op) {
+        println(arith.get(op));
     }
 
     public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
@@ -96,6 +112,14 @@ public class Sampler {
         println(".end method");
         println("");
         println("");
+    }
+
+    public void printClinit() {
+        println(".method static public <clinit>()V");
+        println(".limit stack 0");
+        println(".limit locals 0");
+        println("return");
+        println(".end method");
     }
 
     public void close() {

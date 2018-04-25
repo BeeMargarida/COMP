@@ -3,6 +3,7 @@
 public class ASTFunction extends SimpleNode {
 	public String functionName;
 	public String returnType;
+	public String returnValue;
 
 	public ASTFunction(int id) {
 		super(id);
@@ -20,6 +21,10 @@ public class ASTFunction extends SimpleNode {
 	
 	public String getReturnType() {
 		return returnType;
+	}
+
+	public String getReturnValue(){
+		return returnValue;
 	}
 
 }

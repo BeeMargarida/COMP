@@ -288,10 +288,8 @@ public class SymbolTable {
 
 	public ASTFunction getFunction(String functionName){
 
-		System.out.println("FUNCTION NAME: " + functionName);
 		for(int i = 0; i < functions.size(); i++) {
 			ASTFunction function = (ASTFunction) functions.get(i);
-			System.out.println("FUNCTION NAME CYCLE: " + function.functionName);
 			if(function.functionName.equals(functionName)){
 				return function;
 			}

@@ -14,8 +14,9 @@ class ASTRhs extends SimpleNode {
   }
   
   public String toString(String prefix) {
-    if(operator != null)
+    if(operator != null){
       return prefix + operator;
+    }
     else
       return null;
   } 

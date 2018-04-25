@@ -140,7 +140,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ASSIGN:
         case 32:
-                   jjtn000.returnType = Utils.SCALAR;
+                   jjtn000.returnType = Utils.SCALAR; jjtn000.returnValue = name.image;
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case 32:
             ArrayElement(name);
@@ -706,7 +706,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
               throw new ParseException();
             }
             Term();
-                         jjtn000.setType(Utils.OP);
+                         jjtn000.setType(Utils.OP); jjtn000.value = t.image;
             break;
           default:
             jj_la1[19] = jj_gen;

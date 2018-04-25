@@ -132,7 +132,7 @@ SimpleNode Module(): {Token moduleName;} {
 void Function(): {Token name;} {
 	try {
 	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image; jjtThis.returnType = Utils.VOID; } (
-	     	( {jjtThis.returnType = Utils.SCALAR; }
+	     	( {jjtThis.returnType = Utils.SCALAR; jjtThis.returnValue = name.image; }
 				 (ArrayElement(name) {jjtThis.returnType = Utils.ARRAY; })? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
@@ -334,7 +334,7 @@ void Rhs() : {Token t; String tmp;} {
 	(
 		(
 		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term() 
-			{jjtThis.setType(Utils.OP);})?
+			{jjtThis.setType(Utils.OP); jjtThis.value = t.image;})?
 		) 
 		|
 		 ( ArrayInstantion() )
