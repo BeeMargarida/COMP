@@ -11,8 +11,13 @@ public class Utils {
 	public static String TERM = "Term";
 	public static String NUMBER = "Number";
 	public static String RHS = "Rhs";
+	public static String COND = "Conditional";
 
 	public static String WAS_CALLED = "WasCalled";
+
+	public static int NOT_INIT = 0;
+	public static int MAYBE_INIT = 1;
+	public static int DEFIN_INIT = 2;
 
 	// Made to Extract node that contains a specific value and type
 	public static SimpleNode contains(ArrayList<SimpleNode> array, SimpleNode node) {

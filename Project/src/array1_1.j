@@ -13,7 +13,7 @@ ireturn
 .end method
 
 
-.method public static f()I
+.method public static f(II)I
 ireturn
 .end method
 

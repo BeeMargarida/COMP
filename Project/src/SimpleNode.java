@@ -9,18 +9,18 @@ class SimpleNode implements Node {
   protected Object value;
   protected Parser parser;
   
-  protected boolean isInitialized;
+  protected int isInitialized;
   protected String type;
 
   public SimpleNode(int i){
     id = i;
-    isInitialized = false;
+    isInitialized = Utils.NOT_INIT;
   }
 
   public SimpleNode(Parser p, int i) {
     this(i);
     parser = p;
-    isInitialized = false;
+    isInitialized = Utils.NOT_INIT;
   }
 
   public void jjtOpen() {
@@ -120,12 +120,12 @@ class SimpleNode implements Node {
     return (String) value;
   }
 
-  public boolean isInitialized() {
+  public int isInitialized() {
     return isInitialized;
   }
 
-  public void initialize() {
-    isInitialized = true;
+  public void setInitialization(int initalization) {
+    isInitialized = initalization;
   }
 
   public void setType(String newType)  {

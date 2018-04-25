@@ -5,6 +5,7 @@ class ASTIf extends SimpleNode {
   
   public ASTIf(int id) {
     super(id);
+    setType(Utils.COND);
   }
 
   public ASTIf(Parser p, int id) {
