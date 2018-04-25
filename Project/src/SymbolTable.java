@@ -118,7 +118,6 @@ public class SymbolTable {
 
 	// Semantically analise operations
 	public void analyseOperation(SimpleNode node) {
-	
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
@@ -237,12 +236,36 @@ public class SymbolTable {
 	public void analyseCalls() {
 		// Only called after symbol table is complete
 
-		System.out.println("Calls " + calls.toString());
-		System.out.println("Declarations " + declarations.toString());
-		System.out.println("Symbols " + symbolTrees.toString());
-
+		// Calls include assigns and operations, to check if functions' return value is of the same type
 		for (int i = 0; i < calls.size() ; i++) {
 
+			// Extract the real call hidden within possible assigns and operations
+			SimpleNode callToBeAnalysed = Utils.extractOfType(Utils.CALL, calls.get(i));
+			SimpleNode function = Utils.containsValue(functions, callToBeAnalysed);
+
+			if (function == null) {
+				System.out.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
+			}
+			else { // Call is correct, checking types
+				if (calls.get(i).getType().equals(Utils.OP)) {
+					SimpleNode leftNode = Utils.extractOfType(Utils.SCALAR, (SimpleNode) calls.get(i).jjtGetChild(0));
+
+					if (leftNode == null)
+						leftNode = Utils.extractOfType(Utils.ARRAY, (SimpleNode) calls.get(i).jjtGetChild(0));
+										
+					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+						System.out.println("Semantic error : Mismatching types between " + leftNode.getValue() + " and " + 
+							function.getValue() + " -> " + leftNode.getType() + " and " + ((ASTFunction) function).getReturnType());
+					}
+				}
+				
+			}
+
+			
+		}
+
+		for (int i = 0; i < functions.size() ; i++) {
+			System.out.println("Function " + functions.get(i).getValue());
 		}
 	}
 }

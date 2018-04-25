@@ -19,9 +19,16 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
 
                         SymbolTable symbolTable = new SymbolTable();
 
+                        System.out.println("\n\nCommencing Semantic Analysis.");
+                        System.out.println("Checking Operations.\n");
+
                         symbolTable.fillSymbols(root, "");
 
+                        System.out.println("Checking Calls.\n");
+
                         symbolTable.analyseCalls();
+
+                        System.out.println("\n\nCommencing Code Generation.\n\n");
 
                         Sampler sampler = new Sampler("array1_1.j");
                         Generator generator = new Generator(sampler);
@@ -130,13 +137,14 @@ if (jjtc000) {
       try {
         jj_consume_token(FUNCTION);
         name = jj_consume_token(ID);
-jjtn000.functionName = name.image;
+jjtn000.functionName = name.image; jjtn000.returnType = Utils.SCALAR;
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case ASSIGN:
         case 32:{
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
           case 32:{
             ArrayElement(name);
+jjtn000.returnType = Utils.ARRAY;
             break;
             }
           default:
@@ -429,6 +437,7 @@ System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception 
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String string; Token tmp;
     try {
+jjtn000.value = t.image;
       try {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case DOT:{
@@ -1226,6 +1235,12 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
+  static private boolean jj_3_1()
+ {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
   static private boolean jj_3R_9()
  {
     if (jj_3R_10()) return true;
@@ -1274,12 +1289,6 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1()
- {
-    if (jj_3R_6()) return true;
     return false;
   }
 

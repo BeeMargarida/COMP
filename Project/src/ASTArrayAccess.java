@@ -6,6 +6,7 @@ class ASTArrayAccess extends SimpleNode {
 
   public ASTArrayAccess(int id) {
     super(id);
+    type = Utils.SCALAR;
   }
 
   public ASTArrayAccess(Parser p, int id) {

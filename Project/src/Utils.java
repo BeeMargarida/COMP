@@ -14,7 +14,7 @@ public class Utils {
 
 	public static String WAS_CALLED = "WasCalled";
 
-	// Checks if there is a node on array with the same value
+	// Made to Extract node that contains a specific value and type
 	public static SimpleNode contains(ArrayList<SimpleNode> array, SimpleNode node) {
 		if (array != null) {
 			for (int i = 0; i < array.size(); i++) {
@@ -28,6 +28,21 @@ public class Utils {
 		return null;
 	}
 
+	// Made to Extract node that contains a specific value
+	public static SimpleNode containsValue(ArrayList<SimpleNode> array, SimpleNode node) {
+		if (array != null) {
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).getValue().equals(node.getValue())) {
+					return array.get(i);
+				}
+
+			}
+		}
+
+		return null;
+	}
+
+	// Dumps to screen information about all nodes and subsequent children
 	public static void dumpType(String prefix, SimpleNode node) {
 		if (node.getType() != null)
 			System.out.println(prefix + "node " + node + " type " + node.getType() + " value " + node.getValue());
@@ -41,6 +56,7 @@ public class Utils {
 		}
 	}
 
+	// Checks if there is node hidden in children with specific value 
 	public static boolean checkFor(String value, SimpleNode node) {
 		boolean b = false;
 
@@ -58,5 +74,25 @@ public class Utils {
 			}
 		}
 		return b;
+	}
+	
+	// Extracts node above
+	public static SimpleNode extractOfType(String value, SimpleNode node) {
+		SimpleNode nodeExtracted = null;
+
+		if (node.getType().equals(value))
+			nodeExtracted = node;
+		else if (node.jjtGetNumChildren() != 0) {
+			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
+				SimpleNode n = (SimpleNode) node.jjtGetChild(i);
+				if (n != null) {
+					if (n.getType().equals(value))
+						return n;
+					else
+						nodeExtracted = extractOfType(value, n);
+				}
+			}
+		}
+		return nodeExtracted;
 	}
 }

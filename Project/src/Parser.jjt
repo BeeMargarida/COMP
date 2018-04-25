@@ -23,10 +23,17 @@ public class Parser {
 			root.dump("");
 			
 			SymbolTable symbolTable = new SymbolTable();
+
+			System.out.println("\n\nCommencing Semantic Analysis.");
+			System.out.println("Checking Operations.\n");
 			
 			symbolTable.fillSymbols(root, "");
+
+			System.out.println("Checking Calls.\n");
 			
 			symbolTable.analyseCalls();
+
+			System.out.println("\n\nCommencing Code Generation.\n\n");
 
 			Sampler sampler = new Sampler("array1_1.j");
 			Generator generator = new Generator(sampler);
@@ -124,8 +131,8 @@ SimpleNode Module(): {Token moduleName;} {
 */
 void Function(): {Token name;} {
 	try {
-	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image;} (
-	     	((ArrayElement(name))? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
+	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image; jjtThis.returnType = Utils.SCALAR; } (
+	     	((ArrayElement(name) {jjtThis.returnType = Utils.ARRAY; })? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
 	} catch(ParseException e) {
@@ -235,7 +242,7 @@ void Stmt() #void: {Token t;} {
  * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
-	
+	{jjtThis.value = t.image;}
 	try {
 		( < DOT > tmp=<ID > {jjtThis.calledFunction = tmp.image;})?  < LPAR > (ArgumentList() )? < RPAR >
 		
