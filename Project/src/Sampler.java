@@ -67,6 +67,14 @@ public class Sampler {
         }
     }
 
+    public void printConst(String arg){
+        println("iconst_" + arg);
+    }
+
+    public void printLoad(int arg){
+        println("iload_" + arg);
+    }
+
     public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
         print("invokestatic " + moduleName+ "/" + functionName + "(");
         for(int i = 0; i < params.length; i++){

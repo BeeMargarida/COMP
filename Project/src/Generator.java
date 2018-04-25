@@ -1,12 +1,17 @@
+import java.util.ArrayList;
+
 public class Generator {
 
     private Sampler sampler;
     private SymbolTable table;
     private String moduleName;
 
+    private ArrayList<SimpleNode> stack;
+
     public Generator(Sampler sampler, SymbolTable table) {
         this.sampler = sampler;
         this.table = table;
+        stack = new ArrayList<>();
     }  
 
     public Object visit(SimpleNode node) {
@@ -104,6 +109,7 @@ public class Generator {
 
     // returns type of Var
     public String visit(ASTVar node) {
+        stack.add(node);
         System.out.println("Node: " + node.getValue() + " TYPE: " + node.getType());
         return node.getType();
     }
@@ -118,6 +124,7 @@ public class Generator {
         // Get parameters of the function called
         for(int i = 0; i < varList.jjtGetNumChildren(); i++){
             ASTArgument arg = (ASTArgument) varList.jjtGetChild(i);
+            System.out.println("arg: " + arg.getValue());
 
             //checks type of parameters passed
             boolean isInteger;
@@ -133,11 +140,22 @@ public class Generator {
             if(isInteger){
                 // if parameter is a integer
                 params[i] = "I";
-                sampler.println("iconst_" + arg.content);
+                sampler.printConst(arg.content);
             }
             else {
                 // go check the stack and do iload_<number> and its type
-                
+                for(int j = 0; j < stack.size(); j++){
+                    if(stack.get(j).getValue().equals(arg.content)){
+                        sampler.printLoad(j);
+
+                        // check type of parameters
+                        if(stack.get(j).getType().equals(Utils.SCALAR)){
+                            params[i] = "I";
+                        }
+                        else if(stack.get(j).getType().equals(Utils.ARRAY))
+                            params[i] = "[I";
+                    }
+                }
             }
         }
 
@@ -150,7 +168,7 @@ public class Generator {
                 return -1;
             }
             
-            if(function.getReturnType().equals("Void")){
+            if(function.getReturnType().equals(Utils.VOID)){
                 returnType = "V";
             }
             else
@@ -170,9 +188,9 @@ public class Generator {
         System.out.println("ASSIGN");
         
         //Remove later
-        for(int i = 0; i < node.jjtGetNumChildren(); i++) {
+        /*for(int i = 0; i < node.jjtGetNumChildren(); i++) {
             System.out.println("ASSIGN NODE CHILDREN: " + node.jjtGetChild(i).toString());
-        }
+        }*/
 
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
@@ -195,7 +213,10 @@ public class Generator {
         }
 
         // LHS
-        //if(node.jjtGetChild(0).toString().equals())
+        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
+        stack.add(lhs);
+
+        System.out.println("LHS: " + lhs.getValue());
 
         return null;
     }

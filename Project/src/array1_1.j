@@ -7,7 +7,8 @@ iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
-invokestatic aval1/println(null)V
+iload_0
+invokestatic aval1/println(I)V
 
 return
 .end method
