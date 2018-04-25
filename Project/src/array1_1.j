@@ -9,7 +9,7 @@ invokestatic aval1/f(II)I
 
 invokestatic aval1/println(null)V
 
-ireturn
+return
 .end method
 
 

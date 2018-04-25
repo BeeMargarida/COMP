@@ -136,14 +136,15 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
       try {
         jj_consume_token(FUNCTION);
         name = jj_consume_token(ID);
-                                       jjtn000.functionName = name.image; jjtn000.returnType = Utils.SCALAR;
+                                       jjtn000.functionName = name.image; jjtn000.returnType = Utils.VOID;
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ASSIGN:
         case 32:
+                   jjtn000.returnType = Utils.SCALAR;
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case 32:
             ArrayElement(name);
-                                      jjtn000.returnType = Utils.ARRAY;
+                                                      jjtn000.returnType = Utils.ARRAY;
             break;
           default:
             jj_la1[2] = jj_gen;
@@ -151,7 +152,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
           }
           jj_consume_token(ASSIGN);
           name = jj_consume_token(ID);
-                                                                                                jjtn000.functionName = name.image;
+                                                                                                                jjtn000.functionName = name.image;
           break;
         default:
           jj_la1[3] = jj_gen;
