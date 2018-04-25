@@ -67,12 +67,18 @@ public class SymbolTable {
 			//	nodeToAnalyse.getValue());
 
 			// If it is an operation, do a semantic analysis
-			if (nodeToAnalyse.getType() == Utils.OP) { // Is operation
+			if (nodeToAnalyse.getType().equals(Utils.OP)) { // Is operation
 				analyseOperation(nodeToAnalyse);
 
 				// No need to continue checking children, already analized
 				return;
-			} else {
+			} else if (nodeToAnalyse.getType().equals(Utils.COND)) {
+				analyseConditional(nodeToAnalyse);
+				
+				// No need to continue checking children, already analized
+				return;
+			}
+			else {
 				
 				// Inside a new function, belongs to another scope
 				if (nodeToAnalyse.getType() == Utils.FUNCTION) {
@@ -101,7 +107,7 @@ public class SymbolTable {
 
 					for (int j = 0 ; j < nodeToAnalyse.jjtGetNumChildren() ; j++) {
 						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-						newNode.initialize();
+						newNode.setInitialization(Utils.DEFIN_INIT);
 						nodesInScope.add(newNode);
 					}
 					symbolTrees.put(currentScope, nodesInScope);
@@ -190,7 +196,7 @@ public class SymbolTable {
 		if (rightType == Utils.NUMBER) { 
 			// Isn't array
 			if (leftType != Utils.ARRAY) {
-				leftChild.initialize();
+				leftChild.setInitialization(Utils.DEFIN_INIT);
 				leftChild.setType(Utils.SCALAR);
 				return Utils.SCALAR;
 			} else {
@@ -201,7 +207,7 @@ public class SymbolTable {
 		}
 		
 		// Right Hand Side variable was not initialized, semantic error
-		if ((previousRightNode == null || !previousRightNode.isInitialized()) 
+		if ((previousRightNode == null || previousRightNode.isInitialized() == Utils.NOT_INIT) 
 			&& rightType != Utils.NUMBER) { 
 			
 			System.out.println("Variable " + rightChild.getValue() + " was not initialized.");
@@ -209,7 +215,7 @@ public class SymbolTable {
 		}
 
 		// Left node needs to be initialized
-		if ((previousLeftNode == null || !previousLeftNode.isInitialized()) && needToBeInitialized) {
+		if ((previousLeftNode == null || previousLeftNode.isInitialized() == Utils.NOT_INIT) && needToBeInitialized) {
 			System.out.println("Variable " + leftChild.getValue() + " was not initialized.");
 			return null;
 		} // Was already declared
@@ -225,12 +231,16 @@ public class SymbolTable {
 			}
 		} else { // Was not present, new initialization
 			leftChild.setType(rightChild.getType());		
-			leftChild.initialize();
+			leftChild.setInitialization(Utils.DEFIN_INIT);
 			push(leftChild);
 		}
 
 
 		return leftChild.getType();
+	}
+
+	public void analyseConditional(SimpleNode nodeToAnalyse) {
+		
 	}
 
 	public void analyseCalls() {
@@ -246,7 +256,8 @@ public class SymbolTable {
 			if (function == null) {
 				System.out.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
 			}
-			else { // Call is correct, checking types
+			else { 
+				// Call is correct, checking types
 				if (calls.get(i).getType().equals(Utils.OP)) {
 					SimpleNode leftNode = Utils.extractOfType(Utils.SCALAR, (SimpleNode) calls.get(i).jjtGetChild(0));
 
@@ -255,8 +266,14 @@ public class SymbolTable {
 										
 					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 						System.out.println("Semantic error : Mismatching types between " + leftNode.getValue() + " and " + 
-							function.getValue() + " -> " + leftNode.getType() + " and " + ((ASTFunction) function).getReturnType());
+							function.getValue() + " -> " + leftNode.getType() + " opposed to " + ((ASTFunction) function).getReturnType());
 					}
+				}
+
+				// Checking argslist to see if the size and types are correct
+				if (callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
+					System.out.println("Semantic error : Mismatching number of arguments in call " + callToBeAnalysed.getValue() + 
+						" -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() + " opposed to " +  function.jjtGetChild(1).jjtGetNumChildren());
 				}
 				
 			}
