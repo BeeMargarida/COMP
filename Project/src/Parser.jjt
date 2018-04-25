@@ -131,8 +131,9 @@ SimpleNode Module(): {Token moduleName;} {
 */
 void Function(): {Token name;} {
 	try {
-	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image; jjtThis.returnType = Utils.SCALAR; } (
-	     	((ArrayElement(name) {jjtThis.returnType = Utils.ARRAY; })? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
+	 	<FUNCTION>  name=<ID> {jjtThis.functionName = name.image; jjtThis.returnType = Utils.VOID; } (
+	     	( {jjtThis.returnType = Utils.SCALAR; }
+				 (ArrayElement(name) {jjtThis.returnType = Utils.ARRAY; })? <ASSIGN> name=<ID> {jjtThis.functionName = name.image;})?
 		     (VarList()) 
 		)	
 	} catch(ParseException e) {

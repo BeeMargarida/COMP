@@ -5,6 +5,7 @@ public class Utils {
 	public static String FUNCTION = "Function";
 	public static String ARRAY = "Array";
 	public static String SCALAR = "Scalar";
+	public static String VOID = "Void";
 	public static String CALL = "Call";
 	public static String ARG = "Argument";
 	public static String OP = "Operation";
