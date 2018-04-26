@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class SymbolTable {
@@ -240,7 +239,8 @@ public class SymbolTable {
 	}
 
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
-		
+		// Entered in if statement
+		HashMap<String, ArrayList<SimpleNode>> nodesScope;
 	}
 
 	public void analyseCalls() {
@@ -267,6 +267,10 @@ public class SymbolTable {
 					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 						System.out.println("Semantic error : Mismatching types between " + leftNode.getValue() + " and " + 
 							function.getValue() + " -> " + leftNode.getType() + " opposed to " + ((ASTFunction) function).getReturnType());
+					} else {
+						ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
+						nodesInScope.add(leftNode);
+						symbolTrees.put(currentScope, nodesInScope);
 					}
 				}
 
@@ -287,7 +291,6 @@ public class SymbolTable {
 	}
 
 	public ASTFunction getFunction(String functionName){
-
 		for(int i = 0; i < functions.size(); i++) {
 			ASTFunction function = (ASTFunction) functions.get(i);
 			if(function.functionName.equals(functionName)){
