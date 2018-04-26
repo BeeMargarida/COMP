@@ -23,6 +23,7 @@ public class Generator {
         else if(node.toString().equals("Function")){
             visit((ASTFunction) node);
         }
+        // TODO: Make Declarations
 
         return null;
     
