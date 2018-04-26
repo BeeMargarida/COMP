@@ -18,7 +18,7 @@ return
 
 
 .method public static f(II)I
-.limit locals 3
+.limit locals 4
 .limit stack 2
 iload_0
 iload_1

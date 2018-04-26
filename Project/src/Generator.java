@@ -253,6 +253,9 @@ public class Generator {
                 else if(term.toString().equals("ScalarAccess")){
                     // Scalar or Array Access                  
                     int numStack = getFromStack(term.getValue(), functionName);
+
+                    // if numStack = -1, check the module variables -> TODO
+
                     sampler.printLoad(numStack);
                 }
             }

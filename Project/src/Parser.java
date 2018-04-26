@@ -384,7 +384,6 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
         break;
       case IF:
         If();
-        Else();
         break;
       case ID:
         t = jj_consume_token(ID);
@@ -568,6 +567,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
         jj_consume_token(IF);
         Exprtest();
         Stmtlst();
+        Else();
       } catch (ParseException e) {
                 System.out.println("Error on if");
       }
@@ -1220,11 +1220,6 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_9() {
     if (jj_3R_10()) return true;
     return false;
@@ -1267,6 +1262,11 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
