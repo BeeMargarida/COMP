@@ -23,6 +23,9 @@ public class Generator {
         else if(node.toString().equals("Function")){
             visit((ASTFunction) node);
         }
+        else if(node.toString().equals("Declaration")){
+            visit((ASTDeclaration) node);
+        }
         // TODO: Make Declarations
 
         return null;
@@ -44,6 +47,10 @@ public class Generator {
 
         sampler.printClinit();
         sampler.close();
+        return null;
+    }
+
+    public Object visit(ASTDeclaration node){
         return null;
     }
 
@@ -74,8 +81,13 @@ public class Generator {
 
         // Print stack and locals values
         // TODO : GET STACK AND LOCAL LIMIT VALUES
-        sampler.printLocalsLimit(0);
-        sampler.printStackLimit(0);
+        int locals = table.getSymbolTrees().get(node.functionName).size();
+        sampler.printLocalsLimit(locals);
+
+        System.out.println("Ah: " + table.getSymbolTrees().get(node.functionName).toString());
+
+        int stack = calculateStackValue(table.getSymbolTrees().get(node.functionName));
+        sampler.printStackLimit(stack);
 
 
         // Checks the other children of the function
@@ -97,6 +109,21 @@ public class Generator {
         sampler.functionEnd();
 
         return null;
+    }
+
+    public int calculateStackValue(ArrayList<SimpleNode> arr){
+        int stack = 0;
+        for(int i = 0; i < arr.size(); i++){
+            if(arr.get(i).toString().equals("Var")){
+                stack++;
+            }
+            /*else if(arr.get(i).toString().equals("ScalarAccess")){
+                stack--;
+            }*/
+        }
+        if(stack < 0)
+            return 0;
+        return stack;
     }
 
     public void checkFunctionChildren(SimpleNode node, String functionName){

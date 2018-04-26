@@ -296,4 +296,8 @@ public class SymbolTable {
 		}
 		return null;
 	}
+
+	public HashMap<String, ArrayList<SimpleNode>> getSymbolTrees() {
+		return symbolTrees;
+	}
 }
