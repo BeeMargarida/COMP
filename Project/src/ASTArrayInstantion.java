@@ -14,8 +14,15 @@ class ASTArrayInstantion extends SimpleNode {
   }
  
   public String toString(String prefix) {
-    value = "[" + size + "]";
-    return prefix + value;
+    try  {
+        Integer.parseInt(size);
+        this.isInitialized = Utils.DEFIN_INIT;
+        this.type = Utils.NUMBER;
+    } catch (NumberFormatException ex)  {
+
+    }
+    value = size;
+    return prefix + "[" + value + "]";
   }
 
 }

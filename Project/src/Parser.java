@@ -577,7 +577,15 @@ if (jjtc000) {
         jj_consume_token(IF);
         Exprtest();
         Stmtlst();
-        Else();
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case ELSE:{
+          Else();
+          break;
+          }
+        default:
+          jj_la1[15] = jj_gen;
+          ;
+        }
       } catch (ParseException e) {
 System.out.println("Error on if");
       }
@@ -611,16 +619,8 @@ if (jjtc000) {
   jjtree.openNodeScope(jjtn000);
     try {
       try {
-        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-        case ELSE:{
-          jj_consume_token(ELSE);
-          Stmtlst();
-          break;
-          }
-        default:
-          jj_la1[15] = jj_gen;
-          ;
-        }
+        jj_consume_token(ELSE);
+        Stmtlst();
       } catch (ParseException e) {
 System.out.println("Error on else");
                 error_skipto(PVIRG);
@@ -1236,12 +1236,8 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-<<<<<<< HEAD
   static private boolean jj_3R_9()
  {
-=======
-  static private boolean jj_3R_9() {
->>>>>>> master
     if (jj_3R_10()) return true;
     return false;
   }
@@ -1291,12 +1287,8 @@ try {Token t;
     return false;
   }
 
-<<<<<<< HEAD
   static private boolean jj_3_1()
  {
-=======
-  static private boolean jj_3_1() {
->>>>>>> master
     if (jj_3R_6()) return true;
     return false;
   }

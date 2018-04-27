@@ -13,6 +13,8 @@ public class Utils {
 	public static String NUMBER = "Number";
 	public static String RHS = "Rhs";
 	public static String COND = "Conditional";
+	// Useful for checking else statements
+	public static String ELSE = "Else";
 
 	public static String WAS_CALLED = "WasCalled";
 
@@ -24,7 +26,8 @@ public class Utils {
 	public static SimpleNode contains(ArrayList<SimpleNode> array, SimpleNode node) {
 		if (array != null) {
 			for (int i = 0; i < array.size(); i++) {
-				if (array.get(i).getValue().equals(node.getValue()) && array.get(i).getType().equals(node.getType())) {
+				if (array.get(i).getValue().equals(node.getValue()) && 
+					array.get(i).getType().equals(node.getType())) {
 					return array.get(i);
 				}
 
@@ -51,7 +54,8 @@ public class Utils {
 	// Dumps to screen information about all nodes and subsequent children
 	public static void dumpType(String prefix, SimpleNode node) {
 		if (node.getType() != null)
-			System.out.println(prefix + "node " + node + " type " + node.getType() + " value " + node.getValue());
+			System.out.println(prefix + "node " + node + " type " + node.getType() + " value " +
+				 node.getValue());
 
 		if (node.jjtGetNumChildren() != 0) {
 			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
