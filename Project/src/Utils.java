@@ -7,20 +7,19 @@ public class Utils {
 	public static String SCALAR = "Scalar";
 	public static String VOID = "Void";
 	public static String CALL = "Call";
-	public static String ARG = "Argument";
 	public static String OP = "Operation";
 	public static String TERM = "Term";
 	public static String NUMBER = "Number";
 	public static String RHS = "Rhs";
 	public static String COND = "Conditional";
-	// Useful for checking else statements
 	public static String ELSE = "Else";
-
+	
 	public static String WAS_CALLED = "WasCalled";
 
 	public static int NOT_INIT = 0;
 	public static int MAYBE_INIT = 1;
 	public static int DEFIN_INIT = 2;
+	public static int INCOMPAT_INIT = 3;
 
 	// Made to Extract node that contains a specific value and type
 	public static SimpleNode contains(ArrayList<SimpleNode> array, SimpleNode node) {
@@ -105,5 +104,15 @@ public class Utils {
 			}
 		}
 		return nodeExtracted;
+	}
+
+	public ArrayList<SimpleNode> mergeArrays(ArrayList<SimpleNode> old, ArrayList<SimpleNode> newArray) {
+		for (int i = 0 ; i < old.size() ; i++) {
+			if (Utils.contains(newArray, old.get(i)) == null) {
+				newArray.add(old.get(i));
+			}
+		}
+
+		return newArray;
 	}
 }
