@@ -6,7 +6,6 @@ class ASTArgument extends SimpleNode {
 
   public ASTArgument(int id) {
     super(id);
-    type = Utils.ARG;
   }
 
   public ASTArgument(Parser p, int id) {

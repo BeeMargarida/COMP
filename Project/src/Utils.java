@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Utils {
-	public static String ARGSLIST = "ArgumentList";
+	public static String VARLIST = "ArgumentList";
 	public static String FUNCTION = "Function";
 	public static String ARRAY = "Array";
 	public static String SCALAR = "Scalar";
@@ -24,12 +24,13 @@ public class Utils {
 
 	// Made to Extract node that contains a specific value and type
 	public static SimpleNode contains(ArrayList<SimpleNode> array, SimpleNode node) {
-		if (array != null) {
+		if (array != null && node != null) {
 			for (int i = 0; i < array.size(); i++) {
-				if (array.get(i).getValue().equals(node.getValue()) && 
+				if (array.get(i).getValue() != null)
+					if (array.get(i).getValue().equals(node.getValue()) && 
 					array.get(i).getType().equals(node.getType())) {
 					return array.get(i);
-				}
+					}
 
 			}
 		}
