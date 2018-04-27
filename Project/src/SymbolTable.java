@@ -285,9 +285,9 @@ public class SymbolTable {
 									+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
 									+ ((ASTFunction) function).getReturnType());
 						} else {
-							ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
+							ArrayList<SimpleNode> nodesInScope = symbolTrees.get(entry.getKey());
 							nodesInScope.add(leftNode);
-							symbolTrees.put(currentScope, nodesInScope);
+							symbolTrees.put(entry.getKey(), nodesInScope);
 						}
 					}
 
