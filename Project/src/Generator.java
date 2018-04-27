@@ -285,6 +285,7 @@ public class Generator {
         return null;
     }
 
+    // Gets the position of the variable in the stack
     public int getFromStack(String arg, String functionName) {
         ArrayList<SimpleNode> arr = stack.get(functionName);
         for(int i = 0; i < arr.size(); i++){
