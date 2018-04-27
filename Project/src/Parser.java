@@ -1236,8 +1236,12 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
+<<<<<<< HEAD
   static private boolean jj_3R_9()
  {
+=======
+  static private boolean jj_3R_9() {
+>>>>>>> master
     if (jj_3R_10()) return true;
     return false;
   }
@@ -1287,8 +1291,12 @@ try {Token t;
     return false;
   }
 
+<<<<<<< HEAD
   static private boolean jj_3_1()
  {
+=======
+  static private boolean jj_3_1() {
+>>>>>>> master
     if (jj_3R_6()) return true;
     return false;
   }

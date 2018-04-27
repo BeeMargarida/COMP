@@ -18,8 +18,8 @@ return
 
 
 .method public static f(II)I
-.limit locals 0
-.limit stack 0
+.limit locals 4
+.limit stack 2
 iload_0
 iload_1
 imul
