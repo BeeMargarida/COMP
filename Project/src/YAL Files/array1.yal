@@ -20,7 +20,7 @@ module array1
 		}
 	}
 
-	function main()	
+	function main()	{
 		print_array(10); // the same as array1.print_array(10);
 	}
 }
