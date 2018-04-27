@@ -5,6 +5,7 @@ class ASTElse extends SimpleNode {
 
   public ASTElse(int id) {
     super(id);
+    type = Utils.ELSE;
   }
 
   public ASTElse(Parser p, int id) {

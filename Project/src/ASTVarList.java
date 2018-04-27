@@ -4,7 +4,7 @@ public class ASTVarList extends SimpleNode {
 
   public ASTVarList(int id) {
     super(id);
-    type = Utils.ARGSLIST;
+    type = Utils.VARLIST;
   }
 
   public ASTVarList(Parser p, int id) {

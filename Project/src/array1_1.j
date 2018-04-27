@@ -18,11 +18,12 @@ return
 
 
 .method public static f(II)I
-.limit locals 3
+.limit locals 2
 .limit stack 2
-iload_0
-iload_1
-imul
+null
+istore_2
+
+null
 istore_2
 
 iload_2

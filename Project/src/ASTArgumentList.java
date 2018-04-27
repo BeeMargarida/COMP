@@ -4,7 +4,6 @@ public
 class ASTArgumentList extends SimpleNode {
   public ASTArgumentList(int id) {
     super(id);
-    type = Utils.ARGSLIST;
   }
 
   public ASTArgumentList(Parser p, int id) {

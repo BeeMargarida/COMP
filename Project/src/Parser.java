@@ -567,7 +567,14 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
         jj_consume_token(IF);
         Exprtest();
         Stmtlst();
-        Else();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case ELSE:
+          Else();
+          break;
+        default:
+          jj_la1[15] = jj_gen;
+          ;
+        }
       } catch (ParseException e) {
                 System.out.println("Error on if");
       }
@@ -602,15 +609,8 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
   jjtree.openNodeScope(jjtn000);
     try {
       try {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ELSE:
-          jj_consume_token(ELSE);
-          Stmtlst();
-          break;
-        default:
-          jj_la1[15] = jj_gen;
-          ;
-        }
+        jj_consume_token(ELSE);
+        Stmtlst();
       } catch (ParseException e) {
                 System.out.println("Error on else");
                 error_skipto(PVIRG);

@@ -53,73 +53,6 @@ public class SymbolTable {
 
 	}
 
-	/**
-	 * Adds all symbols to array.
-	 */
-	public void fillSymbols(SimpleNode node, String scope) {
-		currentScope = scope;
-
-		// Goes through all the children
-		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
-			System.out.println("NodeToAnalyse " + nodeToAnalyse);
-			//System.out.println("Currently analysed node " + nodeToAnalyse + " value " + 
-			//	nodeToAnalyse.getValue());
-
-			// If it is an operation, do a semantic analysis
-			if (nodeToAnalyse.getType().equals(Utils.OP)) { // Is operation
-				analyseOperation(nodeToAnalyse);
-
-				// No need to continue checking children, already analized
-				return;
-			} else if (nodeToAnalyse.getType().equals(Utils.COND)) {
-				analyseConditional(nodeToAnalyse);
-
-				// No need to continue checking children, already analized
-				return;
-			} else {
-
-				// Inside a new function, belongs to another scope
-				if (nodeToAnalyse.getType() == Utils.FUNCTION) {
-					scope = nodeToAnalyse.getValue();
-
-					// Create new symbol tree for this scope
-					ArrayList<SimpleNode> newNodesInScope = new ArrayList<>();
-					symbolTrees.put(scope, newNodesInScope);
-
-					// Function Name was already encountered before
-					if (Utils.contains(functions, nodeToAnalyse) != null) {
-						System.out.println(
-								"There are more than one function with name " + nodeToAnalyse.getValue() + ".");
-					} else
-						functions.add(nodeToAnalyse);
-
-				} else if (nodeToAnalyse.getType() == Utils.CALL) {
-					// Encountered a call, will analyse later
-					addToCalls(nodeToAnalyse);
-
-					// No need to analyse children
-					return;
-
-				} else if (nodeToAnalyse.getType() == Utils.ARGSLIST) {
-					ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
-
-					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
-						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-						newNode.setInitialization(Utils.DEFIN_INIT);
-						nodesInScope.add(newNode);
-					}
-					symbolTrees.put(currentScope, nodesInScope);
-				} else if (lookup(nodeToAnalyse) == null)
-					push(nodeToAnalyse);
-
-			}
-
-			// Repeate process
-			fillSymbols(nodeToAnalyse, scope);
-		}
-	}
-
 	private void addToCalls(SimpleNode nodeToAdd) {
 		ArrayList<SimpleNode> nodesInScope = calls.get(currentScope);
 
@@ -133,46 +66,119 @@ public class SymbolTable {
 		calls.put(currentScope, nodesInScope);
 	}
 
+	/**
+	 * Adds all symbols to array.
+	 */
+	public void fillSymbols(SimpleNode node, String scope) {
+		currentScope = scope;
+		
+		// Goes through all the children
+		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+			
+			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
+
+			// Inside a new function, belongs to another scope
+			if (nodeToAnalyse.getType() == Utils.FUNCTION) {
+				scope = nodeToAnalyse.getValue();
+
+				// Create new symbol tree for this scope
+				ArrayList<SimpleNode> newNodesInScope = new ArrayList<>();
+				symbolTrees.put(scope, newNodesInScope);
+
+				// Function Name was already encountered before
+				if (Utils.contains(functions, nodeToAnalyse) != null) {
+					System.out.println("There are more than one function with name " + 
+					nodeToAnalyse.getValue() + ".");
+				} else
+					functions.add(nodeToAnalyse);
+
+			}
+			// If it is an operation, do a semantic analysis
+			else if (nodeToAnalyse.getType() == Utils.OP) { // Is operation
+				SimpleNode newNode = analyseOperation(nodeToAnalyse);
+				System.out.println("CARALHO " + newNode);
+				if (newNode != null)
+					push(newNode);
+				// No need to continue checking children, already analized
+				// return;
+			} 
+
+			else if (nodeToAnalyse.getType() == Utils.COND) {
+				analyseConditional(nodeToAnalyse);
+
+				// No need to continue checking children, already analized
+				//return;
+			} 
+			else if (nodeToAnalyse.getType() == Utils.CALL) {
+				// Encountered a call, will analyse later
+				addToCalls(nodeToAnalyse);
+
+				// No need to analyse children
+				//return;
+			} 
+			else if (nodeToAnalyse.getType() == Utils.VARLIST) {
+				ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
+
+				for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
+					SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
+					newNode.setInitialization(Utils.DEFIN_INIT);
+					nodesInScope.add(newNode);
+				}
+				symbolTrees.put(currentScope, nodesInScope);
+			} 
+
+			fillSymbols(nodeToAnalyse, scope);
+		}
+
+		// Repeate process
+	}
+
 	// Semantically analise operations
-	public void analyseOperation(SimpleNode node) {
+	public SimpleNode analyseOperation(SimpleNode node) {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
+
+		/*System.out.println("MainNode is " + node + " value " + node.getValue());
+		System.out.println("LeftNode is " + leftChild + " value " + leftChild.getValue());
+		System.out.println("RightNode is " + rightChild + " value " + rightChild.getValue());
+		System.out.println("Children are " + rightChild.jjtGetChild(0)); */
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
 			addToCalls(node);
-			return;
+			System.out.println("Entras aqui, não entras?");
+			return null;
 		}
 
 		// In case RHS has some hidden operations or calls
 		if (rightChild.getType() == Utils.OP
 				|| (rightChild.getType() == Utils.RHS && rightChild.jjtGetNumChildren() > 1)) {
 
-			String rightType = recursiveOperationAnalysis(rightChild);
+			SimpleNode rightRecursive = recursiveOperationAnalysis(rightChild);
 
-			if (rightType == Utils.WAS_CALLED) {
-				addToCalls(node);
-				return;
-			} // Error was detected in rhs, error was already reported
-			else if (rightType == null) {
-				return;
+			// Error was detected in rhs, error was already reported
+			if (rightRecursive == null) {
+
+				return null;
 			} // Incompatibility between lhs and rhs
-			else if (leftChild.getType() != rightType) {
+			else if (leftChild.getType() != rightRecursive.getType()) {
 				System.out.println("Semantical Error using variable " + leftChild.getValue() + ".");
-				System.out.println("Attempted operation with variables of type " + rightType + ".");
+				System.out.println("Attempted operation with variables of type " + rightRecursive.getType()
+				 + ".");
+				return null;
 			} // No problem was detected, adding to symbol table
 			else {
-				push(leftChild);
+				return leftChild;
 			}
 
 		}
 		// Direct check between two operatives
 		else
-			analyseTwoNodesOperation(leftChild, rightChild, false);
+			return analyseTwoNodesOperation(leftChild, rightChild, false);
 
 	}
 
-	private String recursiveOperationAnalysis(SimpleNode rightChild) {
+	private SimpleNode recursiveOperationAnalysis(SimpleNode rightChild) {
 		SimpleNode leftNode = (SimpleNode) rightChild.jjtGetChild(0);
 
 		// Operation-ception, or rhs with terms within
@@ -194,12 +200,19 @@ public class SymbolTable {
 	}
 
 	// Needs to be initialized is when the two variables are on rhs, they both need to be initialized
-	private String analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild, boolean needToBeInitialized) {
+	private SimpleNode analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild,
+			boolean needToBeInitialized) {
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 
 		SimpleNode previousRightNode = lookup(rightChild);
 		SimpleNode previousLeftNode = lookup(leftChild);
+
+		// If RightType is RHS
+		if (rightType == Utils.RHS) {
+			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
+			rightType = rightChild.getType();
+		}
 
 		// Is comparing against a number
 		if (rightType == Utils.NUMBER) {
@@ -207,7 +220,7 @@ public class SymbolTable {
 			if (leftType != Utils.ARRAY) {
 				leftChild.setInitialization(Utils.DEFIN_INIT);
 				leftChild.setType(Utils.SCALAR);
-				return Utils.SCALAR;
+				return null;
 			} else {
 				System.out.println(
 						"Semantic Error: Trying to do operation between number and " + leftChild.getValue() + ".");
@@ -241,16 +254,35 @@ public class SymbolTable {
 		} else { // Was not present, new initialization
 			leftChild.setType(rightChild.getType());
 			leftChild.setInitialization(Utils.DEFIN_INIT);
-			push(leftChild);
+			return leftChild;
 		}
 
-		return leftChild.getType();
+		return leftChild;
 	}
 
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
 		// Entered in if statement
-		HashMap<String, ArrayList<SimpleNode>> nodesScope;
-		Utils.dumpType("", nodeToAnalyse);
+		ArrayList<SimpleNode> nodesScope = new ArrayList<>();
+
+		SimpleNode elseNode = null;
+
+		// Check ExprTest variables 
+
+		// Analyse the rest of the if
+		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
+			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
+			if (child.getType().equals(Utils.OP)) {
+				System.out.println("Operation Node is " + child);
+				SimpleNode resultNode = analyseOperation(child);
+				System.out.println("RESULT NODE is " + resultNode);
+			}
+		}
+
+		// Has only if and no else, all variables initialized only MIGHT be initialized
+		if (elseNode == null) {
+
+		} // Has else, needs to comparte to previously declared statements in if
+
 	}
 
 	public void analyseCalls() {
@@ -278,7 +310,8 @@ public class SymbolTable {
 								(SimpleNode) entry.getValue().get(i).jjtGetChild(0));
 
 						if (leftNode == null)
-							leftNode = Utils.extractOfType(Utils.ARRAY, (SimpleNode) entry.getValue().get(i).jjtGetChild(0));
+							leftNode = Utils.extractOfType(Utils.ARRAY,
+									(SimpleNode) entry.getValue().get(i).jjtGetChild(0));
 
 						if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 							System.out.println("Semantic error : Mismatching types between " + leftNode.getValue()
