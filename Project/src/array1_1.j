@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 0
+.limit locals 1
 .limit stack 0
 iconst_2
 iconst_3
@@ -18,7 +18,7 @@ return
 
 
 .method public static f(II)I
-.limit locals 4
+.limit locals 3
 .limit stack 2
 iload_0
 iload_1
