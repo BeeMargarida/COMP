@@ -35,12 +35,11 @@ public class Parser {
 			if (!symbolTable.hasErrors()) {
 				System.out.println("\n\nCommencing Code Generation.\n\n");
 
-				Sampler sampler = new Sampler("array1_1.j");
+				Sampler sampler = new Sampler("code_generated.j");
 				Generator generator = new Generator(sampler, symbolTable);
 			
 				ASTModule rootModule = (ASTModule) root;
 				rootModule.generatorVisit(generator);
-				//root.visitChildren(generator);
 			}
 
 		} catch(FileNotFoundException e) {
