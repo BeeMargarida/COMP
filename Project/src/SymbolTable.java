@@ -81,49 +81,49 @@ public class SymbolTable {
 
 			if (nodeToAnalyse.getType() == Utils.COND) {
 				analyseConditional(nodeToAnalyse);
-			}
-			else {
+			} else {
 				// Inside a new function, belongs to another scope
 				if (nodeToAnalyse.getType() == Utils.FUNCTION) {
 					scope = nodeToAnalyse.getValue();
-	
+
 					// Create new symbol tree for this scope
 					ArrayList<SimpleNode> newNodesInScope = new ArrayList<>();
 					symbolTrees.put(scope, newNodesInScope);
-	
+
 					// Function Name was already encountered before
 					if (Utils.contains(functions, nodeToAnalyse) != null) {
-						System.out.println("There are more than one function with name " + nodeToAnalyse.getValue() + ".");
+						System.out.println(
+								"There are more than one function with name " + nodeToAnalyse.getValue() + ".");
 					} else
 						functions.add(nodeToAnalyse);
-	
+
 				}
 				// If it is an operation, do a semantic analysis
 				else if (nodeToAnalyse.getType() == Utils.OP) { // Is operation
 					SimpleNode newNode = analyseOperation(nodeToAnalyse);
-	
+
 					if (newNode != null)
 						push(newNode);
-	
-				}
-	
-				 else if (nodeToAnalyse.getType() == Utils.CALL) {
-				// Encountered a call, will analyse later
-				addToCalls(nodeToAnalyse);
-			} else if (nodeToAnalyse.getType() == Utils.VARLIST) {
-				ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
 
-				for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
-					SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-					newNode.setInitialization(Utils.DEFIN_INIT);
-					nodesInScope.add(newNode);
 				}
-				symbolTrees.put(currentScope, nodesInScope);
+
+				else if (nodeToAnalyse.getType() == Utils.CALL) {
+					// Encountered a call, will analyse later
+					addToCalls(nodeToAnalyse);
+				} else if (nodeToAnalyse.getType() == Utils.VARLIST) {
+					ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
+
+					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
+						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
+						newNode.setInitialization(Utils.DEFIN_INIT);
+						nodesInScope.add(newNode);
+					}
+					symbolTrees.put(currentScope, nodesInScope);
+				}
+
+				// Repeate process
+				fillSymbols(nodeToAnalyse, scope);
 			}
-
-			// Repeate process
-			fillSymbols(nodeToAnalyse, scope);
-		}
 		}
 	}
 
@@ -228,7 +228,7 @@ public class SymbolTable {
 				return null;
 			}
 		}
-		
+
 		/*
 		if (previousLeftNode != null)
 			System.out.println("Previous left " + previousLeftNode.getValue() + " init " + previousLeftNode.isInitialized());
@@ -298,7 +298,7 @@ public class SymbolTable {
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
 			if (child.getType().equals(Utils.OP)) {
 				SimpleNode resultNode = analyseOperation(child);
-				
+
 				resultNode.setInitialization(Utils.MAYBE_INIT);
 
 				SimpleNode previousNode = Utils.contains(nodesScope, resultNode);
@@ -312,8 +312,8 @@ public class SymbolTable {
 					} else {
 						nodesScope.add(resultNode);
 					}
-					
-				} else{
+
+				} else {
 					nodesScope.add(resultNode);
 				}
 			} else if (child.getType().equals(Utils.ELSE))
@@ -326,19 +326,20 @@ public class SymbolTable {
 
 		// Has else, needs to compare to previous statements
 		if (elseNode != null) {
+
 			// Check if children have previous
 			for (int i = 0; i < elseNode.jjtGetNumChildren(); i++) {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
-
+				
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
 					
-					SimpleNode previousNode = Utils.contains(nodesScope, child);
+					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 
 					// Was already the same node in scope
 					if (previousNode != null) {
 						// Was not the same type as previous declaration
-						if (!previousNode.getType().equals(child.getType())) {
+						if (!previousNode.getType().equals(resultNode.getType())) {
 							System.out.println("Semantic Error: Incompatible previous declaration of variable "
 									+ resultNode.getValue() + " was found.");
 							hasErrors = true;
@@ -348,8 +349,10 @@ public class SymbolTable {
 							nodesScope.add(previousNode);
 						}
 
-					} else
+					} else {
+						resultNode.setInitialization(Utils.MAYBE_INIT);
 						nodesScope.add(resultNode);
+					}
 				} else if (child.getType().equals(Utils.ELSE))
 					elseNode = child;
 				else
@@ -362,7 +365,7 @@ public class SymbolTable {
 		/*for (int i = 0 ; i < mergedNodesInScope.size() ; i++) {
 			System.out.println("Final node " + mergedNodesInScope.get(i) + " is init " + mergedNodesInScope.get(i).isInitialized());
 		} */
-		
+
 		symbolTrees.replace(currentScope, mergedNodesInScope);
 	}
 

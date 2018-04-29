@@ -4,6 +4,8 @@ module aval2
 function c=f(a, b) {
     if(a == b) {
         e = 2;    
+    } else {
+        e = 1;
     }
 
     d=e;
