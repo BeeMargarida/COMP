@@ -2,8 +2,11 @@
 .super java/lang/Object
 
 .method public static f(II)I
-.limit locals 3
+.limit locals 5
 .limit stack 2
+null
+istore_2
+
 iload_-1
 null
 istore_2

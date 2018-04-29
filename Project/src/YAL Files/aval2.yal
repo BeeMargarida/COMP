@@ -2,10 +2,11 @@ module aval2
 {
 
 function c=f(a, b) {
+    d = [20];
     if(a == b) {
         e = 2;    
     } else {
-        e = 1;
+        e = d;
     }
 
     d=e;

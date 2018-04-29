@@ -336,6 +336,10 @@ public class SymbolTable {
 					
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 
+					if (previousNode == null) {
+						previousNode = lookup(resultNode);
+					}
+
 					// Was already the same node in scope
 					if (previousNode != null) {
 						// Was not the same type as previous declaration
