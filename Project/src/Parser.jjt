@@ -333,7 +333,7 @@ void Rhs() : {Token t; String tmp;} {
 	try {
 	(
 		(
-		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP >) Term() 
+		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP > | t=<RELA_OP>) Term() 
 			{jjtThis.setType(Utils.OP); jjtThis.value = t.image;})?
 		) 
 		|
@@ -364,8 +364,8 @@ void Rhs() : {Token t; String tmp;} {
 */
 void Term(): {Token t;} {
 	try {
-		( t=<ADDSUB_OP> 
-			{jjtThis.operator=t.image;} )? 
+		( (t=<ADDSUB_OP> | t=<RELA_OP> )
+			{System.out.println("Rip " + t.image); jjtThis.operator=t.image;} )? 
 
 		( (t=<INTEGER> {jjtThis.setType(Utils.NUMBER); jjtThis.value = t.image;}) 
 			|

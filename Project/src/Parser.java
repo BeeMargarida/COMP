@@ -691,11 +691,13 @@ if (jjtc000) {
     try {
       try {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case RELA_OP:
         case ADDSUB_OP:
         case INTEGER:
         case ID:{
           Term();
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+          case RELA_OP:
           case ADDSUB_OP:
           case ARITH_OP:
           case BITWISE_OP:{
@@ -710,6 +712,10 @@ if (jjtc000) {
               }
             case ADDSUB_OP:{
               t = jj_consume_token(ADDSUB_OP);
+              break;
+              }
+            case RELA_OP:{
+              t = jj_consume_token(RELA_OP);
               break;
               }
             default:
@@ -771,13 +777,27 @@ if (jjtc000) {
     try {
       try {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case RELA_OP:
         case ADDSUB_OP:{
-          t = jj_consume_token(ADDSUB_OP);
-jjtn000.operator=t.image;
+          switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+          case ADDSUB_OP:{
+            t = jj_consume_token(ADDSUB_OP);
+            break;
+            }
+          case RELA_OP:{
+            t = jj_consume_token(RELA_OP);
+            break;
+            }
+          default:
+            jj_la1[21] = jj_gen;
+            jj_consume_token(-1);
+            throw new ParseException();
+          }
+System.out.println("Rip " + t.image); jjtn000.operator=t.image;
           break;
           }
         default:
-          jj_la1[21] = jj_gen;
+          jj_la1[22] = jj_gen;
           ;
         }
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -794,7 +814,7 @@ jjtn000.setType(Utils.NUMBER); jjtn000.value = t.image;
             break;
             }
           default:
-            jj_la1[22] = jj_gen;
+            jj_la1[23] = jj_gen;
             if (jj_2_2(2)) {
               Call(t);
             } else {
@@ -804,7 +824,7 @@ jjtn000.setType(Utils.NUMBER); jjtn000.value = t.image;
           break;
           }
         default:
-          jj_la1[23] = jj_gen;
+          jj_la1[24] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -902,7 +922,7 @@ if (jjtc000) {
             break;
             }
           default:
-            jj_la1[24] = jj_gen;
+            jj_la1[25] = jj_gen;
             break label_5;
           }
           jj_consume_token(VIRG);
@@ -956,7 +976,7 @@ if (jjtc000) {
         break;
         }
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[26] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -984,7 +1004,7 @@ if (jjtc000) {
       break;
       }
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[27] = jj_gen;
       ScalarAccess(tmp);
     }
 }
@@ -1076,7 +1096,7 @@ jjtn000.size = size.image;
         break;
         }
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[28] = jj_gen;
         ;
       }
     } finally {
@@ -1101,7 +1121,7 @@ if (jjtc000) {
       break;
       }
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[29] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -1123,7 +1143,7 @@ jjtn000.content = null; jjtn000.setType(Utils.ARRAY);
         break;
         }
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[30] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -1305,7 +1325,7 @@ try {Token t;
   static private Token jj_scanpos, jj_lastpos;
   static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[30];
+  static final private int[] jj_la1 = new int[31];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1313,10 +1333,10 @@ try {Token t;
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x10000000,0x1000000,0x0,0x8000,0x0,0x100,0x8000100,0x8000,0x80000,0x10000000,0x10003000,0x208000,0x10003000,0x200000,0x98000000,0x4000,0x0,0x0,0x700,0x700,0x18000100,0x100,0x0,0x18000000,0x80000,0x98000000,0x8000000,0x200000,0x18000000,0x0,};
+	   jj_la1_0 = new int[] {0x10000000,0x1000000,0x0,0x8000,0x0,0x100,0x8000100,0x8000,0x80000,0x10000000,0x10003000,0x208000,0x10003000,0x200000,0x98000000,0x4000,0x0,0x0,0x780,0x780,0x18000180,0x180,0x180,0x0,0x18000000,0x80000,0x98000000,0x8000000,0x200000,0x18000000,0x0,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x0,0x1,0x1,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x1,};
+	   jj_la1_1 = new int[] {0x0,0x0,0x1,0x1,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x1,0x0,0x0,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x1,};
 	}
   static final private JJCalls[] jj_2_rtns = new JJCalls[2];
   static private boolean jj_rescan = false;
@@ -1340,7 +1360,7 @@ try {Token t;
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1356,7 +1376,7 @@ try {Token t;
 	 jj_ntk = -1;
 	 jjtree.reset();
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1374,7 +1394,7 @@ try {Token t;
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1394,7 +1414,7 @@ try {Token t;
 	 jj_ntk = -1;
 	 jjtree.reset();
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1411,7 +1431,7 @@ try {Token t;
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1422,7 +1442,7 @@ try {Token t;
 	 jj_ntk = -1;
 	 jjtree.reset();
 	 jj_gen = 0;
-	 for (int i = 0; i < 30; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 31; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1553,7 +1573,7 @@ try {Token t;
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 30; i++) {
+	 for (int i = 0; i < 31; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {

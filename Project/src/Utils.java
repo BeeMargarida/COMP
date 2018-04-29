@@ -15,6 +15,7 @@ public class Utils {
 	public static String ELSE = "Else";
 	public static String ARRAY_INST = "Array Instantion"; // for [20]
 	public static String ARRAY_INST_SCALAR = "Array Instantion Scalar"; // for [d]
+	public static String SIZE = "Size";
 	
 	public static String WAS_CALLED = "WasCalled";
 

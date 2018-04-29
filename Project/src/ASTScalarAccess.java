@@ -14,12 +14,13 @@ class ASTScalarAccess extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    if (size != null)
-      value = content + "." + size;
-    else
-      value = content;
+    value = content;
+    if (size != null) {
+      type = Utils.SIZE;
+      return prefix + content + "." + size;
+    }
     
-    return prefix + value;
+    return prefix + content;
   }
 
 }

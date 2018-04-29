@@ -1,16 +1,10 @@
 module aval2
 {
 
-function c=f(a, b) {
-    d = [20];
-
-    if(a == b) {
-        e = 2;    
-    } else {
-        e = d;
-    }
-
-    d=e;
+function f(a, b) {
+    e = [20];
+    f = [20];
+    d = e < f;
 }
 
 }
