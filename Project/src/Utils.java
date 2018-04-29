@@ -106,7 +106,7 @@ public class Utils {
 		return nodeExtracted;
 	}
 
-	public ArrayList<SimpleNode> mergeArrays(ArrayList<SimpleNode> old, ArrayList<SimpleNode> newArray) {
+	public static ArrayList<SimpleNode> mergeArrays(ArrayList<SimpleNode> old, ArrayList<SimpleNode> newArray) {
 		for (int i = 0 ; i < old.size() ; i++) {
 			if (Utils.contains(newArray, old.get(i)) == null) {
 				newArray.add(old.get(i));

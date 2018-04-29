@@ -3,7 +3,7 @@ module aval2
 
 function c=f(a, b) {
     if(a == b) {
-		  e = 2;    
+        e = 2;    
     }
 
     d=e;
