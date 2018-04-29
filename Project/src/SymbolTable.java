@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.lang.model.type.NullType;
+
 public class SymbolTable {
 
 	private String currentScope;
@@ -149,15 +151,7 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
-		
-		/*
-				System.out.println("LeftNode is " + leftChild + " value " + leftChild.getValue());
-				System.out.println("RightNode is " + rightChild + " value " + rightChild.getValue());
-				System.out.println("Children are " + rightChild.jjtGetChild(0) + 
-					" type " + ((SimpleNode) rightChild.jjtGetChild(0)).getType()); 
-		*/
-
-		// SIZE semantic check
+		// .size semantic check
 		if (leftChild.getType().equals(Utils.SIZE)) {
 			hasErrors = true;
 			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
@@ -224,9 +218,9 @@ public class SymbolTable {
 		if (leftNode.getType() == Utils.OP) {
 			return recursiveOperationAnalysis(leftNode);
 		} else { 
+			
 			// Two different singular nodes, may be scalar or not
 			// If type is term, inside it may contain scalar or array
-
 			if (leftNode.getType() == Utils.TERM)
 				leftNode = (SimpleNode) leftNode.jjtGetChild(0);
 
@@ -252,11 +246,12 @@ public class SymbolTable {
 
 	}
 
-	// Needs to be initialized is when the two variables are on rhs, they both need to be initialized
+	/**
+	 * Compares between two nodes. Needs to know the operation and whether the left needs to be initialized
+	 * for semantic checks.
+	 */
 	private SimpleNode analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild,
 			boolean needToBeInitialized, SimpleNode operation) {
-
-		
 
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
@@ -364,29 +359,28 @@ public class SymbolTable {
 	 * Analyse conditional structures
 	 */
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
-		// Entered in if statement
+		// Nodes in new scope
 		ArrayList<SimpleNode> nodesScope = new ArrayList<>();
 
 		SimpleNode elseNode = null;
 
-		// Check ExprTest variables 
-
-		// Analyse the rest of the if
+		// Analyse all the nodes inside the if
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
+
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
+
+			// If there are operations inside if
 			if (child.getType().equals(Utils.OP)) {
-				System.out.println("analyse conditional if");
 				SimpleNode resultNode = analyseOperation(child);
 
-				resultNode.setInitialization(Utils.MAYBE_INIT);
-
+				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.contains(nodesScope, resultNode);
 
 				if (previousNode == null) {
 					previousNode = lookup(resultNode);
 				}
 
-				// Was already the same node in scope
+				// Had a node in scope
 				if (previousNode != null) {
 
 					// Was not the same type as previous declaration
@@ -398,12 +392,14 @@ public class SymbolTable {
 						nodesScope.add(resultNode);
 					}
 
-				} else {
+				} else { // Had no node in scope, can add safely
 					nodesScope.add(resultNode);
 				}
-			} else if (child.getType().equals(Utils.ELSE))
+			}  // Had else, need to analyse that next
+			else if (child.getType().equals(Utils.ELSE))
 				elseNode = child;
 			else if (child.getType().equals(Utils.CALL)) {
+				// To maybe change in the future, does not check if initialization is correct with calls within if
 				child.setInitialization(Utils.MAYBE_INIT);
 				nodesScope.add(child);
 			}
@@ -412,12 +408,10 @@ public class SymbolTable {
 		// Has else, needs to compare to previous statements
 		if (elseNode != null) {
 
-			// Check if children have previous
 			for (int i = 0; i < elseNode.jjtGetNumChildren(); i++) {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
 
 				if (child.getType().equals(Utils.OP)) {
-					System.out.println("conditionals");
 					SimpleNode resultNode = analyseOperation(child);
 
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
@@ -429,8 +423,6 @@ public class SymbolTable {
 							nodesScope.add(resultNode);
 						}
 					}
-
-					//System.out.println("Previous node in else is " + previousNode.getValue());
 
 					// Was already the same node in scope
 					if (previousNode != null) {
@@ -454,24 +446,20 @@ public class SymbolTable {
 			}
 		}
 
+		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
-
-		/*for (int i = 0 ; i < mergedNodesInScope.size() ; i++) {
-			System.out.println("Final node " + mergedNodesInScope.get(i) + " is init " + mergedNodesInScope.get(i).isInitialized());
-		} */
 
 		symbolTrees.replace(currentScope, mergedNodesInScope);
 	}
 
+	/**
+	 * Analyse calls, do all semantic checks after all the function in the module were read
+	 */
 	public void analyseCalls() {
-		//System.out.println("All symbols, check number " + symbolTrees);
-
-		// Only called after symbol table is complete
 		Map<String, ArrayList<SimpleNode>> map = calls;
 
 		for (Map.Entry<String, ArrayList<SimpleNode>> entry : map.entrySet()) {
-			System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-
+			
 			// Calls include assigns and operations, to check if functions' return value 
 			//is of the same type
 			for (int i = 0; i < entry.getValue().size(); i++) {
@@ -487,6 +475,8 @@ public class SymbolTable {
 				} else {
 					// Call is correct, checking types
 					if (entry.getValue().get(i).getType().equals(Utils.OP)) {
+						// Had operation in call
+
 						SimpleNode leftNode = Utils.extractOfType(Utils.SCALAR,
 								(SimpleNode) entry.getValue().get(i).jjtGetChild(0));
 
@@ -494,6 +484,13 @@ public class SymbolTable {
 							leftNode = Utils.extractOfType(Utils.ARRAY,
 									(SimpleNode) entry.getValue().get(i).jjtGetChild(0));
 
+						// Check previous declarations of node
+						SimpleNode previousLeftNode = Utils.containsValue(entry.getValue(), leftNode);
+						
+						if (previousLeftNode != null)
+							leftNode = previousLeftNode;
+
+						// Semantic check of return type
 						if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 							hasErrors = true;
 							System.out.println("Semantic Error : Mismatching types between " + leftNode.getValue()
@@ -518,10 +515,6 @@ public class SymbolTable {
 
 				}
 
-			}
-
-			for (int i = 0; i < functions.size(); i++) {
-				System.out.println("Function " + functions.get(i).getValue());
 			}
 		}
 	}
