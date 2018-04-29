@@ -32,25 +32,37 @@ public class SymbolTable {
 	}
 
 	public void push(SimpleNode nodeToAdd) {
+		SimpleNode previousNode;
+
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
-			declarations.add(nodeToAdd);
-			return;
+			previousNode = Utils.containsValue(declarations, nodeToAdd);
+			if (previousNode != null) {
+				if (!previousNode.getType().equals(nodeToAdd.getType())) {
+					System.out.println("Semantic Error : Previous declaration of the variable " + previousNode.getValue()
+						+ " with a different type was found.");
+				}
+				
+			} else {
+				declarations.add(nodeToAdd);
+				
+			}
 		}
 		// Check if there is no element associated to current scope
-		else if (!symbolTrees.containsKey(currentScope)) {
-			ArrayList<SimpleNode> newSymbolTree = new ArrayList<>();
-
-			newSymbolTree.add(nodeToAdd);
-
-			symbolTrees.put(currentScope, newSymbolTree);
-		} else {
+		else {
 			// There were already elements in scope, check if element was aready declared
 			ArrayList<SimpleNode> scopeTree = symbolTrees.get(currentScope);
-
-			scopeTree.add(nodeToAdd);
-
-			symbolTrees.put(currentScope, scopeTree);
+			previousNode = Utils.containsValue(scopeTree, nodeToAdd);
+			if (previousNode != null) {
+				if (!previousNode.getType().equals(nodeToAdd.getType())) {
+					System.out.println("Semantic Error : Previous statement with the variable " + previousNode.getValue()
+						+ " with a different type was found.");
+				}
+			}
+			else {
+				scopeTree.add(nodeToAdd);
+				symbolTrees.put(currentScope, scopeTree);
+			}
 		}
 
 	}
@@ -131,16 +143,26 @@ public class SymbolTable {
 	public SimpleNode analyseOperation(SimpleNode node) {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
-
-		/*System.out.println("MainNode is " + node + " value " + node.getValue());
+/*
+		System.out.println("MainNode is " + node + " value " + node.getValue());
 		System.out.println("LeftNode is " + leftChild + " value " + leftChild.getValue());
 		System.out.println("RightNode is " + rightChild + " value " + rightChild.getValue());
-		System.out.println("Children are " + rightChild.jjtGetChild(0)); */
-
+		System.out.println("Children are " + rightChild.jjtGetChild(0) + 
+			" type " + ((SimpleNode) rightChild.jjtGetChild(0)).getType()); 
+*/
+			
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
 			addToCalls(node);
 			return null;
+		}
+
+		if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
+			if (leftChild.isInitialized() == Utils.NOT_INIT) {
+				leftChild.setType(Utils.ARRAY);
+				push(leftChild);
+				return leftChild;
+			}
 		}
 
 		// In case RHS has some hidden operations or calls
@@ -302,6 +324,11 @@ public class SymbolTable {
 				resultNode.setInitialization(Utils.MAYBE_INIT);
 
 				SimpleNode previousNode = Utils.contains(nodesScope, resultNode);
+
+				if (previousNode == null) {
+					previousNode = lookup(resultNode);
+				}
+
 				// Was already the same node in scope
 				if (previousNode != null) {
 					// Was not the same type as previous declaration
@@ -330,15 +357,21 @@ public class SymbolTable {
 			// Check if children have previous
 			for (int i = 0; i < elseNode.jjtGetNumChildren(); i++) {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
-				
+
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
-					
+
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 
-					if (previousNode == null) {
-						previousNode = lookup(resultNode);
+					// Was nowhere to be found
+					if (previousNode == null && lookup(resultNode) == null) {
+						if (resultNode != null) {
+							resultNode.setInitialization(Utils.MAYBE_INIT);
+							nodesScope.add(resultNode);
+						}
 					}
+
+					//System.out.println("Previous node in else is " + previousNode.getValue());
 
 					// Was already the same node in scope
 					if (previousNode != null) {
@@ -353,12 +386,9 @@ public class SymbolTable {
 							nodesScope.add(previousNode);
 						}
 
-					} else {
-						resultNode.setInitialization(Utils.MAYBE_INIT);
-						nodesScope.add(resultNode);
-					}
-				} else if (child.getType().equals(Utils.ELSE))
-					elseNode = child;
+					} 
+
+				} 
 				else
 					push(child);
 			}

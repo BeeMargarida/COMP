@@ -7,6 +7,9 @@
 null
 istore_2
 
+null
+istore_2
+
 iload_-1
 null
 istore_2

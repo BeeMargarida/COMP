@@ -6,7 +6,7 @@ class ASTArrayInstantion extends SimpleNode {
   
   public ASTArrayInstantion(int id) {
     super(id);
-    type = Utils.ARRAY;
+    type = Utils.ARRAY_INST;
   }
 
   public ASTArrayInstantion(Parser p, int id) {
@@ -16,8 +16,6 @@ class ASTArrayInstantion extends SimpleNode {
   public String toString(String prefix) {
     try  {
         Integer.parseInt(size);
-        this.isInitialized = Utils.DEFIN_INIT;
-        this.type = Utils.NUMBER;
     } catch (NumberFormatException ex)  {
 
     }

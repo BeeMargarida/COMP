@@ -13,6 +13,7 @@ public class Utils {
 	public static String RHS = "Rhs";
 	public static String COND = "Conditional";
 	public static String ELSE = "Else";
+	public static String ARRAY_INST = "Else";
 	
 	public static String WAS_CALLED = "WasCalled";
 
@@ -39,7 +40,7 @@ public class Utils {
 
 	// Made to Extract node that contains a specific value
 	public static SimpleNode containsValue(ArrayList<SimpleNode> array, SimpleNode node) {
-		if (array != null) {
+		if (array != null && node != null) {
 			for (int i = 0; i < array.size(); i++) {
 				if (array.get(i).getValue().equals(node.getValue())) {
 					return array.get(i);
