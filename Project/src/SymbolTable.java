@@ -202,12 +202,15 @@ public class SymbolTable {
 				return null;
 			} 
 			
-			else 
-				return analyseTwoNodesOperation(leftChild, rightRecursive, false, rightChild);
+			else {
+				return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
+			}
 		}
 		// Direct check between two operatives
-		else 
+		else {
 			return analyseTwoNodesOperation(leftChild, rightChild, false, null);
+
+		}
 
 	}
 
@@ -253,7 +256,8 @@ public class SymbolTable {
 	private SimpleNode analyseTwoNodesOperation(SimpleNode leftChild, SimpleNode rightChild,
 			boolean needToBeInitialized, SimpleNode operation) {
 
-		System.out.println("Operation is " + operation.getValue());
+		
+
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 
@@ -278,6 +282,16 @@ public class SymbolTable {
 		if (previousLeftNode != null) {
 			leftChild = previousLeftNode;
 			leftType = previousLeftNode.getType();
+		}
+
+		// In case of '<' or '>' comparison between arrays
+		if (leftType == Utils.ARRAY && rightType == Utils.ARRAY &&
+			(operation.getValue().equals("<") || operation.getValue().equals(">"))) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Imcompatible operation ('" + 
+					operation.getValue() + "') between two arrays, " + leftChild.getValue() +
+						" and " + rightChild.getValue() + ".");
+				return null;
 		}
 
 		// Is comparing against a number
