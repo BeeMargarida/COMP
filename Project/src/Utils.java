@@ -16,7 +16,7 @@ public class Utils {
 	public static String ARRAY_INST = "Array Instantion"; // for [20]
 	public static String ARRAY_INST_SCALAR = "Array Instantion Scalar"; // for [d]
 	public static String SIZE = "Size";
-	
+
 	public static String WAS_CALLED = "WasCalled";
 
 	public static int NOT_INIT = 0;
@@ -29,9 +29,9 @@ public class Utils {
 		if (array != null && node != null) {
 			for (int i = 0; i < array.size(); i++) {
 				if (array.get(i).getValue() != null)
-					if (array.get(i).getValue().equals(node.getValue()) && 
-					array.get(i).getType().equals(node.getType())) {
-					return array.get(i);
+					if (array.get(i).getValue().equals(node.getValue())
+							&& array.get(i).getType().equals(node.getType())) {
+						return array.get(i);
 					}
 
 			}
@@ -44,8 +44,10 @@ public class Utils {
 	public static SimpleNode containsValue(ArrayList<SimpleNode> array, SimpleNode node) {
 		if (array != null && node != null) {
 			for (int i = 0; i < array.size(); i++) {
-				if (array.get(i).getValue().equals(node.getValue())) {
-					return array.get(i);
+				if (array.get(i).getValue() != null) {
+					if (array.get(i).getValue().equals(node.getValue())) {
+						return array.get(i);
+					}
 				}
 
 			}
@@ -67,13 +69,10 @@ public class Utils {
 		return null;
 	}
 
-	
-
 	// Dumps to screen information about all nodes and subsequent children
 	public static void dumpType(String prefix, SimpleNode node) {
 		if (node.getType() != null)
-			System.out.println(prefix + "node " + node + " type " + node.getType() + " value " +
-				 node.getValue());
+			System.out.println(prefix + "node " + node + " type " + node.getType() + " value " + node.getValue());
 
 		if (node.jjtGetNumChildren() != 0) {
 			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
@@ -103,7 +102,7 @@ public class Utils {
 		}
 		return b;
 	}
-	
+
 	// Extracts node above
 	public static SimpleNode extractOfType(String value, SimpleNode node) {
 		SimpleNode nodeExtracted = null;
@@ -125,7 +124,7 @@ public class Utils {
 	}
 
 	public static ArrayList<SimpleNode> mergeArrays(ArrayList<SimpleNode> old, ArrayList<SimpleNode> newArray) {
-		for (int i = 0 ; i < old.size() ; i++) {
+		for (int i = 0; i < old.size(); i++) {
 			if (Utils.contains(newArray, old.get(i)) == null) {
 				newArray.add(old.get(i));
 			}

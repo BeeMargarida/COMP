@@ -1,21 +1,28 @@
-.class public aval2
+.class public aval1
 .super java/lang/Object
 
+.method public static main([Ljava/lang/String;)V
+.limit locals 1
+.limit stack 0
+iconst_2
+iconst_3
+invokestatic aval1/f(II)I
+
+istore_0
+
+return
+.end method
+
+
 .method public static f(II)I
-.limit locals 5
+.limit locals 3
 .limit stack 2
-null
+iload_0
+iload_1
+imul
 istore_2
 
-null
-istore_3
-
 iload_2
-iload_3
-null
-istore_4
-
-iload_-1
 ireturn
 .end method
 
