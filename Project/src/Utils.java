@@ -13,7 +13,8 @@ public class Utils {
 	public static String RHS = "Rhs";
 	public static String COND = "Conditional";
 	public static String ELSE = "Else";
-	public static String ARRAY_INST = "Else";
+	public static String ARRAY_INST = "Array Instantion"; // for [20]
+	public static String ARRAY_INST_SCALAR = "Array Instantion Scalar"; // for [d]
 	
 	public static String WAS_CALLED = "WasCalled";
 
@@ -51,6 +52,21 @@ public class Utils {
 
 		return null;
 	}
+
+	public static SimpleNode containsValueString(ArrayList<SimpleNode> array, String string) {
+		if (array != null) {
+			for (int i = 0; i < array.size(); i++) {
+				if (array.get(i).getValue().equals(string)) {
+					return array.get(i);
+				}
+
+			}
+		}
+
+		return null;
+	}
+
+	
 
 	// Dumps to screen information about all nodes and subsequent children
 	public static void dumpType(String prefix, SimpleNode node) {

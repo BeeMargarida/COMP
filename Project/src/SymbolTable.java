@@ -160,6 +160,16 @@ public class SymbolTable {
 		if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
 			if (leftChild.isInitialized() == Utils.NOT_INIT) {
 				leftChild.setType(Utils.ARRAY);
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				return leftChild;
+			}
+		} 
+		else if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
+			
+			if (leftChild.isInitialized() == Utils.NOT_INIT
+					 && Utils.containsValueString(symbolTrees.get(currentScope), leftChild.getValue()) != null) {
+				leftChild.setType(Utils.ARRAY);
+				leftChild.setInitialization(Utils.DEFIN_INIT);
 				push(leftChild);
 				return leftChild;
 			}
@@ -233,8 +243,18 @@ public class SymbolTable {
 			rightType = rightChild.getType();
 		}
 
-		SimpleNode previousRightNode = lookup(rightChild);
-		SimpleNode previousLeftNode = lookup(leftChild);
+		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+
+		if (previousRightNode != null) {
+			rightChild = previousRightNode;
+			rightType = previousRightNode.getType();
+		}
+		if (previousLeftNode != null) {
+			leftChild = previousLeftNode;
+			leftType = previousLeftNode.getType();
+		}
+
 
 		// Is comparing against a number
 		if (rightType == Utils.NUMBER) {
@@ -259,30 +279,32 @@ public class SymbolTable {
 		*/
 
 		// Right Hand Side variable was not initialized, semantic error
-		if ((previousRightNode == null || previousRightNode.isInitialized() == Utils.NOT_INIT)
-				&& rightType != Utils.NUMBER) {
+		if (rightChild.isInitialized() == Utils.NOT_INIT
+				&& rightChild.getType() != Utils.NUMBER) {
 			hasErrors = true;
 			System.out.println("Semantic Error : Variable " + rightChild.getValue() + " was not initialized.");
 			return null;
 		}
-		if ((previousRightNode == null || previousRightNode.isInitialized() == Utils.MAYBE_INIT)
+		else if (rightChild.isInitialized() == Utils.MAYBE_INIT
 				&& rightType != Utils.NUMBER) {
-			System.out.println("Semantic Warning : Variable " + rightChild.getValue() + " may not not initialized.");
+			System.out.println("Semantic Warning : Variable " + rightChild.getValue() + " may not be initialized.");
+		}
+		else if (rightChild.isInitialized() == Utils.INCOMPAT_INIT
+				&& rightType != Utils.NUMBER) {
+			System.out.println("Semantic Error : Variable "+rightChild.getValue()+" has incompatible previous declaration" +
+					" in previous 'if' structure.");
 			return null;
 		}
 
 		// Left node needs to be initialized
-		if ((previousLeftNode == null || previousLeftNode.isInitialized() == Utils.NOT_INIT) && needToBeInitialized) {
-
+		if ( leftChild.isInitialized() == Utils.NOT_INIT && needToBeInitialized) {
 			hasErrors = true;
 			System.out.println("Semantic Error : Variable " + leftChild.getValue() + " was not initialized.");
 			return null;
-		} else if ((previousLeftNode == null || previousLeftNode.isInitialized() == Utils.MAYBE_INIT)
-				&& needToBeInitialized) {
+		} else if (leftChild.isInitialized() == Utils.MAYBE_INIT && needToBeInitialized) {
 			System.out.println("Semantic Warning : Variable " + leftChild.getValue() + " was maybe not initialized.");
 			return leftChild;
-		} else if ((previousLeftNode == null || previousLeftNode.isInitialized() == Utils.INCOMPAT_INIT)
-				&& needToBeInitialized) {
+		} else if (leftChild.isInitialized() == Utils.INCOMPAT_INIT && needToBeInitialized) {
 			System.out.println(
 					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
 			return leftChild;
@@ -329,8 +351,10 @@ public class SymbolTable {
 					previousNode = lookup(resultNode);
 				}
 
+				
 				// Was already the same node in scope
 				if (previousNode != null) {
+					
 					// Was not the same type as previous declaration
 					if (!previousNode.getType().equals(resultNode.getType())) {
 						System.out.println("Semantic Error: Incompatible previous declaration of variable "
@@ -375,11 +399,15 @@ public class SymbolTable {
 
 					// Was already the same node in scope
 					if (previousNode != null) {
+
+						System.out.println("Result " + resultNode.getValue() + " type " + resultNode.getType());
+						System.out.println("Previous " + previousNode.getValue() + " type " + previousNode.getType());
+
 						// Was not the same type as previous declaration
 						if (!previousNode.getType().equals(resultNode.getType())) {
-							System.out.println("Semantic Error: Incompatible previous declaration of variable "
-									+ resultNode.getValue() + " was found.");
-							hasErrors = true;
+							nodesScope.remove(previousNode);
+							previousNode.setInitialization(Utils.INCOMPAT_INIT);
+							nodesScope.add(previousNode);
 						} else {
 							nodesScope.remove(previousNode);
 							previousNode.setInitialization(Utils.DEFIN_INIT);
@@ -389,8 +417,9 @@ public class SymbolTable {
 					} 
 
 				} 
-				else
+				else {
 					push(child);
+				}
 			}
 		}
 
