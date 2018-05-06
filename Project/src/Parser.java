@@ -26,7 +26,6 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
 
                         System.out.println("Checking Calls.\n");
 
-                        symbolTable.analyseCalls();
                         if (!symbolTable.hasErrors()) {
                                 System.out.println("\n\nCommencing Code Generation.\n\n");
 
@@ -1256,6 +1255,12 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
+  static private boolean jj_3_1()
+ {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
   static private boolean jj_3R_9()
  {
     if (jj_3R_10()) return true;
@@ -1304,12 +1309,6 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1()
- {
-    if (jj_3R_6()) return true;
     return false;
   }
 

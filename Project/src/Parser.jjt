@@ -31,7 +31,6 @@ public class Parser {
 
 			System.out.println("Checking Calls.\n");
 			
-			symbolTable.analyseCalls();
 			if (!symbolTable.hasErrors()) {
 				System.out.println("\n\nCommencing Code Generation.\n\n");
 
