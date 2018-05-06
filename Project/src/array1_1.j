@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 0
 .limit stack 0
 iconst_2
 iconst_3

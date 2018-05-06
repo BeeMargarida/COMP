@@ -151,9 +151,10 @@ void Function(): {Token name;} {
  * Declaration, handling definitions and assignment of variables outside functions.
 */
 void Declaration(): {String declaration; Token tmp;} {
+	{jjtThis.setType(Utils.DECLARATION);}
 
 	try {	
-		tmp=<ID> (ArrayElement(tmp))?
+		tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -181,8 +182,6 @@ void VarList(): {String variables; Token tmp;} {
 		)? 
 
 		<RPAR>
-
-
 	} catch (ParseException e) {
 		System.out.println("Error on argument list variables or closing parenthesis.");
 		System.out.println("Specific Exception thrown: "+ e.toString());

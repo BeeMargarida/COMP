@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
-import javax.lang.model.type.NullType;
 
 public class SymbolTable {
 
@@ -35,6 +33,8 @@ public class SymbolTable {
 
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
+
+		System.out.println("Node to Add " + nodeToAdd + " value " + nodeToAdd.getValue());
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -89,55 +89,93 @@ public class SymbolTable {
 				// Function Name was already encountered before
 				if (Utils.contains(functions, nodeToAnalyse) != null) {
 					System.out.println("Semantic Error : " + "There are more than one function with name "
-					+ nodeToAnalyse.getValue() + ".");
-				} else
-				functions.add(nodeToAnalyse);
+						+ nodeToAnalyse.getValue() + ".");
+				}
+				else
+					functions.add(nodeToAnalyse);	
 				
 			}
+			else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
+				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
+
+					SimpleNode nodeToAdd = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
+					declarations.add(nodeToAdd);
+				} else { // Is scalar
+					nodeToAnalyse.setType(Utils.SCALAR);
+					declarations.add(nodeToAnalyse);
+				}
+			}
 			
+			/*
+					void Declaration(): {String declaration; Token tmp;} {
+		{jjtThis.setType(Utils.Declaration);}
+
+	try {	
+				tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
+			(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+			}
+		catch(ParseException e) {
+			System.out.println("Error on declaration, with Exception thrown " + e.toString());
+
+			error_skipto(PVIRG);
+		}
+	}
+			*/
 			System.out.println(functions);
 		}
 
 		for (int i = 0; i < functions.size(); i++) {
-			analyseFunctions(functions.get(i), "");
+			currentScope = functions.get(i).getValue();
+			analyseFunctions(functions.get(i));
 		}
 
 	}
 
-	private void analyseFunctions(SimpleNode node, String scope) {
-		currentScope = scope;
+	private void analyseFunctions(SimpleNode node) {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
-			// Encountered a call, will analyse later
-			if (nodeToAnalyse.getType() == Utils.CALL) {
-				analyseCalls(nodeToAnalyse);
-			}
-
+			
 			// If it is a conditional, analyse everything inside
-			else if (nodeToAnalyse.getType() == Utils.COND) {
+			if (nodeToAnalyse.getType() == Utils.COND) {
 				analyseConditional(nodeToAnalyse);
-			} else if (nodeToAnalyse.getType() == Utils.OP) {
-				// Is operation
-				SimpleNode newNode = analyseOperation(nodeToAnalyse);
-
-				// If it is something worth adding, add it
-				if (newNode != null)
-					push(newNode);
-			} else {
-				// If it is the function argument list, need to store that for check
-				if (nodeToAnalyse.getType() == Utils.VARLIST) {
-					ArrayList<SimpleNode> nodesInScope = symbolTrees.get(currentScope);
-
-					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
-						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-						newNode.setInitialization(Utils.DEFIN_INIT);
-						nodesInScope.add(newNode);
+			}
+			else {
+				if (nodeToAnalyse.getType() == Utils.CALL) {
+					SimpleNode newNode = analyseCalls(nodeToAnalyse);
+					if (newNode != null) {
+						symbolTrees.get(currentScope).add(newNode);
 					}
-					symbolTrees.put(currentScope, nodesInScope);
 				}
+				else if (nodeToAnalyse.getType() == Utils.OP) {
+				   // Is operation
+				   SimpleNode newNode = analyseOperation(nodeToAnalyse);
+   
+				   // If it is something worth adding, add it
+				   if (newNode != null) {
+					    if (newNode.getType().equals(Utils.ARRAY) || newNode.getType().equals(Utils.SCALAR))  {
+							System.out.println("wat " + newNode + " value " + newNode.getValue() + " analysing node " + nodeToAnalyse);
+					   		push(newNode);
+					   }
+				   }
+			   } else {
+				   // If it is the function argument list, need to store that for check
+				   if (nodeToAnalyse.getType() == Utils.VARLIST) {
+					     
+					   for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
+						   	SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
 
-				// Repeate process
-				analyseFunctions(nodeToAnalyse, scope);
+						   	System.out.println("Going through node " + newNode + " value " + newNode.getValue() + " type " + newNode.getType());
+							
+							newNode.setInitialization(Utils.DEFIN_INIT);
+						   	push(newNode);
+					   }
+					   //symbolTrees.put(currentScope, nodesInScope);
+				   }
+   
+				   // Repeate process
+			   }
+			   
+			   analyseFunctions(nodeToAnalyse);
 			}
 		}
 	}
@@ -176,7 +214,6 @@ public class SymbolTable {
 					&& Utils.containsValueString(symbolTrees.get(currentScope), leftChild.getValue()) != null) {
 				leftChild.setType(Utils.ARRAY);
 				leftChild.setInitialization(Utils.DEFIN_INIT);
-				push(leftChild);
 				return leftChild;
 			}
 		}

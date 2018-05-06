@@ -199,6 +199,7 @@ if (jjtc000) {
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String declaration; Token tmp;
     try {
+jjtn000.setType(Utils.DECLARATION);
       try {
         tmp = jj_consume_token(ID);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -210,6 +211,7 @@ if (jjtc000) {
           jj_la1[4] = jj_gen;
           ;
         }
+jjtn000.value = tmp.image;
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case ASSIGN:{
           jj_consume_token(ASSIGN);
@@ -1255,12 +1257,6 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_1()
- {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_9()
  {
     if (jj_3R_10()) return true;
@@ -1309,6 +1305,12 @@ try {Token t;
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1()
+ {
+    if (jj_3R_6()) return true;
     return false;
   }
 
