@@ -1,7 +1,15 @@
 module aval1 {
 
    function main() {
-	  r = f(2,3);
+    a = 1;
+    b = 2;
+    if (a > b) {
+      r = f(2,3);
+    } else {
+      r = [20];
+    }
+
+    r[0] = 1;
    }
 
    function a=f(b, c) {

@@ -68,9 +68,7 @@ public class SymbolTable {
 
 	}
 
-	/**
-	 * Adds all symbols to array.
-	 */
+
 	public void fillSymbols(SimpleNode node, String scope) {
 		currentScope = scope;
 
@@ -106,21 +104,6 @@ public class SymbolTable {
 				}
 			}
 			
-			/*
-					void Declaration(): {String declaration; Token tmp;} {
-		{jjtThis.setType(Utils.Declaration);}
-
-	try {	
-				tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
-			(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
-			}
-		catch(ParseException e) {
-			System.out.println("Error on declaration, with Exception thrown " + e.toString());
-
-			error_skipto(PVIRG);
-		}
-	}
-			*/
 			System.out.println(functions);
 		}
 
@@ -134,6 +117,8 @@ public class SymbolTable {
 	private void analyseFunctions(SimpleNode node) {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
+
+			System.out.println("Going through node " + nodeToAnalyse + " value " + nodeToAnalyse.getValue() + " type " + nodeToAnalyse.getType());
 			
 			// If it is a conditional, analyse everything inside
 			if (nodeToAnalyse.getType() == Utils.COND) {
@@ -153,10 +138,10 @@ public class SymbolTable {
 				   // If it is something worth adding, add it
 				   if (newNode != null) {
 					    if (newNode.getType().equals(Utils.ARRAY) || newNode.getType().equals(Utils.SCALAR))  {
-							System.out.println("wat " + newNode + " value " + newNode.getValue() + " analysing node " + nodeToAnalyse);
 					   		push(newNode);
 					   }
 				   }
+				   break;
 			   } else {
 				   // If it is the function argument list, need to store that for check
 				   if (nodeToAnalyse.getType() == Utils.VARLIST) {
@@ -164,7 +149,6 @@ public class SymbolTable {
 					   for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
 						   	SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
 
-						   	System.out.println("Going through node " + newNode + " value " + newNode.getValue() + " type " + newNode.getType());
 							
 							newNode.setInitialization(Utils.DEFIN_INIT);
 						   	push(newNode);
@@ -193,8 +177,9 @@ public class SymbolTable {
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
-			analyseCalls(node);
-			return null;
+			SimpleNode callNode = analyseCalls(node);
+
+			return callNode;
 		}
 
 		// Check for array instantiations
@@ -357,10 +342,10 @@ public class SymbolTable {
 			hasErrors = true;
 			System.out.println("Semantic Error : Variable " + leftChild.getValue() + " was not initialized.");
 			return null;
-		} else if (leftChild.isInitialized() == Utils.MAYBE_INIT && needToBeInitialized) {
+		} else if (leftChild.isInitialized() == Utils.MAYBE_INIT) {
 			System.out.println("Semantic Warning : Variable " + leftChild.getValue() + " was maybe not initialized.");
 			return leftChild;
-		} else if (leftChild.isInitialized() == Utils.INCOMPAT_INIT && needToBeInitialized) {
+		} else if (leftChild.isInitialized() == Utils.INCOMPAT_INIT) {
 			System.out.println(
 					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
 			return leftChild;
@@ -390,22 +375,24 @@ public class SymbolTable {
 	 */
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
 		// Nodes in new scope
+		System.out.println("Analysing Conditional");
+		
 		ArrayList<SimpleNode> nodesScope = new ArrayList<>();
-
+		
 		SimpleNode elseNode = null;
-
+		
 		// Analyse all the nodes inside the if
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
-
+			
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
-
+			
 			// If there are operations inside if
 			if (child.getType().equals(Utils.OP)) {
 				SimpleNode resultNode = analyseOperation(child);
-
+				
 				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.contains(nodesScope, resultNode);
-
+				
 				if (previousNode == null) {
 					previousNode = lookup(resultNode);
 				}
@@ -445,7 +432,10 @@ public class SymbolTable {
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
 
+					
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
+					
+					
 
 					// Was nowhere to be found
 					if (previousNode == null && lookup(resultNode) == null) {
@@ -471,16 +461,23 @@ public class SymbolTable {
 
 					}
 
-				} else {
-					push(child);
-				}
+				} 
 			}
 		}
 
+		System.out.println("Nodes in scope " + nodesScope.size());
+		for (int i = 0; i < nodesScope.size() ; i++) {
+			System.out.println("Var " + nodesScope.get(i).getValue() + " init " + nodesScope.get(i).isInitialized());
+		}
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
 
+		for (int i = 0; i < mergedNodesInScope.size() ; i++) {
+			System.out.println("VarMerged " + mergedNodesInScope.get(i).getValue() + " init " + mergedNodesInScope.get(i).isInitialized());
+		}
+
 		symbolTrees.replace(currentScope, mergedNodesInScope);
+		
 	}
 
 	/**
@@ -492,6 +489,8 @@ public class SymbolTable {
 		// Extract the real call hidden within possible assigns and operations
 		SimpleNode callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
 		SimpleNode function = Utils.containsValue(functions, callToBeAnalysed);
+
+		System.out.println("Analysing call " + nodeToAnalyse);
 
 		if (function == null) {
 			System.out

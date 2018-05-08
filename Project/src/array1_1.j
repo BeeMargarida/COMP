@@ -2,13 +2,16 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 0
+.limit locals 1
 .limit stack 0
-iconst_2
-iconst_3
-invokestatic aval1/f(II)I
-
+null
 istore_0
+
+null
+istore_1
+
+null
+istore_2
 
 return
 .end method
