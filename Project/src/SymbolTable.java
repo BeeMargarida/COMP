@@ -118,7 +118,7 @@ public class SymbolTable {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
 
-			System.out.println("Going through node " + nodeToAnalyse + " value " + nodeToAnalyse.getValue() + " type " + nodeToAnalyse.getType());
+			//System.out.println("Going through node " + nodeToAnalyse + " value " + nodeToAnalyse.getValue() + " type " + nodeToAnalyse.getType());
 			
 			// If it is a conditional, analyse everything inside
 			if (nodeToAnalyse.getType() == Utils.COND) {
@@ -141,7 +141,6 @@ public class SymbolTable {
 					   		push(newNode);
 					   }
 				   }
-				   break;
 			   } else {
 				   // If it is the function argument list, need to store that for check
 				   if (nodeToAnalyse.getType() == Utils.VARLIST) {
@@ -295,6 +294,7 @@ public class SymbolTable {
 			leftType = previousLeftNode.getType();
 		}
 
+
 		// In case of '<' or '>' comparison between arrays
 		if (leftType == Utils.ARRAY && rightType == Utils.ARRAY
 				&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
@@ -302,22 +302,6 @@ public class SymbolTable {
 			System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
 					+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
 			return null;
-		}
-
-		// Is comparing against a number
-		if (rightType == Utils.NUMBER) {
-			// Isn't array
-			if (leftType != Utils.ARRAY) {
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				leftChild.setType(Utils.SCALAR);
-				return leftChild;
-			} // Is definitely Array
-			else if (leftChild.isInitialized() == Utils.DEFIN_INIT && leftType == Utils.ARRAY) {
-				System.out.println("Semantic Error : Invalid comparison between array and number " + "with variable "
-						+ leftChild.getValue());
-				hasErrors = true;
-				return null;
-			}
 		}
 
 		// Right Hand Side variable was not initialized, semantic error
@@ -349,7 +333,21 @@ public class SymbolTable {
 			System.out.println(
 					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
 			return leftChild;
-		} // Was already declared
+		}  else	if (rightType == Utils.NUMBER) { // Is comparing against a number
+			// Isn't array
+			if (leftType != Utils.ARRAY) {
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				leftChild.setType(Utils.SCALAR);
+				return leftChild;
+			} // Is definitely Array
+			else if (leftChild.isInitialized() == Utils.DEFIN_INIT && leftType == Utils.ARRAY) {
+				System.out.println("Semantic Error : Invalid comparison between array and number " + "with variable "
+						+ leftChild.getValue());
+				hasErrors = true;
+				return null;
+			}
+		}		
+		// Was already declared
 		else if (leftChild != null) {
 			// If they are scalars or arrays
 			if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
@@ -375,8 +373,6 @@ public class SymbolTable {
 	 */
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
 		// Nodes in new scope
-		System.out.println("Analysing Conditional");
-		
 		ArrayList<SimpleNode> nodesScope = new ArrayList<>();
 		
 		SimpleNode elseNode = null;
@@ -386,7 +382,7 @@ public class SymbolTable {
 			
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
 			
-			// If there are operations inside if
+			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
 				SimpleNode resultNode = analyseOperation(child);
 				
@@ -425,7 +421,6 @@ public class SymbolTable {
 
 		// Has else, needs to compare to previous statements
 		if (elseNode != null) {
-
 			for (int i = 0; i < elseNode.jjtGetNumChildren(); i++) {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
 
@@ -465,16 +460,8 @@ public class SymbolTable {
 			}
 		}
 
-		System.out.println("Nodes in scope " + nodesScope.size());
-		for (int i = 0; i < nodesScope.size() ; i++) {
-			System.out.println("Var " + nodesScope.get(i).getValue() + " init " + nodesScope.get(i).isInitialized());
-		}
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
-
-		for (int i = 0; i < mergedNodesInScope.size() ; i++) {
-			System.out.println("VarMerged " + mergedNodesInScope.get(i).getValue() + " init " + mergedNodesInScope.get(i).isInitialized());
-		}
 
 		symbolTrees.replace(currentScope, mergedNodesInScope);
 		
