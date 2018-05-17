@@ -363,20 +363,7 @@ public class SymbolTable {
 			System.out.println(
 					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
 			return leftChild;
-		}  else	if (rightType == Utils.NUMBER) { // Is comparing against a number
-			// Isn't array
-			if (leftType != Utils.ARRAY) {
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				leftChild.setType(Utils.SCALAR);
-				return leftChild;
-			} // Is definitely Array
-			else if (leftChild.isInitialized() == Utils.DEFIN_INIT && leftType == Utils.ARRAY) {
-				System.out.println("Semantic Error : Invalid comparison between array and number " + "with variable "
-						+ leftChild.getValue());
-				hasErrors = true;
-				return null;
-			}
-		}		
+		} 
 		// Was already declared
 		else if (leftChild != null) {
 			// If they are scalars or arrays

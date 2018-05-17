@@ -15,8 +15,14 @@ iload_1
 imul
 istore_2
 
+null
+istore_3
 
-iload_-1
+null
+istore_3
+
+
+iload_2
 ireturn
 .end method
 
