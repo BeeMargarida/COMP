@@ -21,9 +21,9 @@ module array2
    i=0;
    while(i < N)
    {
-   	 a[i] = 1;
-	   i=i+1;
-	 }
+   	a[i] = 1;
+	i=i+1;
+	}
 
 	sum=sum_array(a);
  	io.println("sum of array elements = ",sum);

@@ -32,7 +32,7 @@ public class Parser {
 			System.out.println("Checking Calls.\n");
 			
 			symbolTable.analyseCalls();
-			if (!symbolTable.hasErrors()) {
+			//if (!symbolTable.hasErrors()) {
 				System.out.println("\n\nCommencing Code Generation.\n\n");
 
 				Sampler sampler = new Sampler("code_generated.j");
@@ -40,7 +40,7 @@ public class Parser {
 			
 				ASTModule rootModule = (ASTModule) root;
 				rootModule.generatorVisit(generator);
-			}
+			//}
 
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");

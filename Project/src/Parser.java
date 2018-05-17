@@ -26,7 +26,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                         System.out.println("Checking Calls.\u005cn");
 
                         symbolTable.analyseCalls();
-                        if (!symbolTable.hasErrors()) {
+                        //if (!symbolTable.hasErrors()) {
                                 System.out.println("\u005cn\u005cnCommencing Code Generation.\u005cn\u005cn");
 
                                 Sampler sampler = new Sampler("code_generated.j");
@@ -34,7 +34,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
 
                                 ASTModule rootModule = (ASTModule) root;
                                 rootModule.generatorVisit(generator);
-                        }
+                        //}
 
                 } catch(FileNotFoundException e) {
                         System.out.println("Exception found");

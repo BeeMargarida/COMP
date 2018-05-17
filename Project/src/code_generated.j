@@ -2,13 +2,16 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
-.limit stack 0
+null.limit locals 1
 iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
 istore_0
+
+iload_0
+invokestatic aval1/println(I)V
+
 
 return
 .end method
@@ -16,11 +19,11 @@ return
 
 .method public static f(II)I
 .limit locals 3
-.limit stack 2
 iload_0
 iload_1
 imul
 istore_2
+
 
 iload_2
 ireturn

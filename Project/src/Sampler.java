@@ -74,30 +74,56 @@ public class Sampler {
         println(".limit stack " + limit);
     }
 
-    public void printConst(String arg){
+    /*public void printConst(String arg){
         println("iconst_" + arg);
+    }*/
+
+    public String getConst(String arg){
+        return "iconst_" + arg;
     }
 
-    public void printLoad(int arg){
+    /*public void printLoad(int arg){
         println("iload_" + arg);
+    }*/
+
+    public String getLoad(int arg){
+        return "iload_"+arg;
     }
 
-    public void printStore(int arg){
+    /*public void printStore(int arg){
         println("istore_" + arg);
         println("");
+    }*/
+
+    public String getStore(int arg){
+        return "istore_"+arg+"\n";
     }
 
-    public void printOperator(String op) {
+    /*public void printOperator(String op) {
         println(arith.get(op));
+    }*/
+
+    public String getOperator(String op){
+        return "" + arith.get(op);
     }
 
-    public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
+    /*public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
         print("invokestatic " + moduleName+ "/" + functionName + "(");
         for(int i = 0; i < params.length; i++){
             print(params[i]);
         }   
         println(")" + returnType);
         println("");
+    }*/
+
+    public String getFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
+        String res = "";
+        res += "invokestatic " + moduleName+ "/" + functionName + "(";
+        for(int i = 0; i < params.length; i++){
+            res += params[i];
+        }   
+        res += ")" + returnType + "\n";
+        return res;
     }
 
     public void printVoidReturn() {
@@ -106,6 +132,10 @@ public class Sampler {
     
     public void printIntReturn(){
         println("ireturn");
+    }
+
+    public void printString(String function){
+        println(function);
     }
 
     public void functionEnd() {

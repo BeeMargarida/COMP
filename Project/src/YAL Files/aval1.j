@@ -8,7 +8,7 @@ iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
-istore_0
+istore_1
 
 iload_0
 invokestatic io/println(I)V

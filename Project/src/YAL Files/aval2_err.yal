@@ -4,9 +4,8 @@ module aval2_err
 function c=f(a, b) {
     if(a == b) {
          c = 2;
-    } else  c=3; 
-     // error 1
-}  
+    } else c=3; // error 1
+}
 
 function main1()
 {
