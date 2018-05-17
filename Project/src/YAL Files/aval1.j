@@ -10,7 +10,7 @@ invokestatic aval1/f(II)I
 
 istore_1
 
-iload_0
+iload_1
 invokestatic io/println(I)V
 
 return

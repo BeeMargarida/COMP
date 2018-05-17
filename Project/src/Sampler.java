@@ -82,9 +82,9 @@ public class Sampler {
         return "iconst_" + arg;
     }
 
-    /*public void printLoad(int arg){
+    public void printLoad(int arg){
         println("iload_" + arg);
-    }*/
+    }
 
     public String getLoad(int arg){
         return "iload_"+arg;

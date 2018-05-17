@@ -1,20 +1,8 @@
 module aval1 {
 
    function main() {
-<<<<<<< HEAD
-	 r=f(2,3);
-	 io.println(r); // print 6
-=======
-    a = 1;
-    b = 2;
-    if (a > b) {
-      r = f(2,3);
-    } else {
-      r = [20];
-    }
-
-    r[0] = 1;
->>>>>>> c51883bd8221b524159178424c92cefd2d527e03
+	  r=f(2,3);
+	  io.println(r); // print 6
    }
 
    function a=f(b, c) {

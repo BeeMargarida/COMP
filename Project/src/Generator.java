@@ -15,25 +15,24 @@ public class Generator {
     public Generator(Sampler sampler, SymbolTable table) {
         this.sampler = sampler;
         this.table = table;
+        this.function = "";
         stack = new HashMap<>();
         stackLimit = 0;
-    }  
+    }
 
     public Object visit(SimpleNode node) {
 
-        if(node.toString().equals("Module")){
+        if (node.toString().equals("Module")) {
             visit((ASTModule) node);
-        }
-        else if(node.toString().equals("Function")){
+        } else if (node.toString().equals("Function")) {
             visit((ASTFunction) node);
-        }
-        else if(node.toString().equals("Declaration")){
+        } else if (node.toString().equals("Declaration")) {
             visit((ASTDeclaration) node);
         }
         // TODO: Make Declarations
 
         return null;
-    
+
     }
 
     // Module Node
@@ -44,7 +43,7 @@ public class Generator {
         sampler.startModule(node.name);
 
         // visits Module nodes
-        for(int i = 0; i < node.jjtGetNumChildren(); i++){
+        for (int i = 0; i < node.jjtGetNumChildren(); i++) {
             SimpleNode n = (SimpleNode) node.jjtGetChild(i);
             n.generatorVisit(this);
         }
@@ -54,7 +53,7 @@ public class Generator {
         return null;
     }
 
-    public Object visit(ASTDeclaration node){
+    public Object visit(ASTDeclaration node) {
         return null;
     }
 
@@ -63,52 +62,53 @@ public class Generator {
 
         System.out.println("FUNCTION: " + node.getValue());
 
-        if(node.functionName.equals("main")){
+        if (node.functionName.equals("main")) {
             // if the function is the main one
             sampler.functionBegin(node.functionName, null);
-        }
-        else {
+
+            //ocupy first position of stack
+            ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
+            arr.add(null);
+            stack.put("main", arr);
+
+        } else {
             // If there is no Parameters (Var)
-            if(node.jjtGetChild(0).jjtGetNumChildren() == 0){
+            if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
                 sampler.functionBegin(node.functionName, null);
-            }
-            else {
+            } else {
                 // Get types of vars
-                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.functionName); 
+                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.functionName);
                 sampler.functionBegin(node.functionName, vars);
             }
         }
 
         // Print stack and locals values
         // TODO : GET STACK AND LOCAL LIMIT VALUES
-        
+
         int locals = table.getSymbolTrees().get(node.functionName).size();
-        //sampler.printLocalsLimit(locals);
+        // sampler.printLocalsLimit(locals);
         function += ".limit locals " + locals + "\n";
 
-
         // Checks the other children of the function
-        for(int i = 1; i < node.jjtGetNumChildren(); i++){
+        for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.functionName);
         }
 
-        //update .limit stack
+        // update .limit stack
         System.out.println("Stack limit: " + stackLimit);
         stackLimit = 0;
+        System.out.println(function);
         sampler.printString(function);
         function = "";
 
-
-        //prints return types
-        if(node.getReturnType().equals(Utils.VOID)){
+        // prints return types
+        if (node.getReturnType().equals(Utils.VOID)) {
             sampler.printVoidReturn();
-        }
-        else {
+        } else {
             int numStack = getFromStack(node.getReturnValue(), node.functionName);
             sampler.printLoad(numStack);
             sampler.printIntReturn();
         }
-        
 
         // prints yasmin Function endline
         sampler.functionEnd();
@@ -116,11 +116,10 @@ public class Generator {
         return null;
     }
 
-    public void checkFunctionChildren(SimpleNode node, String functionName){
-        if(node.toString().equals("Call")){
+    public void checkFunctionChildren(SimpleNode node, String functionName) {
+        if (node.toString().equals("Call")) {
             visit((ASTCall) node, functionName);
-        }
-        else if(node.toString().equals("Assign")){
+        } else if (node.toString().equals("Assign")) {
             visit((ASTAssign) node, functionName);
         }
     }
@@ -130,7 +129,7 @@ public class Generator {
         int numChildren = node.jjtGetNumChildren();
         String[] vars = new String[numChildren];
 
-        for(int i = 0; i < numChildren; i++){
+        for (int i = 0; i < numChildren; i++) {
             vars[i] = visit((ASTVar) node.jjtGetChild(i), functionName);
         }
         return vars;
@@ -138,13 +137,12 @@ public class Generator {
 
     // returns type of Var
     public String visit(ASTVar node, String functionName) {
-
-        if(stack.get(functionName) == null){
+        System.out.println("Function Name: " + functionName);
+        if (stack.get(functionName) == null) {
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
             arr.add(node);
             stack.put(functionName, arr);
-        }
-        else
+        } else
             stack.get(functionName).add(node);
 
         return node.getType();
@@ -157,42 +155,38 @@ public class Generator {
         String[] params = new String[varList.jjtGetNumChildren()];
 
         // Get parameters of the function called
-        for(int i = 0; i < varList.jjtGetNumChildren(); i++){
+        for (int i = 0; i < varList.jjtGetNumChildren(); i++) {
             ASTArgument arg = (ASTArgument) varList.jjtGetChild(i);
 
-            //checks type of parameters passed
+            // checks type of parameters passed
             boolean isInteger;
             try {
                 Integer.parseInt(arg.content);
                 isInteger = true;
-            }
-            catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 isInteger = false;
             }
 
             // check if parameter is integer or a variable
-            if(isInteger){
+            if (isInteger) {
                 // if parameter is a integer
                 params[i] = "I";
-                //sampler.printConst(arg.content);
+                // sampler.printConst(arg.content);
                 function += sampler.getConst(arg.content) + "\n";
-            }
-            else {
+            } else {
                 // go check the stack and do iload_<number> and its type
                 int numStack = getFromStack(arg.content, currentFunctionName);
-                if(numStack != -1){
+                if (numStack != -1) {
 
-                    //sampler.printLoad(numStack);
+                    // sampler.printLoad(numStack);
                     function += sampler.getLoad(numStack) + "\n";
 
                     // check type of parameters - TODO: Make this more readable
-                    if(stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)){
+                    if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
                         params[i] = "I";
-                    }
-                    else if(stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
+                    } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
                         params[i] = "[I";
-                }
-                else {
+                } else {
                     System.out.println("Not in stack");
                 }
             }
@@ -200,85 +194,81 @@ public class Generator {
 
         // go check the type of return of the function
         String returnType;
-        if(!node.getValue().equals("println")){
+        if (!node.getValue().equals("println")) {
             ASTFunction function = this.table.getFunction(node.getValue());
-            if(function == null){
+            if (function == null) {
                 System.out.println("Function doesn't exist");
                 return -1;
             }
-            
-            if(function.getReturnType().equals(Utils.VOID)){
+
+            if (function.getReturnType().equals(Utils.VOID)) {
                 returnType = "V";
-            }
-            else
+            } else
                 returnType = "I";
-        }
-        else {
+        } else {
             returnType = "V";
         }
-        
+
         // prints function invocation
-        //sampler.printFunctionInvocation(this.moduleName, node.getValue(), params, returnType);
-        System.out.println("FUNCTION CALL: "+ node.getValue());
-        function += sampler.getFunctionInvocation(this.moduleName, node.getValue(), params, returnType) 
-                    + "\n";
+        // sampler.printFunctionInvocation(this.moduleName, node.getValue(), params,
+        // returnType);
+        System.out.println("FUNCTION CALL: " + node.getValue());
+        function += sampler.getFunctionInvocation(this.moduleName, node.getValue(), params, returnType) + "\n";
 
         return null;
     }
 
     public Object visit(ASTAssign node, String functionName) {
-        
+
         boolean isCall = false;
 
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
-        
-        for(int i = 0; i < rhs.jjtGetNumChildren(); i++) {
+
+        for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
 
             SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
 
-            for(int a = 0; a < chil.jjtGetNumChildren(); a++) {
+            for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
 
-                SimpleNode term = (SimpleNode) chil.jjtGetChild(a); 
+                SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
                 // If RHS is a function call
-                if(term.toString().equals(Utils.CALL)){
+                if (term.toString().equals(Utils.CALL)) {
                     visit((ASTCall) chil.jjtGetChild(a), functionName);
                     isCall = true;
-                }
-                else if(term.toString().equals("ScalarAccess")){
-                    // Scalar or Array Access                  
+                } else if (term.toString().equals("ScalarAccess")) {
+                    // Scalar or Array Access
                     int numStack = getFromStack(term.getValue(), functionName);
 
                     // if numStack = -1, check the module variables -> TODO
 
-                    //sampler.printLoad(numStack);
+                    // sampler.printLoad(numStack);
                     function += sampler.getLoad(numStack) + "\n";
                 }
             }
         }
 
         // print operator
-        if(!isCall)
-            function += sampler.getOperator(rhs.getValue())+ "\n";
-            //sampler.printOperator(rhs.getValue());
+        if (!isCall)
+            function += sampler.getOperator(rhs.getValue()) + "\n";
+        // sampler.printOperator(rhs.getValue());
 
         // LHS
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
 
         // add to stack
-        if(stack.get(functionName) == null){
+        if (stack.get(functionName) == null) {
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
             arr.add(lhs);
             stack.put(functionName, arr);
-        }
-        else {
+        } else {
             stack.get(functionName).add(lhs);
         }
 
-        //print store of Lhs
-        int numStack = getFromStack(lhs.getValue(), functionName);        
-        //sampler.printStore(numStack);
+        // print store of Lhs
+        int numStack = getFromStack(lhs.getValue(), functionName);
+        // sampler.printStore(numStack);
         function += sampler.getStore(numStack) + "\n";
 
         return null;
@@ -287,13 +277,15 @@ public class Generator {
     // Gets the position of the variable in the stack
     public int getFromStack(String arg, String functionName) {
         ArrayList<SimpleNode> arr = stack.get(functionName);
-        for(int i = 0; i < arr.size(); i++){
-            if(arr.get(i).getValue().equals(arg)){
+
+        for (int i = 0; i < arr.size(); i++) {
+
+            if (arr.get(i) != null && arr.get(i).getValue().equals(arg)) {
                 return i;
             }
+
         }
         return -1;
     }
 
-    
 }

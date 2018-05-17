@@ -7,11 +7,10 @@ iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
-istore_0
+istore_1
 
-iload_0
+iload_1
 invokestatic aval1/println(I)V
-
 
 
 return
