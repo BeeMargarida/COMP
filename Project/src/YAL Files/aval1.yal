@@ -1,11 +1,14 @@
 module aval1 {
 
    function main(b,c) {
+        amodule aval1 {
+
+   function main(b,c) {
     a=f(b,c);
    }
 
    function a=f(b, c) {
-     a = b*c;
+     d=b*c;
    }
 
 }

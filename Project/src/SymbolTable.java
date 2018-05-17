@@ -108,14 +108,38 @@ public class SymbolTable {
 
 		for (int i = 0; i < functions.size(); i++) {
 			currentScope = functions.get(i).getValue();
+
+			boolean needsToBeInitializedAfterAnalysis = false;
+					
 			if (((ASTFunction) functions.get(i)).getReturnValue() != null) {
 				SimpleNode returnNode = new SimpleNode(0);
 				returnNode.setType(((ASTFunction) functions.get(i)).getReturnType());
 				returnNode.jjtSetValue(((ASTFunction) functions.get(i)).getReturnValue());
 
-				push(returnNode);
+				push(returnNode);				
+
+				needsToBeInitializedAfterAnalysis = true;
 			}
+			
 			analyseFunctions(functions.get(i));
+
+			if (needsToBeInitializedAfterAnalysis) {
+				String valueToAnalyse = ((ASTFunction) functions.get(i)).getReturnValue();
+				SimpleNode check = Utils.containsValueString(symbolTrees.get(currentScope), valueToAnalyse);
+
+				if (check != null) {
+					if (check.isInitialized() != Utils.DEFIN_INIT) {
+						System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
+						hasErrors = true;
+					}
+
+				}
+				else  {
+					System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
+					hasErrors = true;
+				}
+			}
+			
 		}
 
 	}
