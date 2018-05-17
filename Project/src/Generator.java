@@ -91,13 +91,13 @@ public class Generator {
 
         // Checks the other children of the function
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
+            System.out.println("\nFUNCTION CHILDREN: " + node.jjtGetChild(i).toString());
             checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.functionName);
         }
 
         // update .limit stack
         System.out.println("Stack limit: " + stackLimit);
         stackLimit = 0;
-        System.out.println(function);
         sampler.printString(function);
         function = "";
 
@@ -224,15 +224,17 @@ public class Generator {
 
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
-
+        
         for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
-
+            
             SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
+            System.out.println("RHS CHILD " + chil.toString());
 
             for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
 
                 SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
+                System.out.println("Term: " + term.toString());
                 // If RHS is a function call
                 if (term.toString().equals(Utils.CALL)) {
                     visit((ASTCall) chil.jjtGetChild(a), functionName);
@@ -245,6 +247,7 @@ public class Generator {
 
                     // sampler.printLoad(numStack);
                     function += sampler.getLoad(numStack) + "\n";
+
                 }
             }
         }
