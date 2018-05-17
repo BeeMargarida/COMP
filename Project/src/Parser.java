@@ -25,9 +25,14 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
 
                         System.out.println("Checking Calls.\u005cn");
 
+<<<<<<< HEAD
                         symbolTable.analyseCalls();
                         //if (!symbolTable.hasErrors()) {
                                 System.out.println("\u005cn\u005cnCommencing Code Generation.\u005cn\u005cn");
+=======
+                        if (!symbolTable.hasErrors()) {
+                                System.out.println("\n\nCommencing Code Generation.\n\n");
+>>>>>>> c51883bd8221b524159178424c92cefd2d527e03
 
                                 Sampler sampler = new Sampler("code_generated.j");
                                 Generator generator = new Generator(sampler, symbolTable);
@@ -197,6 +202,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String declaration; Token tmp;
     try {
+jjtn000.setType(Utils.DECLARATION);
       try {
         tmp = jj_consume_token(ID);
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -207,8 +213,14 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
           jj_la1[4] = jj_gen;
           ;
         }
+<<<<<<< HEAD
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ASSIGN:
+=======
+jjtn000.value = tmp.image;
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case ASSIGN:{
+>>>>>>> c51883bd8221b524159178424c92cefd2d527e03
           jj_consume_token(ASSIGN);
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case 32:
@@ -1236,12 +1248,22 @@ try {Token t;
     finally { jj_save(1, xla); }
   }
 
+<<<<<<< HEAD
   static private boolean jj_3_1() {
+=======
+  static private boolean jj_3_1()
+ {
+>>>>>>> c51883bd8221b524159178424c92cefd2d527e03
     if (jj_3R_6()) return true;
     return false;
   }
 
+<<<<<<< HEAD
   static private boolean jj_3R_9() {
+=======
+  static private boolean jj_3R_9()
+ {
+>>>>>>> c51883bd8221b524159178424c92cefd2d527e03
     if (jj_3R_10()) return true;
     return false;
   }

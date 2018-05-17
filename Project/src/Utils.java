@@ -16,7 +16,8 @@ public class Utils {
 	public static String ARRAY_INST = "Array Instantion"; // for [20]
 	public static String ARRAY_INST_SCALAR = "Array Instantion Scalar"; // for [d]
 	public static String SIZE = "Size";
-
+	public static String DECLARATION = "Declaration";
+	public static String ARRAY_ACCESS = "Array Access";
 	public static String WAS_CALLED = "WasCalled";
 
 	public static int NOT_INIT = 0;
@@ -33,7 +34,6 @@ public class Utils {
 							&& array.get(i).getType().equals(node.getType())) {
 						return array.get(i);
 					}
-
 			}
 		}
 

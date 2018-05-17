@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-null.limit locals 1
+.limit locals 1
 iconst_2
 iconst_3
 invokestatic aval1/f(II)I
@@ -11,6 +11,7 @@ istore_0
 
 iload_0
 invokestatic aval1/println(I)V
+
 
 
 return

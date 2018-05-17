@@ -31,8 +31,7 @@ public class Parser {
 
 			System.out.println("Checking Calls.\n");
 			
-			symbolTable.analyseCalls();
-			//if (!symbolTable.hasErrors()) {
+			if (!symbolTable.hasErrors()) {
 				System.out.println("\n\nCommencing Code Generation.\n\n");
 
 				Sampler sampler = new Sampler("code_generated.j");
@@ -40,7 +39,7 @@ public class Parser {
 			
 				ASTModule rootModule = (ASTModule) root;
 				rootModule.generatorVisit(generator);
-			//}
+			}
 
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");
@@ -151,9 +150,10 @@ void Function(): {Token name;} {
  * Declaration, handling definitions and assignment of variables outside functions.
 */
 void Declaration(): {String declaration; Token tmp;} {
+	{jjtThis.setType(Utils.DECLARATION);}
 
 	try {	
-		tmp=<ID> (ArrayElement(tmp))?
+		tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -181,8 +181,6 @@ void VarList(): {String variables; Token tmp;} {
 		)? 
 
 		<RPAR>
-
-
 	} catch (ParseException e) {
 		System.out.println("Error on argument list variables or closing parenthesis.");
 		System.out.println("Specific Exception thrown: "+ e.toString());
