@@ -34,7 +34,7 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 
-		System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue());
+		//System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue());
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -320,7 +320,8 @@ public class SymbolTable {
 		if (rightType == Utils.RHS) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
 			rightType = rightChild.getType();
-		} else if (rightType == Utils.TERM) {
+		} 
+		if (rightType == Utils.TERM) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
 			rightType = rightChild.getType();
 		}
@@ -337,10 +338,7 @@ public class SymbolTable {
 			leftChild = previousLeftNode;
 			leftType = previousLeftNode.getType();
 		}
-
-		System.out.println("Lefttype " + leftType + " rightType " + rightType + " value l " 
-			+ leftChild.getValue() + " value r " + rightChild.getValue());
-
+		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
@@ -351,6 +349,8 @@ public class SymbolTable {
 				return null;
 			}
 		}
+
+		
 
 		// Right Hand Side variable was not initialized, semantic error
 		if (rightChild.isInitialized() == Utils.NOT_INIT && rightChild.getType() != Utils.NUMBER) {
@@ -416,15 +416,15 @@ public class SymbolTable {
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
 			
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
-			System.out.println("Analysing conditional " + child.getValue() + " type "  + child.getType());
 			
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
 
 				SimpleNode resultNode = analyseOperation(child);
 				
+				System.out.println("ResultNode of if " + resultNode.getValue() + " type " + resultNode.getType());
 				// Check previous instanciations of resultNode
-				SimpleNode previousNode = Utils.contains(nodesScope, resultNode);
+				SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 				
 				if (previousNode == null) {
 					previousNode = lookup(resultNode);
@@ -463,7 +463,8 @@ public class SymbolTable {
 
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
-
+					
+					System.out.println("ResultNode of else " + resultNode.getValue() + " type " + resultNode.getType());
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 					
 					// Was nowhere to be found
@@ -476,7 +477,6 @@ public class SymbolTable {
 
 					// Was already the same node in scope
 					if (previousNode != null) {
-
 						// Was not the same type as previous declaration
 						if (!previousNode.getType().equals(resultNode.getType())) {
 							nodesScope.remove(previousNode);
@@ -491,11 +491,16 @@ public class SymbolTable {
 				} 
 			}
 		}
-
+		
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
-
 		symbolTrees.replace(currentScope, mergedNodesInScope);		
+
+		for (int i = 0; i< mergedNodesInScope.size() ; i++) {
+			System.out.println("Adicionei o previous node " + mergedNodesInScope.get(i).getType()
+							 + " value " + mergedNodesInScope.get(i).getValue() + 
+							 " init " + mergedNodesInScope.get(i).isInitialized());
+		}
 	}
 
 	/**
@@ -508,7 +513,7 @@ public class SymbolTable {
 		SimpleNode callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
 		SimpleNode function = Utils.containsValue(functions, callToBeAnalysed);
 
-		System.out.println("Analysing call " + nodeToAnalyse);
+		//System.out.println("Analysing call " + nodeToAnalyse);
 
 		if (function == null) {
 			System.out
@@ -543,12 +548,13 @@ public class SymbolTable {
 				}
 			}
 
+
 			// Checking argslist to see if the size and types are correct
 			if (callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
-				hasErrors = true;
 				System.out.println("Semantic Error : Mismatching number of arguments in call "
-						+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
-						+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
+					+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
+					+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
+				hasErrors = true;
 				return null;
 			}
 			return null;
