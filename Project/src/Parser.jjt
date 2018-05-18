@@ -150,10 +150,11 @@ void Function(): {Token name;} {
  * Declaration, handling definitions and assignment of variables outside functions.
 */
 void Declaration(): {String declaration; Token tmp;} {
-	{jjtThis.setType(Utils.DECLARATION);}
-
+	
 	try {	
-		tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
+		
+		tmp=<ID> {jjtThis.setType(Utils.SCALAR);}
+		 (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -334,7 +335,7 @@ void Rhs() : {Token t; String tmp;} {
 			{jjtThis.setType(Utils.OP); jjtThis.value = t.image;})?
 		) 
 		|
-		 ( ArrayInstantion() )
+		 ( ArrayInstantion() {jjtThis.setType(Utils.ARRAY);} )
 	)
 	 
 	/*

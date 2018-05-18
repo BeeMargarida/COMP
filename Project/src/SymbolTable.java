@@ -34,7 +34,7 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 
-		System.out.println("Node to Add " + nodeToAdd + " value " + nodeToAdd.getValue());
+		System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue());
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -132,7 +132,6 @@ public class SymbolTable {
 						System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
 						hasErrors = true;
 					}
-
 				}
 				else  {
 					System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
@@ -198,6 +197,14 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
+		SimpleNode previousLeftChild = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+		SimpleNode previousRightChild = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+
+		if (previousLeftChild != null)
+			leftChild = previousLeftChild;
+		if (previousRightChild != null)
+			rightChild = previousRightChild;
+
 		// .size semantic check
 		if (leftChild.getType().equals(Utils.SIZE)) {
 			hasErrors = true;
@@ -213,16 +220,23 @@ public class SymbolTable {
 
 		// Check for array instantiations
 		if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
-			if (leftChild.isInitialized() == Utils.NOT_INIT) {
+			if (leftChild.getType().equals(Utils.ARRAY)){
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				return leftChild;
+			} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
 				leftChild.setType(Utils.ARRAY);
 				leftChild.setInitialization(Utils.DEFIN_INIT);
 				return leftChild;
+			} else {
+				System.out.println("Semantic Error : Attempted to instantiate scalar variable " + 
+					leftChild.getValue());
+					hasErrors = true;
+					return null;
 			}
 		}
 
 		// Check for array instantiations, with a scalar for size
 		else if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
-
 			// Do lookup of scalar value
 			if (leftChild.isInitialized() == Utils.NOT_INIT
 					&& Utils.containsValueString(symbolTrees.get(currentScope), leftChild.getValue()) != null) {
@@ -324,14 +338,18 @@ public class SymbolTable {
 			leftType = previousLeftNode.getType();
 		}
 
+		System.out.println("Lefttype " + leftType + " rightType " + rightType + " value l " 
+			+ leftChild.getValue() + " value r " + rightChild.getValue());
 
-		// In case of '<' or '>' comparison between arrays
-		if (leftType == Utils.ARRAY && rightType == Utils.ARRAY
-				&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
-			hasErrors = true;
-			System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
-					+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
-			return null;
+		if (operation != null) {
+			// In case of '<' or '>' comparison between arrays
+			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
+					&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
+						+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
+				return null;
+			}
 		}
 
 		// Right Hand Side variable was not initialized, semantic error
@@ -398,9 +416,11 @@ public class SymbolTable {
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
 			
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
+			System.out.println("Analysing conditional " + child.getValue() + " type "  + child.getType());
 			
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
+
 				SimpleNode resultNode = analyseOperation(child);
 				
 				// Check previous instanciations of resultNode
@@ -444,11 +464,8 @@ public class SymbolTable {
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
 
-					
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 					
-					
-
 					// Was nowhere to be found
 					if (previousNode == null && lookup(resultNode) == null) {
 						if (resultNode != null) {
@@ -470,9 +487,7 @@ public class SymbolTable {
 							previousNode.setInitialization(Utils.DEFIN_INIT);
 							nodesScope.add(previousNode);
 						}
-
 					}
-
 				} 
 			}
 		}
@@ -480,8 +495,7 @@ public class SymbolTable {
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
 
-		symbolTrees.replace(currentScope, mergedNodesInScope);
-		
+		symbolTrees.replace(currentScope, mergedNodesInScope);		
 	}
 
 	/**
@@ -505,12 +519,12 @@ public class SymbolTable {
 			// Call is correct, checking types
 			if (nodeToAnalyse.getType().equals(Utils.OP)) {
 				// Had operation in call
-
+				
 				SimpleNode leftNode = Utils.extractOfType(Utils.SCALAR, (SimpleNode) nodeToAnalyse.jjtGetChild(0));
-
+				
 				if (leftNode == null)
 					leftNode = Utils.extractOfType(Utils.ARRAY, (SimpleNode) nodeToAnalyse.jjtGetChild(0));
-
+					
 				// Check previous declarations of node
 				SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftNode);
 
