@@ -22,7 +22,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                         System.out.println("\n\nCommencing Semantic Analysis.");
                         System.out.println("Checking Operations.\n");
 
-                        symbolTable.fillSymbols(root, "");
+                        symbolTable.fillSymbols(root);
 
                         System.out.println("Checking Calls.\n");
 

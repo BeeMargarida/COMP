@@ -32,7 +32,7 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 
-		System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue() + " scope " + currentScope);
+		//System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue() + " scope " + currentScope);
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -65,20 +65,20 @@ public class SymbolTable {
 
 	}
 
-	public void fillSymbols(SimpleNode node, String scope) {
-		currentScope = scope;
+	public void fillSymbols(SimpleNode node) {
+		currentScope = "";
 
 		// First passage to check functions
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
 
 			
-			if (nodeToAnalyse.getType() == Utils.FUNCTION) {
-				scope = nodeToAnalyse.getValue();
+			if (nodeToAnalyse.getType().equals(Utils.FUNCTION)) {
+				currentScope = nodeToAnalyse.getValue();
 				
 				// Create new symbol tree for this scope
 				ArrayList<SimpleNode> newNodesInScope = new ArrayList<>();
-				symbolTrees.put(scope, newNodesInScope);
+				symbolTrees.put(currentScope, newNodesInScope);
 				
 				// Function Name was already encountered before
 				if (Utils.contains(functions, nodeToAnalyse) != null) {
@@ -88,6 +88,17 @@ public class SymbolTable {
 				else
 					functions.add(nodeToAnalyse);	
 				
+
+				nodeToAnalyse = (SimpleNode) nodeToAnalyse.jjtGetChild(0);
+				// If it is the function argument list, need to store that for check	  
+				if (nodeToAnalyse.getType().equals(Utils.VARLIST)) {				
+					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
+						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
+			 
+						newNode.setInitialization(Utils.DEFIN_INIT);
+						push(newNode);
+					}	
+				}
 			}
 			else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
 				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
@@ -99,8 +110,10 @@ public class SymbolTable {
 					declarations.add(nodeToAnalyse);
 				}
 			}
+
 			
-			System.out.println(functions);
+			
+			System.out.println("functions " + functions);
 		}
 
 		for (int i = 0; i < functions.size(); i++) {
@@ -167,22 +180,7 @@ public class SymbolTable {
 					   		push(newNode);
 					   }
 				   }
-			   } else {
-				   // If it is the function argument list, need to store that for check
-				   if (nodeToAnalyse.getType() == Utils.VARLIST) {
-					     
-					   for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
-						   	SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-
-							
-							newNode.setInitialization(Utils.DEFIN_INIT);
-						   	push(newNode);
-					   }
-					   //symbolTrees.put(currentScope, nodesInScope);
-				   }
-   
-				   // Repeate process
-			   }
+			   } 
 			   
 			   analyseFunctions(nodeToAnalyse);
 			}
@@ -509,7 +507,6 @@ public class SymbolTable {
 
 		// Check for previous declaration
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
-		System.out.println("ANda la " + symbolTrees.get(currentScope));
 				
 		if (previousLeftNode == null) {
 			previousLeftNode = lookup(leftChildExpr);
@@ -527,9 +524,6 @@ public class SymbolTable {
 		}
 		if (previousRightNode != null)
 			rightChildExpr = previousRightNode;
-
-		System.out.println("leftchildexpr " + leftChildExpr.getValue() + " type " + leftChildExpr.getType());
-		System.out.println("rightchildexpr " + rightChildExpr.getValue() + " type " + rightChildExpr.getType());
 
 		// Comparison between array and scalar or number
 		if (leftChildExpr.getType().equals(Utils.ARRAY)) {
