@@ -1,18 +1,16 @@
 module aval1 {
 
-   function main(b,c) {
-        amodule aval1 {
-
-   function main(b,c) {
-    a=f(b,c);
+   function main(b[],c) {
+    a = [2];
+    f(b,c);
    }
 
-   function a=f(b, c) {
-     a=b*c;
+   function z=f(x[], y) {
+     if (x > y) {
+      z = 1;
+     }
 
-     e=[3];
-     e=1;
-
+     z=[3];
    }
 
 }

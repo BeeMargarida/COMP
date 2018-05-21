@@ -393,7 +393,7 @@ void Exprtest(): {Token t; } {
 		error_skipto_withoutconsuming(RELA_OP);
 	}
 	try {
-		t=< RELA_OP > {jjtThis.relOp = t.image;}
+		t=< RELA_OP > {jjtThis.value = t.image;}
 		Rhs()  <RPAR> 
 	}
 	catch (ParseException e) {
@@ -479,7 +479,7 @@ String Index() #void: {Token value;} {
 
 
 void Var() : {Token t; String tmp;} {
-	t=<ID> {jjtThis.content = t.image; jjtThis.setType(Utils.SCALAR); } 
+	t=<ID> {jjtThis.value = t.image; jjtThis.setType(Utils.SCALAR); } 
 	
 	(ArrayElement(t) {jjtThis.content = null; jjtThis.setType(Utils.ARRAY); })?
 }
@@ -489,7 +489,7 @@ void Var() : {Token t; String tmp;} {
  * error recovery.
 */
 String ArrayElement(Token t): { } {
-	"[" "]" {jjtThis.content = t.image; return t.image;}
+	"[" "]" {jjtThis.value = t.image; return t.image;}
 }
 
 // ERROR RECOVERY

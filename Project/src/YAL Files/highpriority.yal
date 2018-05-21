@@ -1,17 +1,11 @@
 module aval1 {
 
    function main(b,c) {
-    a = [2];
-    z=f(b);
+    b = [2];
+    
    }
 
-   function y=f(a) {
-        if (a > 0) {
-            w = 1;
-        } else {
-            w = 2; 
-        }
-        
-        y = w; 
+    function f(a[]) { 
+        if (a > 0) {}
     }
 }

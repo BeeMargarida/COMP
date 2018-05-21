@@ -873,7 +873,7 @@ System.out.println("Invalid opening condition for structure. \nSpecific Exceptio
       }
       try {
         t = jj_consume_token(RELA_OP);
-jjtn000.relOp = t.image;
+jjtn000.value = t.image;
         Rhs();
         jj_consume_token(RPAR);
       } catch (ParseException e) {
@@ -1136,7 +1136,7 @@ if (jjtc000) {
               jjtree.openNodeScope(jjtn000);Token t; String tmp;
     try {
       t = jj_consume_token(ID);
-jjtn000.content = t.image; jjtn000.setType(Utils.SCALAR);
+jjtn000.value = t.image; jjtn000.setType(Utils.SCALAR);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 32:{
         ArrayElement(t);
@@ -1181,7 +1181,7 @@ if (jjtc000) {
       jj_consume_token(33);
 jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
-jjtn000.content = t.image; {if ("" != null) return t.image;}
+jjtn000.value = t.image; {if ("" != null) return t.image;}
     } finally {
 if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);

@@ -11,14 +11,12 @@ public class SymbolTable {
 	private HashMap<String, ArrayList<SimpleNode>> symbolTrees;
 	private ArrayList<SimpleNode> declarations;
 	private ArrayList<SimpleNode> functions;
-	private HashMap<String, ArrayList<SimpleNode>> calls;
-
+	
 	public SymbolTable() {
 		symbolTrees = new HashMap<>();
 		declarations = new ArrayList<>();
 		functions = new ArrayList<>();
-		calls = new HashMap<>();
-
+	
 		currentScope = "";
 		hasErrors = false;
 	}
@@ -34,7 +32,7 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 
-		//System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue());
+		System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue() + " scope " + currentScope);
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -66,7 +64,6 @@ public class SymbolTable {
 		}
 
 	}
-
 
 	public void fillSymbols(SimpleNode node, String scope) {
 		currentScope = scope;
@@ -194,6 +191,7 @@ public class SymbolTable {
 
 	// Semantically analise operations
 	public SimpleNode analyseOperation(SimpleNode node) {
+		System.out.println("Analysing operation node " + node.getValue());
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
@@ -340,6 +338,7 @@ public class SymbolTable {
 		}
 		
 		if (operation != null) {
+			System.out.println("OPERATION " + operation.getValue());
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
 					&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
@@ -412,14 +411,21 @@ public class SymbolTable {
 		
 		SimpleNode elseNode = null;
 		
+		// Analyse ExprTest
+		SimpleNode exprTest = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
+		
+		boolean isValid = analyseExprTest(exprTest);
+
+		if (!isValid) 
+			return;
+
 		// Analyse all the nodes inside the if
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
 			
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
-			
+
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
-
 				SimpleNode resultNode = analyseOperation(child);
 				
 				System.out.println("ResultNode of if " + resultNode.getValue() + " type " + resultNode.getType());
@@ -495,12 +501,51 @@ public class SymbolTable {
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
 		symbolTrees.replace(currentScope, mergedNodesInScope);		
+	}
 
-		for (int i = 0; i< mergedNodesInScope.size() ; i++) {
-			System.out.println("Adicionei o previous node " + mergedNodesInScope.get(i).getType()
-							 + " value " + mergedNodesInScope.get(i).getValue() + 
-							 " init " + mergedNodesInScope.get(i).isInitialized());
+	public boolean analyseExprTest(SimpleNode exprTest) {
+		SimpleNode leftChildExpr = ((SimpleNode) exprTest.jjtGetChild(0));
+		SimpleNode rightChildExpr = ((SimpleNode) exprTest.jjtGetChild(1));
+
+		// Check for previous declaration
+		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
+		System.out.println("ANda la " + symbolTrees.get(currentScope));
+				
+		if (previousLeftNode == null) {
+			previousLeftNode = lookup(leftChildExpr);
 		}
+		if (previousLeftNode != null)
+			leftChildExpr = previousLeftNode;
+
+		if (rightChildExpr.getType().equals(Utils.RHS))
+			rightChildExpr = (SimpleNode) rightChildExpr.jjtGetChild(0);
+
+		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChildExpr);
+				
+		if (previousRightNode == null) {
+			previousRightNode = lookup(leftChildExpr);
+		}
+		if (previousRightNode != null)
+			rightChildExpr = previousRightNode;
+
+		System.out.println("leftchildexpr " + leftChildExpr.getValue() + " type " + leftChildExpr.getType());
+		System.out.println("rightchildexpr " + rightChildExpr.getValue() + " type " + rightChildExpr.getType());
+
+		// Comparison between array and scalar or number
+		if (leftChildExpr.getType().equals(Utils.ARRAY)) {
+			System.out.println("Semantic Error : Array cannot compare with " + rightChildExpr.getType());
+			hasErrors = true;
+			return false;
+		}
+
+		if (rightChildExpr.getType().equals(Utils.ARRAY)) {
+			 System.out.println("Semantic Error : Array cannot compare with " + leftChildExpr.getType());
+			 hasErrors = true;
+			 return false;
+		 }	 
+		
+		 return true;
+
 	}
 
 	/**
