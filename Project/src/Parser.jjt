@@ -27,7 +27,7 @@ public class Parser {
 			System.out.println("\n\nCommencing Semantic Analysis.");
 			System.out.println("Checking Operations.\n");
 			
-			symbolTable.fillSymbols(root, "");
+			symbolTable.fillSymbols(root);
 
 			System.out.println("Checking Calls.\n");
 			
@@ -150,10 +150,11 @@ void Function(): {Token name;} {
  * Declaration, handling definitions and assignment of variables outside functions.
 */
 void Declaration(): {String declaration; Token tmp;} {
-	{jjtThis.setType(Utils.DECLARATION);}
-
+	
 	try {	
-		tmp=<ID> (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
+		
+		tmp=<ID> {jjtThis.setType(Utils.SCALAR);}
+		 (ArrayElement(tmp))? {jjtThis.value = tmp.image;}
 		(< ASSIGN > (("[" ArraySize() "]") | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
@@ -334,7 +335,7 @@ void Rhs() : {Token t; String tmp;} {
 			{jjtThis.setType(Utils.OP); jjtThis.value = t.image;})?
 		) 
 		|
-		 ( ArrayInstantion() )
+		 ( ArrayInstantion() {jjtThis.setType(Utils.ARRAY);} )
 	)
 	 
 	/*
@@ -392,7 +393,7 @@ void Exprtest(): {Token t; } {
 		error_skipto_withoutconsuming(RELA_OP);
 	}
 	try {
-		t=< RELA_OP > {jjtThis.relOp = t.image;}
+		t=< RELA_OP > {jjtThis.value = t.image;}
 		Rhs()  <RPAR> 
 	}
 	catch (ParseException e) {
@@ -478,7 +479,7 @@ String Index() #void: {Token value;} {
 
 
 void Var() : {Token t; String tmp;} {
-	t=<ID> {jjtThis.content = t.image; jjtThis.setType(Utils.SCALAR); } 
+	t=<ID> {jjtThis.value = t.image; jjtThis.setType(Utils.SCALAR); } 
 	
 	(ArrayElement(t) {jjtThis.content = null; jjtThis.setType(Utils.ARRAY); })?
 }
@@ -488,7 +489,7 @@ void Var() : {Token t; String tmp;} {
  * error recovery.
 */
 String ArrayElement(Token t): { } {
-	"[" "]" {jjtThis.content = t.image; return t.image;}
+	"[" "]" {jjtThis.value = t.image; return t.image;}
 }
 
 // ERROR RECOVERY

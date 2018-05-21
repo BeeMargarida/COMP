@@ -1,0 +1,11 @@
+module aval1 {
+
+   function main(b,c) {
+    b = [2];
+    
+   }
+
+    function f(a[]) { 
+        if (a > 0) {}
+    }
+}

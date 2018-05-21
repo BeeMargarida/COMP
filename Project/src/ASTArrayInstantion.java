@@ -17,7 +17,7 @@ class ASTArrayInstantion extends SimpleNode {
     try  {
         Integer.parseInt(size);
     } catch (NumberFormatException ex)  {
-        type = Utils.ARRAY_INST_SCALAR;
+    
     }
     value = size;
     return prefix + "[" + value + "]";
