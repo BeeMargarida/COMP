@@ -2,13 +2,19 @@ module aval1 {
 
    function main() {
 	  r=f(2,3);
-    a=0;
-    r=a+1;
+    b(2,3);
+    /*a=0;
+    r=a+1;*/
 	  io.println(r); // print 6
    }
 
    function a=f(b, c) {
      a = b*c;
+     a = -1;
+   }
+
+   function b(a,b){
+
    }
 
 }

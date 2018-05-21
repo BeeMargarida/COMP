@@ -45,12 +45,18 @@ public class Sampler {
         println("");
     }
 
-    public void functionBegin(String functionName, String[] params) {
+    public void functionBegin(String functionName, String returnType, String[] params) {
+
+        String returnT = "I";
+        if(returnType.equals(Utils.VOID)){
+            returnT = "V";
+        }
+
         if(functionName.equals("main")){
-            println(".method public static main([Ljava/lang/String;)V");
+            println(".method public static main([Ljava/lang/String;)" + returnT);
         }
         else if(params == null){
-            println(".method public static " + functionName + "()I");
+            println(".method public static " + functionName + "()" + returnT);
             //missing stack
         }
         else {
@@ -61,7 +67,7 @@ public class Sampler {
                 else if(params[i].equals("Array"))
                     print("[I");
             }
-            println(")I");
+            println(")" + returnT);
             
         }
     }
@@ -83,11 +89,17 @@ public class Sampler {
     }
 
     public void printLoad(int arg){
-        println("iload_" + arg);
+        if(arg <= 3)
+            println("iload_" + arg);
+        else 
+            println("iload " + arg);
     }
 
     public String getLoad(int arg){
-        return "iload_"+arg;
+        if(arg <= 3)
+            return "iload_"+arg;
+        else 
+            return "iload "+arg;
     }
 
     /*public void printStore(int arg){

@@ -64,7 +64,7 @@ public class Generator {
 
         if (node.functionName.equals("main")) {
             // if the function is the main one
-            sampler.functionBegin(node.functionName, null);
+            sampler.functionBegin(node.functionName, Utils.VOID, null);
 
             //ocupy first position of stack
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
@@ -74,11 +74,11 @@ public class Generator {
         } else {
             // If there is no Parameters (Var)
             if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
-                sampler.functionBegin(node.functionName, null);
+                sampler.functionBegin(node.functionName, node.getReturnType(), null);
             } else {
                 // Get types of vars
                 String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.functionName);
-                sampler.functionBegin(node.functionName, vars);
+                sampler.functionBegin(node.functionName, node.getReturnType(), vars);
             }
         }
 

@@ -47,7 +47,6 @@ public class SymbolTable {
 
 			} else {
 				declarations.add(nodeToAdd);
-
 			}
 		}
 		// Check if there is no element associated to current scope
@@ -109,6 +108,13 @@ public class SymbolTable {
 
 		for (int i = 0; i < functions.size(); i++) {
 			currentScope = functions.get(i).getValue();
+			if (((ASTFunction) functions.get(i)).getReturnValue() != null) {
+				SimpleNode returnNode = new SimpleNode(0);
+				returnNode.setType(((ASTFunction) functions.get(i)).getReturnType());
+				returnNode.jjtSetValue(((ASTFunction) functions.get(i)).getReturnValue());
+
+				push(returnNode);
+			}
 			analyseFunctions(functions.get(i));
 		}
 

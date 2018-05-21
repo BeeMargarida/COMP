@@ -2,15 +2,16 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 2
+.limit locals 1
 iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
 istore_1
 
-null
-istore_2
+iconst_2
+iconst_3
+invokestatic aval1/b(II)V
 
 iload_1
 invokestatic aval1/println(I)V
@@ -27,9 +28,19 @@ iload_1
 imul
 istore_2
 
+null
+istore_2
+
 
 iload_2
 ireturn
+.end method
+
+
+.method public static b(II)V
+.limit locals 2
+
+return
 .end method
 
 
