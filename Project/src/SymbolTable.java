@@ -189,7 +189,6 @@ public class SymbolTable {
 
 	// Semantically analise operations
 	public SimpleNode analyseOperation(SimpleNode node) {
-		System.out.println("Analysing operation node " + node.getValue());
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
@@ -338,7 +337,6 @@ public class SymbolTable {
 		}
 		
 		if (operation != null) {
-			System.out.println("OPERATION " + operation.getValue());
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
 					&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
@@ -348,7 +346,6 @@ public class SymbolTable {
 				return null;
 			}
 		}
-
 		
 		//Utils.printNode(rightChild);
 		// Right Hand Side variable was not initialized, semantic error
@@ -599,8 +596,8 @@ public class SymbolTable {
 				else {
 					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 						hasErrors = true;
-						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() + " and "
-							+ function.getValue() + " -> " + leftNode.getType() + " opposed to "
+						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() 
+						+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
 							+ ((ASTFunction) function).getReturnType());
 						return null;
 					} else {

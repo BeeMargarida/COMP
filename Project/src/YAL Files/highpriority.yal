@@ -1,9 +1,7 @@
 module aval1 {
 
    function main(b,c) {
-        b = [2];
-        a = 1;
-        c = a + 1;
+        io.println(c);
    }
 
     function f(a[]) { 
