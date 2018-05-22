@@ -12,6 +12,7 @@ High-priority:
 external functions and it should be possible to integrate yal with other external modules, including
 ones you don't know about. In particular, see "G31-bug-println.yal" for an example where this causes
 problems.
+	- Error in operation of kind "a = 5 + f(2,3)"
 
 Low-priority:
 	- Use packages, instead of Java's default package
