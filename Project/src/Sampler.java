@@ -85,7 +85,11 @@ public class Sampler {
     }*/
 
     public String getConst(String arg){
-        return "iconst_" + arg;
+        if(Integer.parseInt(arg) >= 10){
+            return "bipush " + arg;
+        } else {
+            return "iconst_" + arg;
+        }
     }
 
     public void printLoad(int arg){
