@@ -3,6 +3,7 @@
 
 .method public static main([Ljava/lang/String;)V
 .limit locals 1
+.limit stack 2
 iconst_2
 iconst_3
 invokestatic aval1/f(II)I
@@ -19,6 +20,7 @@ return
 
 .method public static f(II)I
 .limit locals 3
+.limit stack 2
 iload_0
 iload_1
 imul
