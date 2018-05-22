@@ -122,11 +122,14 @@ public class Generator {
     }
 
     public void checkFunctionChildren(SimpleNode node, String functionName) {
+        System.out.println("Function CHILDREN TYPES: " + node.toString());
+        
         if (node.toString().equals("Call")) {
             visit((ASTCall) node, functionName);
         } else if (node.toString().equals("Assign")) {
             visit((ASTAssign) node, functionName);
         }
+        
     }
 
     // gets all the types of vars
