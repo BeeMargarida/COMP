@@ -7,6 +7,7 @@ public class Utils {
 	public static String SCALAR = "Scalar";
 	public static String VOID = "Void";
 	public static String CALL = "Call";
+	public static String EXTERNAL_CALL = "External Package Call";
 	public static String OP = "Operation";
 	public static String TERM = "Term";
 	public static String NUMBER = "Number";

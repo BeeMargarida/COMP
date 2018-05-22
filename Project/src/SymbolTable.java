@@ -558,6 +558,8 @@ public class SymbolTable {
 	 * were read
 	 */
 	public SimpleNode analyseCalls(SimpleNode nodeToAnalyse) {
+		// Checks to see if call is external
+		SimpleNode isExternalCall = Utils.extractOfType(Utils.EXTERNAL_CALL, nodeToAnalyse);
 
 		// Extract the real call hidden within possible assigns and operations
 		SimpleNode callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
@@ -565,9 +567,9 @@ public class SymbolTable {
 
 		//System.out.println("Analysing call " + nodeToAnalyse);
 
-		if (function == null) {
-			System.out
-					.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
+		// Has no function and isn't external call
+		if (function == null && isExternalCall == null) {
+			System.out.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
 			hasErrors = true;
 			return null;
 		} else {
@@ -586,15 +588,24 @@ public class SymbolTable {
 				if (previousLeftNode != null)
 					leftNode = previousLeftNode;
 
+				if (isExternalCall != null) {
+					if (!leftNode.getType().equals(Utils.SCALAR)) {
+						System.out.println("Semantic Error : Calls to external packages need to be compared to scalars");
+					} else {
+						return leftNode;
+					}
+				}
 				// Semantic check of return type
-				if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
-					hasErrors = true;
-					System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() + " and "
+				else {
+					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+						hasErrors = true;
+						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() + " and "
 							+ function.getValue() + " -> " + leftNode.getType() + " opposed to "
 							+ ((ASTFunction) function).getReturnType());
-					return null;
-				} else {
-					return leftNode;
+						return null;
+					} else {
+						return leftNode;
+					}
 				}
 			}
 

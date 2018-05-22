@@ -3,7 +3,7 @@ module aval1 {
    function main(b,c) {
         b = [2];
         a = 1;
-        y = -a;
+        c = a + 1;
    }
 
     function f(a[]) { 
