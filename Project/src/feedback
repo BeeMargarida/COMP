@@ -7,25 +7,11 @@ If you believe this is an error, contact your class teacher.
 =====================
 
 High-priority:
-	- In "function y = f() {}", there should be a semantic error, as "y" is not initialized before
-the end of the function. (DONE)
-	- In "function y = f() { y = [1]; }", there should be a semantic error, as "y" is a scalar but
-has been given an array value. (DONE)
-	- In "w = [3]; w = 1;", the compiler prints an error about "invalid comparison". Not only is
-this not a comparison, it is actually valid -- it fills the array "w" with the value 3. (DONE)
-	- In "function y=f(a) { if (a > 0) { w = 1; } else { w = 2; } y = w; }", the compiler prints an
-error ("Variable null was not initialized"), but all used variables were in fact initialized. (DONE)
-	- In "function f(a[]) { if (a > 0) {} }", there should be a semantic error (">" comparison with
-array variable). 
 	- In "y = -a;", the compiler prints an error "Variable null was not initialized", but all used
 variables were in fact initialized. 
-	- In "b = a + 1", the compiler says that a was not initialized.
-	
+	- In "b = a + 1", the compiler says that a was not initialized.	
 	- In "y = a + 1;", the generated code is missing the push for the constant 1.
 	- In "y = -1;", the generated code includes a line with "null".
-	- Functions with no return value should end in ")V" instead of ")I". (DONE)
-	- The compact instructions "iload_<n>" are only supported for n <= 3. "iload_4" is invalid and
-instead "iload 4" should be used. (DONE)
 	- Do not hard-code anything about the "io" module or "println" functions. These are generic
 external functions and it should be possible to integrate yal with other external modules, including
 ones you don't know about. In particular, see "G31-bug-println.yal" for an example where this causes
@@ -35,5 +21,21 @@ Low-priority:
 	- Use packages, instead of Java's default package
 	- In "function y=f(a) { if (a > 0) { w = 1; } y = w; }", the compiler prints "Variable null was
 not initialized". This is not a good error message.
+
+
+DONE :
+	- Functions with no return value should end in ")V" instead of ")I". (DONE)
+	- The compact instructions "iload_<n>" are only supported for n <= 3. "iload_4" is invalid and
+instead "iload 4" should be used. (DONE)
+	- In "function y = f() {}", there should be a semantic error, as "y" is not initialized before
+the end of the function. (DONE)
+	- In "function y = f() { y = [1]; }", there should be a semantic error, as "y" is a scalar but
+has been given an array value. (DONE)
+	- In "w = [3]; w = 1;", the compiler prints an error about "invalid comparison". Not only is
+this not a comparison, it is actually valid -- it fills the array "w" with the value 3. (DONE)
+	- In "function y=f(a) { if (a > 0) { w = 1; } else { w = 2; } y = w; }", the compiler prints an
+error ("Variable null was not initialized"), but all used variables were in fact initialized. (DONE)
 	- The compiler should generate a file with the name "<input_file>.j" (e.g., "a.j" for "a.yal"),
 instead of "code_generated.j". (DONE)
+	- In "function f(a[]) { if (a > 0) {} }", there should be a semantic error (">" comparison with
+array variable). (DONE)
