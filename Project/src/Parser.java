@@ -439,7 +439,7 @@ System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception 
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String string; Token tmp;
     try {
-jjtn000.value = t.image;
+jjtn000.value = t.image; jjtn000.setType(Utils.CALL);
       try {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case DOT:{

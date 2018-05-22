@@ -357,7 +357,7 @@ void Call(Token t): {/*@bgen(jjtree) Call */
 /*@egen*/String string; Token tmp;} {/*@bgen(jjtree) Call */
         try {
 /*@egen*/
-	{jjtn000.value = t.image;}
+	{jjtn000.value = t.image; jjtn000.setType(Utils.CALL);}
 	try {
 		( < DOT > tmp=<ID > 
 		{jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;})? 

@@ -243,7 +243,7 @@ void Stmt() #void: {Token t;} {
  * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
-	{jjtThis.value = t.image;}
+	{jjtThis.value = t.image; jjtThis.setType(Utils.CALL);}
 	try {
 		( < DOT > tmp=<ID > 
 		{jjtThis.setType(Utils.EXTERNAL_CALL); jjtThis.calledFunction = tmp.image;})? 

@@ -1,10 +1,11 @@
 module aval1 {
 
-   function main(b,c) {
-        io.println(c);
+   function main(b,c[]) {
+       a = f(c);
+       b = io.println(b);
    }
 
-    function f(a[]) { 
-        if (a > 0) {}
+    function d = f(a[]) { 
+        
     }
 }
