@@ -40,6 +40,11 @@ public class Utils {
 		return null;
 	}
 
+	public static void printNode(SimpleNode node) {
+		System.out.println("Node is " + node + " type " + node.getType() 
+			+ " value " + node.getValue() + " is Initialized " + node.isInitialized());
+	}
+
 	// Made to Extract node that contains a specific value
 	public static SimpleNode containsValue(ArrayList<SimpleNode> array, SimpleNode node) {
 		if (array != null && node != null) {

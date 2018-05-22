@@ -365,7 +365,7 @@ void Rhs() : {Token t; String tmp;} {
 void Term(): {Token t;} {
 	try {
 		( (t=<ADDSUB_OP> | t=<RELA_OP> )
-			{System.out.println("Rip " + t.image); jjtThis.operator=t.image;} )? 
+			{jjtThis.operator=t.image;} )? 
 
 		( (t=<INTEGER> {jjtThis.setType(Utils.NUMBER); jjtThis.value = t.image;}) 
 			|

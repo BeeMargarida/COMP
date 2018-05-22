@@ -350,7 +350,7 @@ public class SymbolTable {
 		}
 
 		
-
+		//Utils.printNode(rightChild);
 		// Right Hand Side variable was not initialized, semantic error
 		if (rightChild.isInitialized() == Utils.NOT_INIT && rightChild.getType() != Utils.NUMBER) {
 			hasErrors = true;
@@ -368,6 +368,7 @@ public class SymbolTable {
 			return null;
 		}
 
+		//Utils.printNode(leftChild);
 		// Left node needs to be initialized (in case of it being on the rhs of some op)
 		if (leftChild.isInitialized() == Utils.NOT_INIT && needToBeInitialized) {
 			hasErrors = true;
@@ -381,15 +382,16 @@ public class SymbolTable {
 					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
 			return leftChild;
 		} 
+		
 		// Was already declared
 		else if (leftChild != null) {
 			// If they are scalars or arrays
 			if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
-					&& (rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
+			&& (rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
 				if (!leftType.equals(rightType)) {
 					hasErrors = true;
 					System.out.println("Semantic Error: Incompatible operation between " + "left Hand Side Value "
-							+ leftChild.getValue() + " and Right Hand Side Value " + rightChild.getValue());
+					+ leftChild.getValue() + " and Right Hand Side Value " + rightChild.getValue());
 					return null;
 				} else { // Was not present, new initialization
 					leftChild.setType(rightChild.getType());
@@ -397,8 +399,11 @@ public class SymbolTable {
 					return leftChild;
 				}
 			}
+			else if (rightType.equals(Utils.NUMBER) && leftType.equals(Utils.SCALAR))
+				leftChild.setInitialization(Utils.DEFIN_INIT);
 		}
-
+		//System.out.println("End analysing\n");
+		
 		return leftChild;
 	}
 
@@ -507,35 +512,39 @@ public class SymbolTable {
 		SimpleNode leftChildExpr = ((SimpleNode) exprTest.jjtGetChild(0));
 		SimpleNode rightChildExpr = ((SimpleNode) exprTest.jjtGetChild(1));
 
-		// Check for previous declaration
-		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
-				
-		if (previousLeftNode == null) {
-			previousLeftNode = lookup(leftChildExpr);
-		}
-		if (previousLeftNode != null)
+		if (!leftChildExpr.getType().equals(Utils.NUMBER)) {
+			// Check for previous declaration
+			SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
+			
+			if (previousLeftNode == null) {
+				previousLeftNode = lookup(leftChildExpr);
+			}
+			if (previousLeftNode != null)
 			leftChildExpr = previousLeftNode;
+		}
 
 		if (rightChildExpr.getType().equals(Utils.RHS))
 			rightChildExpr = (SimpleNode) rightChildExpr.jjtGetChild(0);
-
-		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChildExpr);
-				
-		if (previousRightNode == null) {
-			previousRightNode = lookup(leftChildExpr);
+		
+		if (!rightChildExpr.getType().equals(Utils.NUMBER)) {
+			SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChildExpr);
+			
+			if (previousRightNode == null) {
+				previousRightNode = lookup(leftChildExpr);
+			}
+			if (previousRightNode != null)
+				rightChildExpr = previousRightNode;
 		}
-		if (previousRightNode != null)
-			rightChildExpr = previousRightNode;
 
 		// Comparison between array and scalar or number
 		if (leftChildExpr.getType().equals(Utils.ARRAY)) {
-			System.out.println("Semantic Error : Array cannot compare with " + rightChildExpr.getType());
+			System.out.println("Semantic Error : Array cannot compare with " + rightChildExpr.getValue());
 			hasErrors = true;
 			return false;
 		}
 
-		if (rightChildExpr.getType().equals(Utils.ARRAY)) {
-			 System.out.println("Semantic Error : Array cannot compare with " + leftChildExpr.getType());
+		else if (rightChildExpr.getType().equals(Utils.ARRAY)) {
+			 System.out.println("Semantic Error : Array cannot compare with " + leftChildExpr.getValue());
 			 hasErrors = true;
 			 return false;
 		 }	 
