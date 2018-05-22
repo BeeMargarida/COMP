@@ -445,7 +445,7 @@ jjtn000.value = t.image;
         case DOT:{
           jj_consume_token(DOT);
           tmp = jj_consume_token(ID);
-jjtn000.calledFunction = tmp.image;
+jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;
           break;
           }
         default:

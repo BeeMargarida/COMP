@@ -360,7 +360,7 @@ void Call(Token t): {/*@bgen(jjtree) Call */
 	{jjtn000.value = t.image;}
 	try {
 		( < DOT > tmp=<ID > 
-		{ jjtn000.calledFunction = tmp.image;})? 
+		{jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;})? 
 		 < LPAR > (ArgumentList() )? < RPAR >
 		
 	} catch (ParseException e) {
