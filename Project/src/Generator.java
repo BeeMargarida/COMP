@@ -8,6 +8,7 @@ public class Generator {
     private String moduleName;
 
     private int stackLimit;
+    private int stackMax;
     private String function;
 
     private HashMap<String, ArrayList<SimpleNode>> stack;
@@ -18,6 +19,7 @@ public class Generator {
         this.function = "";
         stack = new HashMap<>();
         stackLimit = 0;
+        stackMax = 0;
     }
 
     public Object visit(SimpleNode node) {
@@ -82,12 +84,10 @@ public class Generator {
             }
         }
 
-        // Print stack and locals values
-        // TODO : GET STACK AND LOCAL LIMIT VALUES
-
+        // Get locals values
         int locals = table.getSymbolTrees().get(node.functionName).size();
-        // sampler.printLocalsLimit(locals);
-        function += ".limit locals " + locals + "\n";
+        sampler.printLocalsLimit(locals);
+        //function += ".limit locals " + locals + "\n";
 
         // Checks the other children of the function
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
@@ -95,10 +95,15 @@ public class Generator {
             checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.functionName);
         }
 
-        // update .limit stack
-        System.out.println("Stack limit: " + stackLimit);
-        stackLimit = 0;
+        // update stack Limit
+        if(stackMax < stackLimit){
+            stackMax = stackLimit;
+        }
+        sampler.printStackLimit(stackMax);
         sampler.printString(function);
+        
+        stackLimit = 0;
+        stackMax = 0;
         function = "";
 
         // prints return types
@@ -170,15 +175,18 @@ public class Generator {
             // check if parameter is integer or a variable
             if (isInteger) {
                 // if parameter is a integer
+                stackLimit++;
+
                 params[i] = "I";
-                // sampler.printConst(arg.content);
                 function += sampler.getConst(arg.content) + "\n";
+
             } else {
                 // go check the stack and do iload_<number> and its type
                 int numStack = getFromStack(arg.content, currentFunctionName);
                 if (numStack != -1) {
 
-                    // sampler.printLoad(numStack);
+                    stackLimit++;
+
                     function += sampler.getLoad(numStack) + "\n";
 
                     // check type of parameters - TODO: Make this more readable
@@ -186,6 +194,7 @@ public class Generator {
                         params[i] = "I";
                     } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
                         params[i] = "[I";
+
                 } else {
                     System.out.println("Not in stack");
                 }
@@ -195,7 +204,9 @@ public class Generator {
         // go check the type of return of the function
         String returnType;
         if (!node.getValue().equals("println")) {
+
             ASTFunction function = this.table.getFunction(node.getValue());
+
             if (function == null) {
                 System.out.println("Function doesn't exist");
                 return -1;
@@ -212,6 +223,7 @@ public class Generator {
         // prints function invocation
         // sampler.printFunctionInvocation(this.moduleName, node.getValue(), params,
         // returnType);
+
         System.out.println("FUNCTION CALL: " + node.getValue());
         function += sampler.getFunctionInvocation(this.moduleName, node.getValue(), params, returnType) + "\n";
 
@@ -228,6 +240,7 @@ public class Generator {
         for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
             
             SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
+
             System.out.println("RHS CHILD " + chil.toString());
 
             for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
@@ -235,17 +248,21 @@ public class Generator {
                 SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
                 System.out.println("Term: " + term.toString());
+
                 // If RHS is a function call
                 if (term.toString().equals(Utils.CALL)) {
+
                     visit((ASTCall) chil.jjtGetChild(a), functionName);
                     isCall = true;
+
                 } else if (term.toString().equals("ScalarAccess")) {
                     // Scalar or Array Access
                     int numStack = getFromStack(term.getValue(), functionName);
 
                     // if numStack = -1, check the module variables -> TODO
 
-                    // sampler.printLoad(numStack);
+                    stackLimit++;
+
                     function += sampler.getLoad(numStack) + "\n";
 
                 }
@@ -253,8 +270,10 @@ public class Generator {
         }
 
         // print operator
-        if (!isCall)
+        if (!isCall){
             function += sampler.getOperator(rhs.getValue()) + "\n";
+            
+        }
         // sampler.printOperator(rhs.getValue());
 
         // LHS
@@ -272,6 +291,13 @@ public class Generator {
         // print store of Lhs
         int numStack = getFromStack(lhs.getValue(), functionName);
         // sampler.printStore(numStack);
+
+        //Update stack Max
+        if(stackMax < stackLimit){
+            stackMax = stackLimit;
+        }
+        stackLimit = 0;
+
         function += sampler.getStore(numStack) + "\n";
 
         return null;
