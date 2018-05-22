@@ -434,7 +434,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
         case DOT:
           jj_consume_token(DOT);
           tmp = jj_consume_token(ID);
-                                     jjtn000.calledFunction = tmp.image;
+                 jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;
           break;
         default:
           jj_la1[13] = jj_gen;
@@ -1245,19 +1245,8 @@ try {Token t;
     return false;
   }
 
-  static private boolean jj_3R_8() {
-    if (jj_3R_9()) return true;
-    return false;
-  }
-
   static private boolean jj_3_2() {
     if (jj_3R_6()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_7() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_scan_token(ID)) return true;
     return false;
   }
 
@@ -1271,6 +1260,17 @@ try {Token t;
     if (jj_scan_token(27)) return true;
     }
     }
+    return false;
+  }
+
+  static private boolean jj_3R_8() {
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_7() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 

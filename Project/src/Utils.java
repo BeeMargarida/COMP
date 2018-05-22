@@ -7,6 +7,7 @@ public class Utils {
 	public static String SCALAR = "Scalar";
 	public static String VOID = "Void";
 	public static String CALL = "Call";
+	public static String EXTERNAL_CALL = "External Package Call";
 	public static String OP = "Operation";
 	public static String TERM = "Term";
 	public static String NUMBER = "Number";
@@ -117,7 +118,9 @@ public class Utils {
 		else if (node.jjtGetNumChildren() != 0) {
 			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
 				SimpleNode n = (SimpleNode) node.jjtGetChild(i);
+				System.out.println("Crl " + n + " value "+ value);
 				if (n != null) {
+					System.out.println("OH CRL "+ n + "value " + n.getType());
 					if (n.getType().equals(value))
 						return n;
 					else

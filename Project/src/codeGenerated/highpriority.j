@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 4
+.limit locals 3
 null
 istore_1
 
@@ -10,7 +10,7 @@ null
 istore_2
 
 iload_2
-null
+iadd
 istore_3
 
 
