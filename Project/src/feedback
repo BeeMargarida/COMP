@@ -8,19 +8,15 @@ If you believe this is an error, contact your class teacher.
 
 High-priority:
 	- In "y = -1;", the generated code includes a line with "null".
-	- Do not hard-code anything about the "io" module or "println" functions. These are generic
-external functions and it should be possible to integrate yal with other external modules, including
-ones you don't know about. In particular, see "G31-bug-println.yal" for an example where this causes
-problems.
 	- Error in operation of kind "a = 5 + f(2,3)"
-
-Low-priority:
-	- Use packages, instead of Java's default package
 	- In "function y=f(a) { if (a > 0) { w = 1; } y = w; }", the compiler prints "Variable null was
 not initialized". This is not a good error message.
 
-
 DONE :
+	- Do not hard-code anything about the "io" module or "println" functions. These are generic
+external functions and it should be possible to integrate yal with other external modules, including
+ones you don't know about. In particular, see "G31-bug-println.yal" for an example where this causes
+problems. (DONE)
 	- In "y = -a;", the compiler prints an error "Variable null was not initialized", but all used
 variables were in fact initialized. (DONE)
 	- In "b = a + 1", the compiler says that a was not initialized.	(DONE)
