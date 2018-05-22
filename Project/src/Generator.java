@@ -101,7 +101,7 @@ public class Generator {
         }
         sampler.printStackLimit(stackMax);
         sampler.printString(function);
-        
+
         stackLimit = 0;
         stackMax = 0;
         function = "";
@@ -232,7 +232,7 @@ public class Generator {
 
     public Object visit(ASTAssign node, String functionName) {
 
-        boolean isCall = false;
+        boolean isOp = false;
 
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
@@ -241,36 +241,45 @@ public class Generator {
             
             SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
 
-            System.out.println("RHS CHILD " + chil.toString());
+            System.out.println("RHS CHILD " + chil.getValue());
 
-            for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
+            if(chil.jjtGetNumChildren() == 0 && chil.toString().equals(Utils.TERM)){
+                stackLimit++;
 
-                SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
+                function += sampler.getConst(chil.getValue()) + "\n";
+            }
+            else {
+                isOp = true;
 
-                System.out.println("Term: " + term.toString());
+                for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
 
-                // If RHS is a function call
-                if (term.toString().equals(Utils.CALL)) {
+                    SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
-                    visit((ASTCall) chil.jjtGetChild(a), functionName);
-                    isCall = true;
+                    System.out.println("Term: " + term.toString());
 
-                } else if (term.toString().equals("ScalarAccess")) {
-                    // Scalar or Array Access
-                    int numStack = getFromStack(term.getValue(), functionName);
+                    // If RHS is a function call
+                    if (term.toString().equals(Utils.CALL)) {
+                        isOp = false;
+                        visit((ASTCall) chil.jjtGetChild(a), functionName);
 
-                    // if numStack = -1, check the module variables -> TODO
+                    } else if (term.toString().equals("ScalarAccess")) {
+                        // Scalar or Array Access
+                        int numStack = getFromStack(term.getValue(), functionName);
+                        // if numStack = -1, check the module variables -> TODO
 
-                    stackLimit++;
+                        stackLimit++;
+                        System.out.println("Here1");
+                        function += sampler.getLoad(numStack) + "\n";
 
-                    function += sampler.getLoad(numStack) + "\n";
-
+                    }
                 }
+
             }
         }
 
         // print operator
-        if (!isCall){
+        if (isOp){
+            System.out.println("Here2");
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
         }

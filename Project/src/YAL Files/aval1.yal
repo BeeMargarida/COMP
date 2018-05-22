@@ -3,9 +3,9 @@ module aval1 {
   function main() {
     r=f(2,3);
     
-    /*c = b(2,3);
-    a=0;
-    r=a+1;*/
+    /*c = b(2,3);*/
+    a=0 + f(2,3);
+    r=a+1;
 
     io.println(r); // print 6
   }
