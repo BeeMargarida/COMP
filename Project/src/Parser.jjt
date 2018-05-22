@@ -34,7 +34,9 @@ public class Parser {
 			//if (!symbolTable.hasErrors()) {
 				System.out.println("\n\nCommencing Code Generation.\n\n");
 
-				Sampler sampler = new Sampler("code_generated.j");
+				String filenameWthExt = filename.getName().replaceFirst("[.][^.]+$","");
+
+				Sampler sampler = new Sampler("codeGenerated/" + filenameWthExt + ".j");
 				Generator generator = new Generator(sampler, symbolTable);
 			
 				ASTModule rootModule = (ASTModule) root;

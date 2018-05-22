@@ -19,6 +19,8 @@ error ("Variable null was not initialized"), but all used variables were in fact
 array variable). 
 	- In "y = -a;", the compiler prints an error "Variable null was not initialized", but all used
 variables were in fact initialized. 
+	- In "b = a + 1", the compiler says that a was not initialized.
+	
 	- In "y = a + 1;", the generated code is missing the push for the constant 1.
 	- In "y = -1;", the generated code includes a line with "null".
 	- Functions with no return value should end in ")V" instead of ")I". (DONE)
@@ -34,4 +36,4 @@ Low-priority:
 	- In "function y=f(a) { if (a > 0) { w = 1; } y = w; }", the compiler prints "Variable null was
 not initialized". This is not a good error message.
 	- The compiler should generate a file with the name "<input_file>.j" (e.g., "a.j" for "a.yal"),
-instead of "code_generated.j".
+instead of "code_generated.j". (DONE)

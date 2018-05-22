@@ -215,30 +215,32 @@ public class SymbolTable {
 		}
 
 		// Check for array instantiations
-		if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
-			if (leftChild.getType().equals(Utils.ARRAY)){
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				return leftChild;
-			} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
-				leftChild.setType(Utils.ARRAY);
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				return leftChild;
-			} else {
-				System.out.println("Semantic Error : Attempted to instantiate scalar variable " + 
-					leftChild.getValue());
+		if (rightChild.jjtGetNumChildren() > 0) {
+			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
+				if (leftChild.getType().equals(Utils.ARRAY)){
+					leftChild.setInitialization(Utils.DEFIN_INIT);
+					return leftChild;
+				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
+					leftChild.setType(Utils.ARRAY);
+					leftChild.setInitialization(Utils.DEFIN_INIT);
+					return leftChild;
+				} else {
+					System.out.println("Semantic Error : Attempted to instantiate scalar variable " + 
+						leftChild.getValue());
 					hasErrors = true;
 					return null;
+				}
 			}
-		}
-
-		// Check for array instantiations, with a scalar for size
-		else if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
-			// Do lookup of scalar value
-			if (leftChild.isInitialized() == Utils.NOT_INIT
-					&& Utils.containsValueString(symbolTrees.get(currentScope), leftChild.getValue()) != null) {
-				leftChild.setType(Utils.ARRAY);
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				return leftChild;
+		
+			// Check for array instantiations, with a scalar for size
+			else if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
+				// Do lookup of scalar value
+				if (leftChild.isInitialized() == Utils.NOT_INIT
+						&& Utils.containsValueString(symbolTrees.get(currentScope), leftChild.getValue()) != null) {
+					leftChild.setType(Utils.ARRAY);
+					leftChild.setInitialization(Utils.DEFIN_INIT);
+					return leftChild;
+				}
 			}
 		}
 
@@ -578,7 +580,7 @@ public class SymbolTable {
 				// Semantic check of return type
 				if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 					hasErrors = true;
-					System.out.println("Semantic Error : Mismatching types between " + leftNode.getValue() + " and "
+					System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() + " and "
 							+ function.getValue() + " -> " + leftNode.getType() + " opposed to "
 							+ ((ASTFunction) function).getReturnType());
 					return null;

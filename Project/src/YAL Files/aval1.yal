@@ -1,34 +1,20 @@
 module aval1 {
 
-<<<<<<< HEAD
-   function main() {
-	  r=f(2,3);
-    b(2,3);
-    /*a=0;
-    r=a+1;*/
-	  io.println(r); // print 6
-   }
+  function main() {
+  r=f(2,3);
+  /*c = b(2,3);
+  a=0;
+  r=a+1;*/
+  io.println(r); // print 6
+  }
 
-   function a=f(b, c) {
-     a = b*c;
-     a = -1;
-   }
+  function a=f(b, c) {
+    a = b*c;
+    /*a = -1;*/
+  }
 
-   function b(a,b){
+  /*function b(a,b){
 
-=======
-   function main(b[],c) {
-    a = [2];
-    f(b,c);
-   }
-
-   function z=f(x[], y) {
-     if (x > y) {
-      z = 1;
-     }
-
-     z=[3];
->>>>>>> 23a2f2d38f18b2ed97ba2544ef9bf73a41c9643b
-   }
+  }*/
 
 }
