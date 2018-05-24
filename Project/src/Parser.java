@@ -713,7 +713,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
               throw new ParseException();
             }
             Term();
-                         jjtn000.setType(Utils.OP); jjtn000.value = t.image;
+                         jjtn000.setType(Utils.OP); jjtn000.operator = t.image;
             break;
           default:
             jj_la1[19] = jj_gen;
