@@ -98,7 +98,7 @@ public class Utils {
 		else if (node.jjtGetNumChildren() != 0) {
 			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
 				SimpleNode n = (SimpleNode) node.jjtGetChild(i);
-				if (n != null) {
+				if (n != null && n.getType() != null) {
 					if (n.getType().equals(value))
 						return true;
 					else
@@ -118,9 +118,7 @@ public class Utils {
 		else if (node.jjtGetNumChildren() != 0) {
 			for (int i = 0; i < node.jjtGetNumChildren(); ++i) {
 				SimpleNode n = (SimpleNode) node.jjtGetChild(i);
-				System.out.println("Crl " + n + " value "+ value);
-				if (n != null) {
-					System.out.println("OH CRL "+ n + "value " + n.getType());
+				if (n != null && n.getType() != null) {
 					if (n.getType().equals(value))
 						return n;
 					else

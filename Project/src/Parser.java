@@ -428,7 +428,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String string; Token tmp;
     try {
-         jjtn000.value = t.image;
+         jjtn000.value = t.image; jjtn000.setType(Utils.CALL);
       try {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case DOT:
@@ -713,7 +713,7 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
               throw new ParseException();
             }
             Term();
-                         jjtn000.setType(Utils.OP); jjtn000.value = t.image;
+                         jjtn000.setType(Utils.OP); jjtn000.operator = t.image;
             break;
           default:
             jj_la1[19] = jj_gen;

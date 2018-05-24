@@ -2,20 +2,27 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 2
-.limit stack 0
-invokestatic aval1/println(null)V
+.limit locals 3
+.limit stack 1
+iconst_5
+invokestatic aval1/f()I
+
+istore_1
 
 
 return
 .end method
 
 
-.method public static f([I)V
+.method public static f()I
 .limit locals 1
-.limit stack 0
+.limit stack 1
+iconst_1
+istore_0
 
-return
+
+iload_0
+ireturn
 .end method
 
 

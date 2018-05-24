@@ -1,10 +1,12 @@
 module aval1 {
 
-   function main(b,c) {
-        io.println(c);
+   function main(b,c[]) {
+       a = 5 + f();
+       /*b = -a;*/
    }
 
-    function f(a[]) { 
-        if (a > 0) {}
+    function d = f() { 
+        /*if (a > 0) { w = 1; } y = w;*/
+        d = 1;
     }
 }

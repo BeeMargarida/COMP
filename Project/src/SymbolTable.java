@@ -165,7 +165,13 @@ public class SymbolTable {
 			}
 			else {
 				if (nodeToAnalyse.getType() == Utils.CALL) {
-					SimpleNode newNode = analyseCalls(nodeToAnalyse);
+					SimpleNode newNode = analyseCalls(nodeToAnalyse, false);
+					if (newNode != null) {
+						symbolTrees.get(currentScope).add(newNode);
+					}
+				}
+				if (nodeToAnalyse.getType() == Utils.EXTERNAL_CALL) {
+					SimpleNode newNode = analyseCalls(nodeToAnalyse, true);
 					if (newNode != null) {
 						symbolTrees.get(currentScope).add(newNode);
 					}
@@ -208,10 +214,14 @@ public class SymbolTable {
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
-			SimpleNode callNode = analyseCalls(node);
-
+			SimpleNode callNode = analyseCalls(node, false);
 			return callNode;
 		}
+
+		else if (Utils.checkFor(Utils.EXTERNAL_CALL, leftChild) || Utils.checkFor(Utils.EXTERNAL_CALL, rightChild)) {
+			SimpleNode callNode = analyseCalls(node, true);
+			return callNode;
+		}		
 
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
@@ -554,18 +564,18 @@ public class SymbolTable {
 	 * Analyse calls, do all semantic checks after all the function in the module
 	 * were read
 	 */
-	public SimpleNode analyseCalls(SimpleNode nodeToAnalyse) {
-		// Checks to see if call is external
-		SimpleNode isExternalCall = Utils.extractOfType(Utils.EXTERNAL_CALL, nodeToAnalyse);
-
+	public SimpleNode analyseCalls(SimpleNode nodeToAnalyse, boolean isExternal) {
+		SimpleNode callToBeAnalysed;
 		// Extract the real call hidden within possible assigns and operations
-		SimpleNode callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
+		if (isExternal)
+			callToBeAnalysed = Utils.extractOfType(Utils.EXTERNAL_CALL, nodeToAnalyse);
+		else 
+			callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
+
 		SimpleNode function = Utils.containsValue(functions, callToBeAnalysed);
 
-		//System.out.println("Analysing call " + nodeToAnalyse);
-
 		// Has no function and isn't external call
-		if (function == null && isExternalCall == null) {
+		if (function == null && !isExternal) {
 			System.out.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
 			hasErrors = true;
 			return null;
@@ -584,37 +594,42 @@ public class SymbolTable {
 
 				if (previousLeftNode != null)
 					leftNode = previousLeftNode;
-
-				if (isExternalCall != null) {
-					if (!leftNode.getType().equals(Utils.SCALAR)) {
-						System.out.println("Semantic Error : Calls to external packages need to be compared to scalars");
-					} else {
-						return leftNode;
-					}
-				}
 				// Semantic check of return type
-				else {
-					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+				if(isExternal) {
+					if (!leftNode.getType().equals(Utils.SCALAR)) {
 						hasErrors = true;
-						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() 
-						+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
-							+ ((ASTFunction) function).getReturnType());
+						System.out.println("Semantic Error : External package, by default " + 
+						 " return scalar, variable " +
+							leftNode.getValue() + " was already initialized with type " +  leftNode.getType() + ".");
 						return null;
 					} else {
 						return leftNode;
 					}
 				}
+				else {
+					if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+						hasErrors = true;
+						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() 
+						+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
+						+ ((ASTFunction) function).getReturnType());
+						return null;
+					}
+					// Checking argslist to see if the size and types are correct
+					if (callToBeAnalysed.jjtGetNumChildren() > 0 &&
+						callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
+						System.out.println("Semantic Error : Mismatching number of arguments in call "
+							+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
+							+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
+						hasErrors = true;
+						return null;
+					}
+					 else {
+						return leftNode;
+					}
+				}
 			}
 
-
-			// Checking argslist to see if the size and types are correct
-			if (callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
-				System.out.println("Semantic Error : Mismatching number of arguments in call "
-					+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
-					+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
-				hasErrors = true;
-				return null;
-			}
+			
 			return null;
 		}
 	}

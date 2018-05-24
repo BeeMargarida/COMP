@@ -243,7 +243,7 @@ void Stmt() #void: {Token t;} {
  * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
-	{jjtThis.value = t.image;}
+	{jjtThis.value = t.image; jjtThis.setType(Utils.CALL);}
 	try {
 		( < DOT > tmp=<ID > 
 		{jjtThis.setType(Utils.EXTERNAL_CALL); jjtThis.calledFunction = tmp.image;})? 
@@ -336,7 +336,7 @@ void Rhs() : {Token t; String tmp;} {
 	(
 		(
 		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP > | t=<RELA_OP>) Term() 
-			{jjtThis.setType(Utils.OP); jjtThis.value = t.image;})?
+			{jjtThis.setType(Utils.OP); jjtThis.operator = t.image;})?
 		) 
 		|
 		 ( ArrayInstantion() {jjtThis.setType(Utils.ARRAY);} )

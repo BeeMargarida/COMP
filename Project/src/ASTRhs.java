@@ -15,6 +15,7 @@ class ASTRhs extends SimpleNode {
   
   public String toString(String prefix) {
     if(operator != null){
+      System.out.println("CARAMBAS " + operator);
       return prefix + operator;
     }
     else
