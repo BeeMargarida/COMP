@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.print.event.PrintJobListener;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
+
 public class Generator {
 
     private Sampler sampler;
@@ -126,8 +129,12 @@ public class Generator {
         
         if (node.toString().equals("Call")) {
             visit((ASTCall) node, functionName);
-        } else if (node.toString().equals("Assign")) {
+        } 
+        else if (node.toString().equals("Assign")) {
             visit((ASTAssign) node, functionName);
+        } 
+        else if(node.toString().equals("If")) {
+            visit((ASTIf) node, functionName);
         }
         
     }
@@ -145,7 +152,7 @@ public class Generator {
 
     // returns type of Var
     public String visit(ASTVar node, String functionName) {
-        System.out.println("Function Name: " + functionName);
+
         if (stack.get(functionName) == null) {
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
             arr.add(node);
@@ -315,6 +322,32 @@ public class Generator {
         return null;
     }
 
+
+    public Object visit(ASTIf node, String functionName){
+        System.out.println("IF NODE");
+
+        for(int i = 0; i < node.jjtGetNumChildren(); i++){
+            System.out.println("IF NODE CHILDREN: " + node.jjtGetChild(i).toString());
+
+            if(node.jjtGetChild(i).toString().equals("Exprtest")){
+                visit((ASTExprtest) node.jjtGetChild(i), functionName);
+            }
+            else {
+                //verify this
+                checkFunctionChildren((SimpleNode) node.jjtGetChild(i), functionName);
+            }
+        }
+
+        return null;
+    }
+
+    public Object visit(ASTExprtest node, String functionName){
+
+
+        return null;
+    }
+
+    
     // Gets the position of the variable in the stack
     public int getFromStack(String arg, String functionName) {
         ArrayList<SimpleNode> arr = stack.get(functionName);

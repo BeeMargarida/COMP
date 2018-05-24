@@ -1,10 +1,11 @@
 module aval1 {
 
    function main(b,c[]) {
-       
+       a = 5 + f();
+       /*b = -a;*/
    }
 
     function d = f() { 
-        if (a > 0) { w = 1; } y = w;
+        /*if (a > 0) { w = 1; } y = w;*/
     }
 }
