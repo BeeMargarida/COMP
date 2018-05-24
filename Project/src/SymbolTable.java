@@ -607,7 +607,7 @@ public class SymbolTable {
 					}
 				}
 				else {
-					if (!((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+					if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 						hasErrors = true;
 						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() 
 						+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
@@ -615,7 +615,8 @@ public class SymbolTable {
 						return null;
 					}
 					// Checking argslist to see if the size and types are correct
-					if (callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
+					if (callToBeAnalysed.jjtGetNumChildren() > 0 &&
+						callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
 						System.out.println("Semantic Error : Mismatching number of arguments in call "
 							+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
 							+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
