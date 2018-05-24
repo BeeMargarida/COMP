@@ -135,9 +135,11 @@ public class Sampler {
     public String getFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
         String res = "";
         res += "invokestatic " + moduleName+ "/" + functionName + "(";
-        for(int i = 0; i < params.length; i++){
-            res += params[i];
-        }   
+        if(params != null){
+            for(int i = 0; i < params.length; i++){
+                res += params[i];
+            }   
+        }
         res += ")" + returnType + "\n";
         return res;
     }

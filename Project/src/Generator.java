@@ -165,52 +165,56 @@ public class Generator {
 
     public Object visit(ASTCall node, String currentFunctionName) {
 
-        SimpleNode varList = (SimpleNode) node.jjtGetChild(0);
+        String[] params = null;
+        // if there are parameters to the function call
+        if(node.jjtGetNumChildren() > 0){
+            SimpleNode varList = (SimpleNode) node.jjtGetChild(0);
 
-        String[] params = new String[varList.jjtGetNumChildren()];
+            params = new String[varList.jjtGetNumChildren()];
 
-        // Get parameters of the function called
-        for (int i = 0; i < varList.jjtGetNumChildren(); i++) {
-            ASTArgument arg = (ASTArgument) varList.jjtGetChild(i);
+            // Get parameters of the function called
+            for (int i = 0; i < varList.jjtGetNumChildren(); i++) {
+                ASTArgument arg = (ASTArgument) varList.jjtGetChild(i);
 
-            // checks type of parameters passed
-            boolean isInteger;
-            try {
-                Integer.parseInt(arg.content);
-                isInteger = true;
-            } catch (NumberFormatException e) {
-                isInteger = false;
-            }
+                // checks type of parameters passed
+                boolean isInteger;
+                try {
+                    Integer.parseInt(arg.content);
+                    isInteger = true;
+                } catch (NumberFormatException e) {
+                    isInteger = false;
+                }
 
-            // check if parameter is integer or a variable
-            if (isInteger) {
-                // if parameter is a integer
-                stackLimit++;
-
-                params[i] = "I";
-                function += sampler.getConst(arg.content) + "\n";
-
-            } else {
-                // go check the stack and do iload_<number> and its type
-                int numStack = getFromStack(arg.content, currentFunctionName);
-                if (numStack != -1) {
-
+                // check if parameter is integer or a variable
+                if (isInteger) {
+                    // if parameter is a integer
                     stackLimit++;
 
-                    function += sampler.getLoad(numStack) + "\n";
-
-                    // check type of parameters - TODO: Make this more readable
-                    if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
-                        params[i] = "I";
-                    } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
-                        params[i] = "[I";
+                    params[i] = "I";
+                    function += sampler.getConst(arg.content) + "\n";
 
                 } else {
-                    System.out.println("Not in stack");
+                    // go check the stack and do iload_<number> and its type
+                    int numStack = getFromStack(arg.content, currentFunctionName);
+                    if (numStack != -1) {
+
+                        stackLimit++;
+
+                        function += sampler.getLoad(numStack) + "\n";
+
+                        // check type of parameters - TODO: Make this more readable
+                        if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
+                            params[i] = "I";
+                        } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
+                            params[i] = "[I";
+
+                    } else {
+                        System.out.println("Not in stack");
+                    }
                 }
             }
         }
-
+        
         // go check the type of return of the function
         String returnType;
         if (!node.getValue().equals("println")) {
@@ -351,6 +355,7 @@ public class Generator {
     // Gets the position of the variable in the stack
     public int getFromStack(String arg, String functionName) {
         ArrayList<SimpleNode> arr = stack.get(functionName);
+        System.out.println("GETFROMSTACK: " + arr.toString());
 
         for (int i = 0; i < arr.size(); i++) {
 
