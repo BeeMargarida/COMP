@@ -5,11 +5,13 @@ import java.util.HashMap;
 public class Sampler {
 
     private HashMap<String,String> arith;
+    private HashMap<String,String> compare;
     private PrintWriter pw;
     private int lineN;
 
     public Sampler(String filename) {
         arith = new HashMap<String, String>();
+        compare = new HashMap<String, String>();
         lineN = 1;
 
         try {
@@ -26,7 +28,17 @@ public class Sampler {
         arith.put("^", "ixor");
         arith.put("&", "iand");
         arith.put("|", "ior");
+        arith.put(">>", "ishr");
+        arith.put("<<", "ishl");
         //missing some
+
+        compare.put("==", "icmpne");
+        compare.put("!=", "icmpeq");
+        compare.put("<", "icmpge");
+        compare.put("<=", "icmpgt");
+        compare.put(">", "icmple");
+        compare.put(">=", "icmplt");
+
 
     }
 
@@ -106,40 +118,51 @@ public class Sampler {
             return "iload "+arg;
     }
 
-    /*public void printStore(int arg){
-        println("istore_" + arg);
-        println("");
-    }*/
-
     public String getStore(int arg){
         return "istore_"+arg+"\n";
     }
-
-    /*public void printOperator(String op) {
-        println(arith.get(op));
-    }*/
 
     public String getOperator(String op){
         return "" + arith.get(op);
     }
 
-    /*public void printFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
-        print("invokestatic " + moduleName+ "/" + functionName + "(");
-        for(int i = 0; i < params.length; i++){
-            print(params[i]);
-        }   
-        println(")" + returnType);
-        println("");
-    }*/
+    public String getIfStart(String comp, int loopN){
+        return "if_" + compare.get(comp) + " loop" + loopN + "_end\n\n";
+    }
+
+    public String getIfGotoElse(int loopN){
+        return "goto loop" + loopN + "_next\n";
+    }
+
+    public String getIfElse(int loopN){
+        return "loop" + loopN + "_end:\n";
+    }
+
+    public String getIfEnd(int loopN, boolean hasElse){
+        if(hasElse){
+            return "loop" + loopN + "_next:\n";
+        }
+        return  "loop" + loopN + "_end:\n";
+    }
+
+    public String getWhileBegin(int loopN){
+        return "loop" + loopN + ":\n\n";
+    }
+
+    public String getWhileLoop(int loopN){
+        return "goto loop" + loopN + "\n\n";
+    }
+
+    public String getWhileEnd(int loopN){
+        return "loop" + loopN + "_end:\n\n";
+    }
 
     public String getFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
         String res = "";
         res += "invokestatic " + moduleName+ "/" + functionName + "(";
-        if(params != null){
-            for(int i = 0; i < params.length; i++){
-                res += params[i];
-            }   
-        }
+        for(int i = 0; i < params.length; i++){
+            res += params[i];
+        }   
         res += ")" + returnType + "\n";
         return res;
     }

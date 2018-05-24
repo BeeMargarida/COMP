@@ -12,6 +12,10 @@ class ASTRhs extends SimpleNode {
   public ASTRhs(Parser p, int id) {
     super(p, id);
   }
+
+  public String getValue(){
+    return operator;
+  }
   
   public String toString(String prefix) {
     if(operator != null){

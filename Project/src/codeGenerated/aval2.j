@@ -1,4 +1,4 @@
-.class public aval3
+.class public aval2
 .super java/lang/Object
 
 .method public static f(II)I
@@ -6,17 +6,12 @@
 .limit stack 2
 iload_0
 iload_1
-if_icmplt loop0_end
+if_icmpne loop0_end
 
 iconst_2
 istore_2
 
-goto loop0_next
 loop0_end:
-iconst_4
-istore_2
-
-loop0_next:
 
 iload_2
 ireturn
@@ -24,34 +19,37 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 2
-.limit stack 2
+.limit locals 1
+.limit stack 3
 iconst_2
+bipush 12
+invokestatic aval2/f(II)I
+
 istore_1
+
+iload_1
+invokestatic aval2/println(I)V
+
+iconst_4
+iconst_2
+invokestatic aval2/f(II)I
+
+istore_1
+
+iload_1
+invokestatic aval2/println(I)V
 
 iconst_3
-istore_2
+istore_1
 
-iload_1
-iload_2
-invokestatic aval3/f(II)I
+iconst_4
+iconst_2
+invokestatic aval2/f(II)I
 
 istore_1
 
 iload_1
-invokestatic aval3/println(I)V
-
-iconst_6
-istore_1
-
-iload_1
-iload_2
-invokestatic aval3/f(II)I
-
-istore_1
-
-iload_1
-invokestatic aval3/println(I)V
+invokestatic aval2/println(I)V
 
 
 return
