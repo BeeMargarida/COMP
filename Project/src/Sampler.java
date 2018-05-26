@@ -152,6 +152,10 @@ public class Sampler {
         return "newarray int\n";
     }
 
+    public String getIStore(){
+        return "iastore\n";
+    }
+
     public String getIfStart(String comp, int loopN){
         return "if_" + compare.get(comp) + " loop" + loopN + "_end\n\n";
     }

@@ -1070,12 +1070,12 @@ public class Parser/*@bgen(jjtree)*/implements ParserTreeConstants, ParserConsta
                                      boolean jjtc000 = true;
                                      jjtree.openNodeScope(jjtn000);Token size;
     try {
-         jjtn000.content = content.image;
+         jjtn000.value = content.image;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOT:
         jj_consume_token(DOT);
         size = jj_consume_token(SIZE);
-                                                                  jjtn000.size = size.image;
+                                                                jjtn000.setType(Utils.SIZE); jjtn000.size = size.image;
         break;
       default:
         jj_la1[28] = jj_gen;

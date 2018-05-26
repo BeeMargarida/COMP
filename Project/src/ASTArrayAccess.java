@@ -25,5 +25,7 @@ class ASTArrayAccess extends SimpleNode {
     
   }
 
+  public String getIndex() { return index; }
+
 }
 /* JavaCC - OriginalChecksum=0e62b27ae5af6ae9e88f185eb64b929b (do not edit this line) */

@@ -273,30 +273,48 @@ public class Generator {
 
         // LHS
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
+        System.out.println("LHS: " + lhs.toString());
 
-        // add to stack
-        if (stack.get(functionName) == null) {
-            ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
-            arr.add(lhs);
-            stack.put(functionName, arr);
-        } else {
-            stack.get(functionName).add(lhs);
-        }
+        
 
         // print store of Lhs
         int numStack = getFromStack(lhs.getValue(), functionName);
 
-        //Update stack Max
-        if(stackMax < stackLimit){
-            stackMax = stackLimit;
-        }
-        stackLimit = 0;
+        if(lhs.toString().equals("ArrayAccess")){
 
-        if(wasArray){
-            function += sampler.getStore(numStack, Utils.ARRAY) + "\n";
+            ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
+
+            System.out.println("LHS ARRAY ACCESS: " + lhsArr.toString() + " : " + lhsArr.getIndex());
+            function += sampler.getLoad(numStack, Utils.ARRAY);
+
+            numStack = getFromStack(lhsArr.getIndex(), functionName);
+            function += sampler.getLoad(numStack, Utils.SCALAR);
+
+            function += sampler.getIStore();
+
         }
-        else{
-            function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+        else {
+            // add to stack
+            if (stack.get(functionName) == null) {
+                ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
+                arr.add(lhs);
+                stack.put(functionName, arr);
+            } else {
+                stack.get(functionName).add(lhs);
+            }
+
+            //Update stack Max
+            if(stackMax < stackLimit){
+                stackMax = stackLimit;
+            }
+            stackLimit = 0;
+
+            if(wasArray){
+                function += sampler.getStore(numStack, Utils.ARRAY) + "\n";
+            }
+            else{
+                function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+            }
         }
 
         return null;
@@ -339,21 +357,24 @@ public class Generator {
 
                     SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
-                    System.out.println("Term: " + term.toString());
+                    System.out.println("Term: " + term.toString() + " : " + term.getValue());
 
                     if(term.toString().equals("ArrayAccess")){
                         // If RHS is a function call
+                        ASTArrayAccess arrAcc = (ASTArrayAccess) term;
 
-                        System.out.println("ARRAY ACCESS " + term.getValue());
-                        for (int b = 0; b < term.jjtGetNumChildren(); b++) {
-                            System.out.println("ARRAY ACCESS CHIL " + term.jjtGetChild(b).toString());
-                        }
+                        System.out.println("ARRAY ACCESS " + arrAcc.getValue());
+                        System.out.println("ARRAY ACCESS "+ arrAcc.getIndex());
                         //int numStack = getFromStack(term.getValue(), functionName);
+
+                        //aload array
+                        //iload index
+                        //iaload
 
                     }
                     else if (term.toString().equals(Utils.CALL)) {
                         // If RHS is a function call
-                        
+
                         isOp = false;
                         visit((ASTCall) chil.jjtGetChild(a), functionName);
 
