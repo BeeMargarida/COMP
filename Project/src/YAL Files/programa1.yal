@@ -1,8 +1,8 @@
 module programa1 {
 
-	data=[100]; // vector of 100 integers
 	mx; // attribute mx
 	mn; // attribute mn
+	data=[100]; // vector of 100 integers
 
 function det(d[]) {
 	i=0;

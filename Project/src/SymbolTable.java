@@ -101,6 +101,7 @@ public class SymbolTable {
 				}
 			}
 			else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
+				System.out.println("\n\nMERDA MERDA");
 				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
 
 					SimpleNode nodeToAdd = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
@@ -212,6 +213,7 @@ public class SymbolTable {
 		}
 
 		
+	
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
@@ -330,13 +332,14 @@ public class SymbolTable {
 			leftType = leftChild.getType();
 		}
 
-		// .size semantic check
-		if (leftChild.getType().equals(Utils.SIZE)) {
-			hasErrors = true;
-			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
-			return null;
-		}		
-		
+			// .size semantic check
+			if (leftChild.getType().equals(Utils.SIZE)) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
+				return null;
+			}		
+			
+
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
 		if (previousLeftNode != null) {
