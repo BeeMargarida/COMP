@@ -94,7 +94,7 @@ TOKEN: {
 	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
 }
 
-// MAIN BLOCKS OF INFORMATION
+// MAIN BLOCKS OF INFORMATION 
 
 /**
  * Main Module
@@ -583,7 +583,7 @@ void Rhs() : {/*@bgen(jjtree) Rhs */
 			{jjtn000.setType(Utils.OP); jjtn000.operator = t.image;})?
 		) 
 		|
-		 ( ArrayInstantion() {jjtn000.setType(Utils.ARRAY);} )
+		 ( ArrayInstantion() {jjtn000.setType(Utils.ARRAY); } )
 	)
 	 
 	/*
@@ -641,10 +641,11 @@ void Term(): {/*@bgen(jjtree) Term */
 
 		( (t=<INTEGER> {jjtn000.setType(Utils.NUMBER); jjtn000.value = t.image;}) 
 			|
-		 ( t=<ID> ( (ArrayAccess(t) ) 
+		 ( t=<ID> ( (ArrayAccess(t)) 
 		  	| 
-			(LOOKAHEAD(2) Call(t) | (ScalarAccess(t)
-			 ))
+			(
+				LOOKAHEAD(2) Call(t) | (ScalarAccess(t))
+			)
 			)
 		 	)
 		 )
@@ -825,8 +826,7 @@ void ArrayAccess(Token content) :  {/*@bgen(jjtree) ArrayAccess */
           jjtc000 = false;
         }
 /*@egen*/
-	{jjtn000.content = content.image;
-		jjtn000.index = index; }/*@bgen(jjtree)*/
+	{jjtn000.content = content.image; jjtn000.index = index; }/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -913,7 +913,6 @@ String Index()      : {Token value;} {
 	(value=< ID > | value=< INTEGER >)
 	{return value.image;}
 }
-
 
 void Var() : {/*@bgen(jjtree) Var */
               ASTVar jjtn000 = new ASTVar(JJTVAR);
@@ -1047,4 +1046,3 @@ try {
 }
 /*@egen*/
 }
-

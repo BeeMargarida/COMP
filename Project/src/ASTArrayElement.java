@@ -13,8 +13,8 @@ public class ASTArrayElement extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    value = content + "[]";
-    return prefix + value;
+    value = content;
+    return prefix + value + "[]";
   }
 }
 /* JavaCC - OriginalChecksum=bfb423163e1035ee48f8712c238c8a4e (do not edit this line) */

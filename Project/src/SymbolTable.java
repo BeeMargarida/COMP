@@ -198,13 +198,18 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
-		SimpleNode previousLeftChild = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
-		SimpleNode previousRightChild = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		if (!leftChild.getType().equals(Utils.ARRAY_ACCESS)) {
+				SimpleNode previousLeftChild = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
 
-		if (previousLeftChild != null)
-			leftChild = previousLeftChild;
-		if (previousRightChild != null)
-			rightChild = previousRightChild;
+			if (previousLeftChild != null)
+				leftChild = previousLeftChild;
+		}
+		if (!rightChild.getType().equals(Utils.ARRAY_ACCESS)) {
+			SimpleNode previousRightChild = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+	
+			if (previousRightChild != null)
+				rightChild = previousRightChild;
+		}
 
 		// .size semantic check
 		if (leftChild.getType().equals(Utils.SIZE)) {
@@ -275,7 +280,7 @@ public class SymbolTable {
 		}
 
 	}
-
+	
 	/**
 	 * Recursive operations, in case of nested ops.
 	 */
@@ -297,21 +302,12 @@ public class SymbolTable {
 			if (rightNode.getType() == Utils.TERM)
 				rightNode = (SimpleNode) rightNode.jjtGetChild(0);
 
-			// Check with possible previous instantiantions in symbol table
-			SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftNode);
-			SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightNode);
-
-			if (previousLeftNode != null)
-				leftNode = previousLeftNode;
-
-			if (previousRightNode != null)
-				rightNode = previousRightNode;
-
 			// Are scalar or array, start analysing here
 			return analyseTwoNodesOperation(leftNode, rightNode, true, rightChild);
 		}
 
 	}
+
 
 	/**
 	 * Compares between two nodes. Needs to know the operation and whether the left
@@ -333,19 +329,28 @@ public class SymbolTable {
 			rightType = rightChild.getType();
 		}
 
-		// Check possible previous instantiations in symbol table
-		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
-		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
-
-		if (previousRightNode != null) {
-			rightChild = previousRightNode;
-			rightType = previousRightNode.getType();
-		}
-		if (previousLeftNode != null) {
-			leftChild = previousLeftNode;
-			leftType = previousLeftNode.getType();
+		if (leftType == Utils.TERM) {
+			leftChild = (SimpleNode) leftChild.jjtGetChild(0);
+			leftType = leftChild.getType();
 		}
 		
+		// Check possible previous instantiations in symbol table
+		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+		if (previousLeftNode != null) {
+			leftChild = previousLeftNode;
+			if (leftChild.getType().equals(Utils.ARRAY_ACCESS)) {
+				leftType = Utils.SCALAR;
+			} 
+		}
+		
+		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		if (previousRightNode != null) {
+			rightChild = previousRightNode;
+			if (rightChild.getType().equals(Utils.ARRAY_ACCESS)) {
+				rightType = Utils.SCALAR;
+			} 
+		}
+
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
@@ -398,7 +403,7 @@ public class SymbolTable {
 				if (!leftType.equals(rightType)) {
 					hasErrors = true;
 					System.out.println("Semantic Error: Incompatible operation between " + "left Hand Side Value "
-					+ leftChild.getValue() + " and Right Hand Side Value " + rightChild.getValue());
+					+ leftChild.getValue() + " type " + leftType + " and Right Hand Side Value " + rightChild.getValue() + " type " + rightType);
 					return null;
 				} else { // Was not present, new initialization
 					leftChild.setType(rightChild.getType());
@@ -440,6 +445,9 @@ public class SymbolTable {
 			if (child.getType().equals(Utils.OP)) {
 				SimpleNode resultNode = analyseOperation(child);
 				
+				if(resultNode == null)
+					return;
+
 				System.out.println("ResultNode of if " + resultNode.getValue() + " type " + resultNode.getType());
 				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
