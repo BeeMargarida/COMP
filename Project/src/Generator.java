@@ -1,9 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.print.event.PrintJobListener;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
-
 public class Generator {
 
     private Sampler sampler;
@@ -14,20 +11,24 @@ public class Generator {
     private int stackMax;
     private String function;
 
+    private int stackDeclaration;
+    private int localDeclaration;
+
     private int loopCount;
 
     private HashMap<String, ArrayList<SimpleNode>> stack;
-    //private HashMap<Integer, SimpleNode> loops;
 
     public Generator(Sampler sampler, SymbolTable table) {
         this.sampler = sampler;
         this.table = table;
         this.function = "";
         stack = new HashMap<>();
-        //loops = new HashMap<>();
         stackLimit = 0;
         stackMax = 0;
         loopCount = -1;
+
+        stackDeclaration = 0;
+        localDeclaration = 0;
     }
 
     public Object visit(SimpleNode node) {
@@ -39,8 +40,7 @@ public class Generator {
         } else if (node.toString().equals("Declaration")) {
             visit((ASTDeclaration) node);
         }
-        // TODO: Make Declarations
-
+        
         return null;
 
     }
@@ -64,6 +64,11 @@ public class Generator {
     }
 
     public Object visit(ASTDeclaration node) {
+        System.out.println("DECLARATION");
+
+        for(int i = 0; i < node.jjtGetNumChildren(); i++){
+            System.out.println("DECLARATION CHIL: " + node.jjtGetChild(i).toString());
+        }
         return null;
     }
 
@@ -207,7 +212,7 @@ public class Generator {
 
                     stackLimit++;
 
-                    function += sampler.getLoad(numStack) + "\n";
+                    function += sampler.getLoad(numStack, arg.getType()) + "\n";
 
                     // check type of parameters - TODO: Make this more readable
                     if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
@@ -255,8 +260,9 @@ public class Generator {
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         
-        boolean isOp = (boolean) visit(rhs, functionName);
-        
+        boolean[] answer = (boolean[]) visit(rhs, functionName);
+        boolean isOp = answer[0];
+        boolean wasArray = answer[1];
 
         // print operator
         if (isOp){
@@ -286,7 +292,12 @@ public class Generator {
         }
         stackLimit = 0;
 
-        function += sampler.getStore(numStack) + "\n";
+        if(wasArray){
+            function += sampler.getStore(numStack, Utils.ARRAY) + "\n";
+        }
+        else{
+            function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+        }
 
         return null;
     }
@@ -294,6 +305,7 @@ public class Generator {
     public Object visit(ASTRhs rhs, String functionName){
 
         boolean isOp = false;
+        boolean wasArray = false;
 
         System.out.println("RHS");
 
@@ -304,42 +316,67 @@ public class Generator {
             System.out.println("RHS CHILD " + chil.toString());
 
             if(chil.jjtGetNumChildren() == 0 && chil.toString().equals(Utils.TERM)){
+                
                 stackLimit++;
 
                 function += sampler.getConst(chil.getValue()) + "\n";
             }
-            else {
-                isOp = true;
+            else if(chil.toString().equals("ArrayInstantion")) {
 
+                // array instatiation
+                int numStack = getFromStack(chil.getValue(), functionName);
+                function += sampler.getLoad(numStack, Utils.SCALAR);
+
+                stack.get(functionName).add(chil);
+
+                function += sampler.getNewArray();
+                wasArray = true;
+            }
+            else {
+
+                // TODO : POR ISTO MAIS BONITO
                 for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
 
                     SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
                     System.out.println("Term: " + term.toString());
 
-                    // If RHS is a function call
-                    if (term.toString().equals(Utils.CALL)) {
+                    if(term.toString().equals("ArrayAccess")){
+                        // If RHS is a function call
+
+                        System.out.println("ARRAY ACCESS " + term.getValue());
+                        for (int b = 0; b < term.jjtGetNumChildren(); b++) {
+                            System.out.println("ARRAY ACCESS CHIL " + term.jjtGetChild(b).toString());
+                        }
+                        //int numStack = getFromStack(term.getValue(), functionName);
+
+                    }
+                    else if (term.toString().equals(Utils.CALL)) {
+                        // If RHS is a function call
+                        
                         isOp = false;
                         visit((ASTCall) chil.jjtGetChild(a), functionName);
 
                     } else if (term.toString().equals("ScalarAccess")) {
                         // Scalar or Array Access
-                        int numStack = getFromStack(term.getValue(), functionName);
 
+                        isOp = true;
+                        int numStack = getFromStack(term.getValue(), functionName);
 
                         // if numStack = -1, check the module variables -> TODO
 
                         // TODO: Check if operation like a = a + 1-> it will be iinc <stack_n> 1
 
-
                         stackLimit++;
-                        function += sampler.getLoad(numStack) + "\n";
+                        function += sampler.getLoad(numStack, term.getType()) + "\n";
 
                     }
                 }
             }
         }
-        return isOp;
+
+        boolean[] answer = {isOp, wasArray};
+        return answer;
     }
 
 
@@ -378,7 +415,7 @@ public class Generator {
 
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         int numStack = getFromStack(lhs.getValue(), functionName);
-        function += sampler.getLoad(numStack) + "\n";
+        function += sampler.getLoad(numStack, lhs.getType()) + "\n";
 
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         visit(rhs, functionName);

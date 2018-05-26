@@ -57,6 +57,15 @@ public class Sampler {
         println("");
     }
 
+    public void printStaticField(String name, String type){
+        if(type.equals(Utils.ARRAY)){
+            println(".field static " + name + " [I");
+        }
+        else if(type.equals(Utils.SCALAR)){
+            println(".field static " + name + " I");
+        }
+    }
+
     public void functionBegin(String functionName, String returnType, String[] params) {
 
         String returnT = "I";
@@ -111,19 +120,36 @@ public class Sampler {
             println("iload " + arg);
     }
 
-    public String getLoad(int arg){
-        if(arg <= 3)
-            return "iload_"+arg;
-        else 
-            return "iload "+arg;
+    public String getLoad(int arg, String type){
+        if(type.equals(Utils.ARRAY)){
+
+            if(arg <= 3)
+                return "aload_" + arg;
+            else 
+                return "aload " + arg;
+        }
+        else {
+
+            if(arg <= 3)
+                return "iload_"+arg;
+            else 
+                return "iload "+arg;
+        }
     }
 
-    public String getStore(int arg){
+    public String getStore(int arg, String type){
+        if(type.equals(Utils.ARRAY)){
+            return "astore_" + arg;
+        }
         return "istore_"+arg+"\n";
     }
 
     public String getOperator(String op){
         return "" + arith.get(op);
+    }
+
+    public String getNewArray(){
+        return "newarray int\n";
     }
 
     public String getIfStart(String comp, int loopN){
