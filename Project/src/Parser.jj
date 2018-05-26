@@ -896,7 +896,7 @@ void ScalarAccess(Token content) :  {/*@bgen(jjtree) ScalarAccess */
 /*@egen*/Token size; } {/*@bgen(jjtree) ScalarAccess */
         try {
 /*@egen*/
-	{jjtn000.content = content.image;} (<DOT > size=< SIZE > {jjtn000.size = size.image;})?/*@bgen(jjtree)*/
+	{jjtn000.value = content.image;} (<DOT > size=< SIZE > {jjtn000.setType(Utils.SIZE); jjtn000.size = size.image;})?/*@bgen(jjtree)*/
         } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);

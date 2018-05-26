@@ -2,7 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTScalarAccess extends SimpleNode {
-  public String content, size;
+  public String size;
 
   public ASTScalarAccess(int id) {
     super(id);
@@ -14,13 +14,12 @@ class ASTScalarAccess extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    value = content;
     if (size != null) {
       type = Utils.SIZE;
-      return prefix + content + "." + size;
+      return prefix + value + "." + size;
     }
     
-    return prefix + content;
+    return prefix + value;
   }
 
 }

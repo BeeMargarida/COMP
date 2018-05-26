@@ -198,24 +198,20 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
-		if (!leftChild.getType().equals(Utils.ARRAY_ACCESS)) {
+		if (!leftChild.getType().equals(Utils.ARRAY_ACCESS) && !leftChild.getType().equals(Utils.SIZE)) {
 				SimpleNode previousLeftChild = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
 
 			if (previousLeftChild != null)
 				leftChild = previousLeftChild;
 		}
-		if (!rightChild.getType().equals(Utils.ARRAY_ACCESS)) {
+		if (!rightChild.getType().equals(Utils.ARRAY_ACCESS) && !rightChild.getType().equals(Utils.SIZE)) {
 			SimpleNode previousRightChild = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
 	
 			if (previousRightChild != null)
 				rightChild = previousRightChild;
 		}
 
-		// .size semantic check
-		if (leftChild.getType().equals(Utils.SIZE)) {
-			hasErrors = true;
-			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
-		}
+		
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
@@ -333,6 +329,13 @@ public class SymbolTable {
 			leftChild = (SimpleNode) leftChild.jjtGetChild(0);
 			leftType = leftChild.getType();
 		}
+
+		// .size semantic check
+		if (leftChild.getType().equals(Utils.SIZE)) {
+			hasErrors = true;
+			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
+			return null;
+		}		
 		
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
@@ -344,6 +347,20 @@ public class SymbolTable {
 		}
 		
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		System.out.println("RIGHT TYPE " + rightChild.getType());	
+		if (rightChild.getType().equals(Utils.SIZE)) {
+			if (previousRightNode == null) {
+				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable " + rightChild.getValue());
+				hasErrors = true;
+				return null;
+			}
+			if (!previousRightNode.getType().equals(Utils.ARRAY)) {
+				System.out.println("Semantic Error : Attempt to utilize '.size' without being array, with variable " + rightChild.getValue());
+				hasErrors = true;
+				return null;
+			}
+		}
+
 		if (previousRightNode != null) {
 			rightChild = previousRightNode;
 			if (rightChild.getType().equals(Utils.ARRAY_ACCESS)) {

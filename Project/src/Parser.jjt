@@ -469,7 +469,7 @@ void ArrayInstantion() : {String size;} {
  * @return String containing information of size, or nothing if no '.' is found.
 */
 void ScalarAccess(Token content) :  {Token size; } {
-	{jjtThis.content = content.image;} (<DOT > size=< SIZE > {jjtThis.size = size.image;})? 
+	{jjtThis.value = content.image;} (<DOT > size=< SIZE > {jjtThis.setType(Utils.SIZE); jjtThis.size = size.image;})? 
 }
 
 /**
