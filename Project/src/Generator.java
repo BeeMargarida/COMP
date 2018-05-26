@@ -68,6 +68,8 @@ public class Generator {
 
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
             System.out.println("DECLARATION CHIL: " + node.jjtGetChild(i).toString());
+
+            
         }
         return null;
     }
@@ -206,29 +208,41 @@ public class Generator {
                 function += sampler.getConst(arg.content) + "\n";
 
             } else {
-                // go check the stack and do iload_<number> and its type
-                int numStack = getFromStack(arg.content, currentFunctionName);
-                if (numStack != -1) {
+                System.out.println("ARG CONTENT: " + arg.content + " : " + arg.content.contains("\""));
+                
+                if(arg.content.contains("\"")){
 
-                    stackLimit++;
+                    function += sampler.getLdc(arg.content);
+                    params[i] = "Ljava/lang/String;";
+                }
+                else {
 
-                    function += sampler.getLoad(numStack, arg.getType()) + "\n";
-
-                    // check type of parameters - TODO: Make this more readable
-                    if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
-                        params[i] = "I";
-                    } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
-                        params[i] = "[I";
-
-                } else {
-                    System.out.println("Not in stack");
+                    // go check the stack and do iload_<number> and its type
+                    int numStack = getFromStack(arg.content, currentFunctionName);
+                    if (numStack != -1) {
+    
+                        stackLimit++;
+                        String type = stack.get(currentFunctionName).get(numStack).getType();
+                        function += sampler.getLoad(numStack, type) + "\n";
+    
+                        // check type of parameters - TODO: Make this more readable
+                        if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
+                            params[i] = "I";
+                        } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
+                            params[i] = "[I";
+    
+                    } else {
+                        System.out.println("Not in stack");
+                    }
                 }
             }
         }
         
+
+        // TODO - do not hardcode this!!
         // go check the type of return of the function
         String returnType;
-        if (!node.getValue().equals("println")) {
+        if (!node.getValue().equals("println") && !node.getValue().equals("print")) {
 
             ASTFunction function = this.table.getFunction(node.getValue());
 
@@ -259,41 +273,52 @@ public class Generator {
 
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
+
+        // LHS
+        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
+
+        if(lhs.toString().equals("ArrayAccess")){
+            ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
+            int numStack = getFromStack(lhs.getValue(), functionName);
+            // prints commands
+            System.out.println("LHS ARRAY ACCESS: " + lhsArr.toString() + " : " + lhsArr.getIndex());
+            function += sampler.getLoad(numStack, Utils.ARRAY) + "\n";
+
+            numStack = getFromStack(lhsArr.getIndex(), functionName);
+            function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+        }
         
+        //Process RHS
         boolean[] answer = (boolean[]) visit(rhs, functionName);
         boolean isOp = answer[0];
         boolean wasArray = answer[1];
 
         // print operator
-        if (isOp){
+        if (isOp && rhs.getValue() != null){
             System.out.println("OP! " + rhs.getValue());
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
         }
 
         // LHS
-        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         System.out.println("LHS: " + lhs.toString());
 
-        
+        //Update stack Max
+        if(stackMax < stackLimit){
+            stackMax = stackLimit;
+        }
+        stackLimit = 0;
 
-        // print store of Lhs
-        int numStack = getFromStack(lhs.getValue(), functionName);
-
+        // check if arrayAccess or not
         if(lhs.toString().equals("ArrayAccess")){
-
-            ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
-
-            System.out.println("LHS ARRAY ACCESS: " + lhsArr.toString() + " : " + lhsArr.getIndex());
-            function += sampler.getLoad(numStack, Utils.ARRAY);
-
-            numStack = getFromStack(lhsArr.getIndex(), functionName);
-            function += sampler.getLoad(numStack, Utils.SCALAR);
 
             function += sampler.getIStore();
 
         }
         else {
+
+            System.out.println("LHS ScalarAccess : " + lhs.getValue());
+
             // add to stack
             if (stack.get(functionName) == null) {
                 ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
@@ -303,17 +328,13 @@ public class Generator {
                 stack.get(functionName).add(lhs);
             }
 
-            //Update stack Max
-            if(stackMax < stackLimit){
-                stackMax = stackLimit;
-            }
-            stackLimit = 0;
+            int numStack = getFromStack(lhs.getValue(), functionName);
 
             if(wasArray){
-                function += sampler.getStore(numStack, Utils.ARRAY) + "\n";
+                function += sampler.getStore(numStack, Utils.ARRAY) + "\n\n";
             }
             else{
-                function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+                function += sampler.getStore(numStack, Utils.SCALAR) + "\n\n";
             }
         }
 
@@ -343,9 +364,9 @@ public class Generator {
 
                 // array instatiation
                 int numStack = getFromStack(chil.getValue(), functionName);
-                function += sampler.getLoad(numStack, Utils.SCALAR);
+                function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
 
-                stack.get(functionName).add(chil);
+                //stack.get(functionName).add(chil);
 
                 function += sampler.getNewArray();
                 wasArray = true;
@@ -364,12 +385,14 @@ public class Generator {
                         ASTArrayAccess arrAcc = (ASTArrayAccess) term;
 
                         System.out.println("ARRAY ACCESS " + arrAcc.getValue());
-                        System.out.println("ARRAY ACCESS "+ arrAcc.getIndex());
-                        //int numStack = getFromStack(term.getValue(), functionName);
+                        
+                        int numStack = getFromStack(arrAcc.getValue(), functionName);
+                        function += sampler.getLoad(numStack, Utils.ARRAY) + "\n";
 
-                        //aload array
-                        //iload index
-                        //iaload
+                        numStack = getFromStack(arrAcc.getIndex(), functionName);
+                        function += sampler.getLoad(numStack, Utils.SCALAR)  + "\n";
+
+                        function += sampler.getILoad();
 
                     }
                     else if (term.toString().equals(Utils.CALL)) {
@@ -379,18 +402,28 @@ public class Generator {
                         visit((ASTCall) chil.jjtGetChild(a), functionName);
 
                     } else if (term.toString().equals("ScalarAccess")) {
-                        // Scalar or Array Access
+                        
+                        if(term.getType().equals(Utils.SIZE)){
 
-                        isOp = true;
-                        int numStack = getFromStack(term.getValue(), functionName);
+                            System.out.println("SCALARACCESS SIZE ");
+                            int numStack = getFromStack(term.getValue(), functionName);
 
-                        // if numStack = -1, check the module variables -> TODO
-
-                        // TODO: Check if operation like a = a + 1-> it will be iinc <stack_n> 1
-
-                        stackLimit++;
-                        function += sampler.getLoad(numStack, term.getType()) + "\n";
-
+                            function += sampler.getLoad(numStack, Utils.ARRAY) + "\n";
+                            function += sampler.getArraySize();
+                            
+                        }
+                        else {
+                            // Scalar 
+                            isOp = true;
+                            int numStack = getFromStack(term.getValue(), functionName);
+    
+                            // if numStack = -1, check the module variables -> TODO
+    
+                            // TODO: Check if operation like a = a + 1-> it will be iinc <stack_n> 1
+    
+                            stackLimit++;
+                            function += sampler.getLoad(numStack, term.getType()) + "\n";
+                        }
                     }
                 }
             }

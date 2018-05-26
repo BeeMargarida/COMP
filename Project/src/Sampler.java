@@ -120,6 +120,10 @@ public class Sampler {
             println("iload " + arg);
     }
 
+    public String getLdc(String content) {
+        return "ldc " + content + "\n";
+    }
+
     public String getLoad(int arg, String type){
         if(type.equals(Utils.ARRAY)){
 
@@ -152,8 +156,16 @@ public class Sampler {
         return "newarray int\n";
     }
 
+    public String getArraySize() {
+        return "arraylength\n";
+    }
+
     public String getIStore(){
         return "iastore\n";
+    }
+
+    public String getILoad(){
+        return "iaload\n";
     }
 
     public String getIfStart(String comp, int loopN){

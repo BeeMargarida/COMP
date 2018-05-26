@@ -18,7 +18,7 @@ module array1
 
 	i=0;
 	while(i < N) {
-		ai=a.size;
+		ai=a[i];
 		io.print("a: ",ai);
 		i=i+1;
 	}
