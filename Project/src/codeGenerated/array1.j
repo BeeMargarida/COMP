@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static print_array(I)V
-.limit locals 4
+.limit locals 3
 .limit stack 3
 null
 istore_1
@@ -38,7 +38,7 @@ iload_2
 iload_0
 if_icmpge loop1_end
 
-iload_1
+iload_-1
 null
 istore_6
 

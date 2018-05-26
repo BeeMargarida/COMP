@@ -22,5 +22,7 @@ class ASTScalarAccess extends SimpleNode {
     return prefix + value;
   }
 
+  public String getSize() { return size; }
+
 }
 /* JavaCC - OriginalChecksum=18593799f559e2f31668aff54fba25f1 (do not edit this line) */
