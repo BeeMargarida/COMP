@@ -227,10 +227,29 @@ public class Sampler {
         println("");
     }
 
-    public void printClinit() {
+    public String getStoreStatic(String moduleName, String variableName, String type){
+        if(type.equals(Utils.ARRAY)){
+            return "putstatic " + moduleName + "/" + variableName + " [I ";
+        }
+        else {
+            return "putstatic " + moduleName + "/" + variableName + " I ";
+        }
+    }
+
+    public String getLoadStatic(String moduleName, String variableName, String type){
+        if(type.equals(Utils.ARRAY)){
+            return "getstatic " + moduleName + "/" + variableName + " [I ";
+        }
+        else {
+            return "getstatic " + moduleName + "/" + variableName + " I ";
+        }
+    }
+
+    public void printClinit(String clinitCode, int stackDeclaration, int localDeclaration) {
         println(".method static public <clinit>()V");
-        println(".limit stack 0");
-        println(".limit locals 0");
+        println(".limit stack " + stackDeclaration);
+        println(".limit locals " + localDeclaration);
+        println(clinitCode);
         println("return");
         println(".end method");
     }

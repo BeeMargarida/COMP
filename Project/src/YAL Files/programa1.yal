@@ -1,8 +1,8 @@
 module programa1 {
 
+	data=[100]; // vector of 100 integers
 	mx; // attribute mx
 	mn; // attribute mn
-	data=[100]; // vector of 100 integers
 
 function det(d[]) {
 	i=0;
@@ -11,7 +11,7 @@ function det(d[]) {
 		a=d[i];
 		i=i+1;
 		b=d[i];
-		mx= library1.max(a,b);
+		mx= library1.max(a,b); // fazer isto!
 		mn= library1.min(a,b);
 	}
 }
