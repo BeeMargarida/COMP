@@ -220,7 +220,6 @@ jjtn000.value = tmp.image;
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
           case 32:{
             ArraySize();
-System.out.println("MERd");
             break;
             }
           case ADDSUB_OP:
@@ -439,13 +438,13 @@ System.out.println("Error on a statement, maybe missing ';'\nSpecific Exception 
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);String string; Token tmp;
     try {
-jjtn000.value = t.image; jjtn000.setType(Utils.CALL);
+jjtn000.value = t.image; jjtn000.setType(Utils.CALL); jjtn000.calledFunction = t.image;
       try {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case DOT:{
           jj_consume_token(DOT);
           tmp = jj_consume_token(ID);
-jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;
+jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.packageName = (String) jjtn000.value; jjtn000.calledFunction = tmp.image;
           break;
           }
         default:

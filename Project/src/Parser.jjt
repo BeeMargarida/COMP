@@ -243,10 +243,10 @@ void Stmt() #void: {Token t;} {
  * @param Token t contains ID information for printing.
 */
 void Call(Token t): {String string; Token tmp;} {
-	{jjtThis.value = t.image; jjtThis.setType(Utils.CALL);}
+	{jjtThis.value = t.image; jjtThis.setType(Utils.CALL); jjtThis.calledFunction = t.image;}
 	try {
 		( < DOT > tmp=<ID > 
-		{jjtThis.setType(Utils.EXTERNAL_CALL); jjtThis.calledFunction = tmp.image;})? 
+		{jjtThis.setType(Utils.EXTERNAL_CALL); jjtThis.packageName = (String) jjtThis.value; jjtThis.calledFunction = tmp.image;})? 
 		 < LPAR > (ArgumentList() )? < RPAR >
 		
 	} catch (ParseException e) {

@@ -219,7 +219,7 @@ void Declaration(): {/*@bgen(jjtree) Declaration */
 		
 		tmp=<ID>  {jjtn000.setType(Utils.SCALAR);}
 		 (ArrayElement(tmp)  {jjtn000.setType(Utils.ARRAY);})?  {jjtn000.value = tmp.image;}
-		(< ASSIGN > ((ArraySize() {System.out.println("MERd");}) | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+		(< ASSIGN > ((ArraySize()) | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Error on declaration, with Exception thrown " + e.toString());
@@ -357,10 +357,10 @@ void Call(Token t): {/*@bgen(jjtree) Call */
 /*@egen*/String string; Token tmp;} {/*@bgen(jjtree) Call */
         try {
 /*@egen*/
-	{jjtn000.value = t.image; jjtn000.setType(Utils.CALL);}
+	{jjtn000.value = t.image; jjtn000.setType(Utils.CALL); jjtn000.calledFunction = t.image;}
 	try {
 		( < DOT > tmp=<ID > 
-		{jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.calledFunction = tmp.image;})? 
+		{jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.packageName = (String) jjtn000.value; jjtn000.calledFunction = tmp.image;})? 
 		 < LPAR > (ArgumentList() )? < RPAR >
 		
 	} catch (ParseException e) {
