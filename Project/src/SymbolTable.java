@@ -86,8 +86,7 @@ public class SymbolTable {
 						+ nodeToAnalyse.getValue() + ".");
 				}
 				else
-					functions.add(nodeToAnalyse);	
-				
+					functions.add(nodeToAnalyse);					
 
 				nodeToAnalyse = (SimpleNode) nodeToAnalyse.jjtGetChild(0);
 				// If it is the function argument list, need to store that for check	  
@@ -199,21 +198,12 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
-		if (!leftChild.getType().equals(Utils.ARRAY_ACCESS) && !leftChild.getType().equals(Utils.SIZE)) {
-				SimpleNode previousLeftChild = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
-
-			if (previousLeftChild != null)
-				leftChild = previousLeftChild;
-		}
-		if (!rightChild.getType().equals(Utils.ARRAY_ACCESS) && !rightChild.getType().equals(Utils.SIZE)) {
-			SimpleNode previousRightChild = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
-	
-			if (previousRightChild != null)
-				rightChild = previousRightChild;
-		}
-
-		
-	
+		// .size semantic check
+		if (leftChild.getType().equals(Utils.SIZE)) {
+			hasErrors = true;
+			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
+			return null;
+		}	
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
@@ -332,25 +322,36 @@ public class SymbolTable {
 			leftType = leftChild.getType();
 		}
 
-			// .size semantic check
-			if (leftChild.getType().equals(Utils.SIZE)) {
-				hasErrors = true;
-				System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
-				return null;
-			}		
-			
-
+		
+		//System.out.println("Before L " + leftType + " value " + leftChild.getValue() + " needs " + needToBeInitialized);
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+
+		if (leftChild.getType().equals(Utils.SIZE)) {
+			if (previousLeftNode == null) {
+				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable " + leftChild.getValue());
+				hasErrors = true;
+				return null;
+			}
+			if (!previousLeftNode.getType().equals(Utils.ARRAY)) {
+				System.out.println("Semantic Error : Attempt to utilize '.size' without being array, with variable " + leftChild.getValue());
+				hasErrors = true;
+				return null;
+			}
+		}
+
 		if (previousLeftNode != null) {
-			leftChild = previousLeftNode;
-			if (leftChild.getType().equals(Utils.ARRAY_ACCESS)) {
+			if (leftChild.getType().equals(Utils.ARRAY_ACCESS) || leftChild.getType().equals(Utils.SIZE)) {
 				leftType = Utils.SCALAR;
 			} 
+			leftChild = previousLeftNode;
 		}
+
+		//System.out.println("After L " + leftType + " value " + leftChild.getValue() + " needs " + needToBeInitialized);
 		
+		//System.out.println("Before R " + rightType + " value " + rightChild.getValue() + " needs " + needToBeInitialized);
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
-		System.out.println("RIGHT TYPE " + rightChild.getType());	
+
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
 				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable " + rightChild.getValue());
@@ -365,16 +366,18 @@ public class SymbolTable {
 		}
 
 		if (previousRightNode != null) {
-			rightChild = previousRightNode;
-			if (rightChild.getType().equals(Utils.ARRAY_ACCESS)) {
+			if (rightChild.getType().equals(Utils.ARRAY_ACCESS) || rightChild.getType().equals(Utils.SIZE)) {
 				rightType = Utils.SCALAR;
 			} 
+			rightChild = previousRightNode;
 		}
+
+		//System.out.println("After R " + rightType + " value " + rightChild.getValue() + " needs " + needToBeInitialized);
 
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
-					&& (operation.getValue().equals("<") || operation.getValue().equals(">"))) {
+					&& (operation.getValue() != null && (operation.getValue().equals("<") || operation.getValue().equals(">")))) {
 				hasErrors = true;
 				System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
 						+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
@@ -384,7 +387,7 @@ public class SymbolTable {
 		
 		//Utils.printNode(rightChild);
 		// Right Hand Side variable was not initialized, semantic error
-		if (rightChild.isInitialized() == Utils.NOT_INIT && rightChild.getType() != Utils.NUMBER) {
+		if (rightChild.isInitialized() == Utils.NOT_INIT && rightType != Utils.NUMBER) {
 			hasErrors = true;
 			System.out.println("Semantic Error : Variable " + rightChild.getValue() + " was not initialized.");
 			return null;
@@ -468,7 +471,6 @@ public class SymbolTable {
 				if(resultNode == null)
 					return;
 
-				System.out.println("ResultNode of if " + resultNode.getValue() + " type " + resultNode.getType());
 				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 				
@@ -510,7 +512,6 @@ public class SymbolTable {
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
 					
-					System.out.println("ResultNode of else " + resultNode.getValue() + " type " + resultNode.getType());
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
 					
 					// Was nowhere to be found
@@ -595,8 +596,11 @@ public class SymbolTable {
 	public SimpleNode analyseCalls(SimpleNode nodeToAnalyse, boolean isExternal) {
 		SimpleNode callToBeAnalysed;
 		// Extract the real call hidden within possible assigns and operations
-		if (isExternal)
-			callToBeAnalysed = Utils.extractOfType(Utils.EXTERNAL_CALL, nodeToAnalyse);
+		if (isExternal) {
+			callToBeAnalysed = new SimpleNode(0);
+			callToBeAnalysed.setInitialization(Utils.DEFIN_INIT);
+			callToBeAnalysed.setType(Utils.SCALAR);			
+		}
 		else 
 			callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
 
@@ -631,6 +635,7 @@ public class SymbolTable {
 							leftNode.getValue() + " was already initialized with type " +  leftNode.getType() + ".");
 						return null;
 					} else {
+						leftNode.setInitialization(Utils.DEFIN_INIT);
 						return leftNode;
 					}
 				}

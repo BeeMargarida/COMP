@@ -11,6 +11,7 @@ if_icmpne loop0_end
 iconst_2
 istore_2
 
+
 loop0_end:
 
 iload_2
@@ -27,6 +28,7 @@ invokestatic aval2/f(II)I
 
 istore_1
 
+
 iload_1
 invokestatic aval2/println(I)V
 
@@ -35,6 +37,7 @@ iconst_2
 invokestatic aval2/f(II)I
 
 istore_1
+
 
 iload_1
 invokestatic aval2/println(I)V
@@ -42,11 +45,13 @@ invokestatic aval2/println(I)V
 iconst_3
 istore_1
 
+
 iconst_4
 iconst_2
 invokestatic aval2/f(II)I
 
 istore_1
+
 
 iload_1
 invokestatic aval2/println(I)V

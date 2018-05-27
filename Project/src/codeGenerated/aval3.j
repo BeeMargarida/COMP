@@ -11,10 +11,12 @@ if_icmplt loop0_end
 iconst_2
 istore_2
 
+
 goto loop0_next
 loop0_end:
 iconst_4
 istore_2
+
 
 loop0_next:
 
@@ -29,14 +31,17 @@ ireturn
 iconst_2
 istore_1
 
+
 iconst_3
 istore_2
+
 
 iload_1
 iload_2
 invokestatic aval3/f(II)I
 
 istore_1
+
 
 iload_1
 invokestatic aval3/println(I)V
@@ -44,11 +49,13 @@ invokestatic aval3/println(I)V
 iconst_6
 istore_1
 
+
 iload_1
 iload_2
 invokestatic aval3/f(II)I
 
 istore_1
+
 
 iload_1
 invokestatic aval3/println(I)V

@@ -38,13 +38,13 @@ iaload
 istore_5
 
 
-iload_3
-iload 5
+aload_3
+aload 5
 istore_6
 
 
-iload_3
-iload 5
+aload_3
+aload 5
 istore_7
 
 

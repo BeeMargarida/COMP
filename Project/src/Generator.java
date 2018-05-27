@@ -180,7 +180,8 @@ public class Generator {
     }
 
     public Object visit(ASTCall node, String currentFunctionName) {
-
+        if (node.jjtGetNumChildren() == 0)
+            return null;
         // if there are parameters to the function call
         SimpleNode varList = (SimpleNode) node.jjtGetChild(0);
 
