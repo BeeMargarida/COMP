@@ -2,7 +2,7 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTRhs extends SimpleNode {
-  public String operator;
+  private boolean isNegative = false;
 
   public ASTRhs(int id) {
     super(id);
@@ -14,16 +14,27 @@ class ASTRhs extends SimpleNode {
   }
 
   public String getValue(){
-    return operator;
+    if (isNegative)
+      return "-";
+    else 
+      return null;
   }
   
   public String toString(String prefix) {
-    if(operator != null){
-      System.out.println("CARAMBAS " + operator);
-      return prefix + operator;
+    if(isNegative){
+      return prefix + "-";
     }
     else
       return null;
   } 
+
+  public void setOperator(String operator) {
+    System.out.println("SET OPERATOR RHS");
+    if (operator.equals("-")) 
+      isNegative = true;
+    else 
+      isNegative = false;
+  }
+
 }
 /* JavaCC - OriginalChecksum=9e8e08102ca50579db5e2882e58e6298 (do not edit this line) */

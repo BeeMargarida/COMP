@@ -1,12 +1,8 @@
 module aval1 {
 
    function main(b,c[]) {
-       a = 5 + f();
-       /*b = -a;*/
+    a = -1;
+    b = a;       
    }
 
-    function d = f() { 
-        /*if (a > 0) { w = 1; } y = w;*/
-        d = 1;
-    }
 }

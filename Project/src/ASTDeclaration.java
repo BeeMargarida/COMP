@@ -2,6 +2,8 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTDeclaration extends SimpleNode {
+  private boolean isNegative = false;
+
   public ASTDeclaration(int id) {
     super(id);
   }
@@ -12,6 +14,14 @@ class ASTDeclaration extends SimpleNode {
 
   public String toString(String prefix) {
   	return prefix + "ASTDeclaration";
+  }
+
+  public void setOperator(String operator) {
+    System.out.println("SET OPERATOR DECLARATION");
+    if (operator.equals("-")) 
+      isNegative = true;
+    else 
+      isNegative = false;
   }
 
 }

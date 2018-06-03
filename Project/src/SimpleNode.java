@@ -8,6 +8,7 @@ class SimpleNode implements Node {
   protected int id;
   protected Object value;
   protected Parser parser;
+
   
   protected int isInitialized;
   protected String type;

@@ -211,7 +211,7 @@ void Declaration(): {/*@bgen(jjtree) Declaration */
                      ASTDeclaration jjtn000 = new ASTDeclaration(JJTDECLARATION);
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);
-/*@egen*/String declaration; Token tmp;} {/*@bgen(jjtree) Declaration */
+/*@egen*/String declaration; Token tmp; } {/*@bgen(jjtree) Declaration */
         try {
 /*@egen*/
 	
@@ -219,7 +219,8 @@ void Declaration(): {/*@bgen(jjtree) Declaration */
 		
 		tmp=<ID>  {jjtn000.setType(Utils.SCALAR);}
 		 (ArrayElement(tmp)  {jjtn000.setType(Utils.ARRAY);})?  {jjtn000.value = tmp.image;}
-		(< ASSIGN > ((ArraySize()) | (< ADDSUB_OP >)? < INTEGER >))? < PVIRG >
+		(< ASSIGN > ((ArraySize()) | (tmp=< ADDSUB_OP > 
+			{jjtn000.setOperator(tmp.image);})? < INTEGER >))? < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Error on declaration, with Exception thrown " + e.toString());
@@ -580,7 +581,7 @@ void Rhs() : {/*@bgen(jjtree) Rhs */
 	(
 		(
 		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP > | t=<RELA_OP>) Term() 
-			{jjtn000.setType(Utils.OP); jjtn000.operator = t.image;})?
+			{jjtn000.setType(Utils.OP); jjtn000.setOperator(t.image);})?
 		) 
 		|
 		 ( ArrayInstantion() {jjtn000.setType(Utils.ARRAY); } )
@@ -637,7 +638,7 @@ void Term(): {/*@bgen(jjtree) Term */
 /*@egen*/
 	try {
 		( (t=<ADDSUB_OP> | t=<RELA_OP> )
-			{jjtn000.operator=t.image;} )? 
+			{jjtn000.setOperator(t.image);} )? 
 
 		( (t=<INTEGER> {jjtn000.setType(Utils.NUMBER); jjtn000.value = t.image;}) 
 			|
@@ -918,7 +919,7 @@ void Var() : {/*@bgen(jjtree) Var */
 /*@egen*/
 	t=<ID> {jjtn000.value = t.image; jjtn000.setType(Utils.SCALAR); } 
 	
-	(ArrayElement(t) {jjtn000.content = null; jjtn000.setType(Utils.ARRAY); })?/*@bgen(jjtree)*/
+	(ArrayElement(t) {jjtn000.value = null; jjtn000.setType(Utils.ARRAY); })?/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -945,19 +946,20 @@ void Var() : {/*@bgen(jjtree) Var */
  * Array Element, checks to see if the element is correctly formatted, important for
  * error recovery.
 */
-String ArrayElement(Token t): {/*@bgen(jjtree) ArrayElement */
+void ArrayElement(Token t): {/*@bgen(jjtree) ArrayElement */
   ASTArrayElement jjtn000 = new ASTArrayElement(JJTARRAYELEMENT);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
 /*@egen*/ } {/*@bgen(jjtree) ArrayElement */
         try {
 /*@egen*/
+	{System.out.println("Entro aqui com o que? " + t.image);}
 	"[" "]"/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
                   jjtc000 = false;
                 }
-/*@egen*/ {jjtn000.value = t.image; return t.image;}/*@bgen(jjtree)*/
+/*@egen*/ {jjtn000.value = t.image;}/*@bgen(jjtree)*/
         } finally {
           if (jjtc000) {
             jjtree.closeNodeScope(jjtn000, true);
@@ -1041,4 +1043,3 @@ try {
 }
 /*@egen*/
 }
-

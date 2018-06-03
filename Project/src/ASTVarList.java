@@ -9,7 +9,6 @@ public class ASTVarList extends SimpleNode {
 
   public ASTVarList(Parser p, int id) {
     super(p, id);
-    
   }
 
   public String toString(String prefix) {

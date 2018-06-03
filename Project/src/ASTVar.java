@@ -2,8 +2,6 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=false,TRACK_TOKENS=false,NODE_PREFIX=AST,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 public
 class ASTVar extends SimpleNode {
-  public String content;
-
   public ASTVar(int id) {
     super(id);
   }
@@ -13,12 +11,10 @@ class ASTVar extends SimpleNode {
   }
 
   public String toString(String prefix) {
-    if (content != null) {
-      value = content;
+    if (value != null)
       return prefix + value;
-    }
-    else
-      return null;
+
+    return null;
   }
 
 }
