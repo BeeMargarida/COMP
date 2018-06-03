@@ -726,7 +726,7 @@ if (jjtc000) {
               throw new ParseException();
             }
             Term();
-jjtn000.setType(Utils.OP); jjtn000.setOperator(t.image);
+jjtn000.setType(Utils.OP); jjtn000.jjtSetValue(t.image);
             break;
             }
           default:

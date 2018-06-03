@@ -2,9 +2,10 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 3
-.limit stack 1
+.limit locals 2
+.limit stack 2
 iconst_1
+iconst_3
 istore_1
 
 
