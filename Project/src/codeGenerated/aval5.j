@@ -45,10 +45,10 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 6
 .limit stack 3
 iconst_4
-iconst_5
+bipush 5
 invokestatic aval5/f(II)I
 
 istore_1

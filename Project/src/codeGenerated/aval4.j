@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static f(II)I
-.limit locals 4
+.limit locals 3
 .limit stack 2
 loop0:
 
@@ -10,8 +10,12 @@ iload_0
 iload_1
 if_icmpge loop0_end
 
+invokestatic io/read()I
+
 istore_2
 
+
+invokestatic io/read()I
 
 istore_0
 
@@ -33,10 +37,10 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 4
 .limit stack 2
-iconst_5
-iconst_6
+bipush 5
+bipush 6
 invokestatic aval4/f(II)I
 
 istore_1

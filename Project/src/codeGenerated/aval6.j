@@ -27,11 +27,7 @@ istore 5
 loop0:
 
 iload 5
-<<<<<<< HEAD
 bipush 6
-=======
-iconst_6
->>>>>>> ddbdc11af570a56b515d96df2262c16181173e26
 if_icmpge loop0_end
 
 iload_2
@@ -127,7 +123,7 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 3
 .limit stack 1
 bipush 17
 invokestatic aval6/sqrt(I)I

@@ -20,7 +20,7 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 8
 .limit stack 3
 iconst_2
 bipush 12

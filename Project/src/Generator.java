@@ -105,7 +105,7 @@ public class Generator {
 
         if (node.functionName.equals("main")) {
             // if the function is the main one
-            sampler.functionBegin(node.functionName, Utils.VOID, null);
+            sampler.functionBegin(node.getValue(), Utils.VOID, null);
 
             //ocupy first position of stack
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
@@ -115,18 +115,18 @@ public class Generator {
         } else {
             // If there is no Parameters (Var)
             if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
-                sampler.functionBegin(node.functionName, node.getReturnType(), null);
+                sampler.functionBegin(node.getValue(), node.getReturnType(), null);
             } else {
                 // Get types of vars
-                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.functionName);
+                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
                 //localLimit += vars.length;
-                sampler.functionBegin(node.functionName, node.getReturnType(), vars);
+                sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
             }
         }
 
         // Get locals values
-        localLimit = table.getSymbolTrees().get(node.functionName).size();
-        if(node.functionName.equals("main")){
+        localLimit = table.getSymbolTrees().get(node.getValue()).size();
+        if(node.getValue().equals("main")){
             localLimit++;
         }
 
@@ -135,7 +135,7 @@ public class Generator {
         // Checks the other children of the function
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
             System.out.println("\nFUNCTION CHILDREN: " + node.jjtGetChild(i).toString());
-            checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.functionName);
+            checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.getValue());
         }
 
         // update stack Limit
@@ -157,7 +157,7 @@ public class Generator {
         if (node.getReturnType().equals(Utils.VOID)) {
             sampler.printVoidReturn();
         } else {
-            int numStack = getFromStack(node.getReturnValue(), node.functionName);
+            int numStack = getFromStack(node.getReturnValue(), node.getValue());
             if(numStack != -1){
                 sampler.printLoad(numStack);
                 sampler.printIntReturn();
@@ -321,7 +321,6 @@ public class Generator {
                 // It's from another module
                 moduleString = node.getPackage();
                 returnType = "I";
-                
             }
             else {
                 if (function.getReturnType().equals(Utils.VOID)) {

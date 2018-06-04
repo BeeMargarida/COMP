@@ -26,7 +26,7 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 2
+.limit locals 3
 .limit stack 2
 iconst_2
 istore_1
@@ -46,7 +46,7 @@ istore_1
 iload_1
 invokestatic io/println(I)V
 
-iconst_6
+bipush 6
 istore_1
 
 

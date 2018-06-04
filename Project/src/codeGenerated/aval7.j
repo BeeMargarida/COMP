@@ -1,7 +1,7 @@
 .class public aval7
 .super java/lang/Object
 
-.method public static Count(I)I
+.method public static count(I)I
 .limit locals 4
 .limit stack 3
 iconst_0
@@ -48,10 +48,10 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 3
 .limit stack 1
 iconst_3
-invokestatic aval7/Count(I)I
+invokestatic null/count(I)I
 
 istore_1
 
