@@ -3,7 +3,7 @@
 
 .method public static sum_array([I)I
 .limit locals 3
-.limit stack 1
+.limit stack 3
 iconst_0
 istore_1
 
@@ -39,8 +39,8 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 4
-.limit stack 2
+.limit locals 5
+.limit stack 3
 bipush 16
 istore_1
 
@@ -71,7 +71,7 @@ loop0_end:
 aload_2
 invokestatic array2/sum_array([I)I
 
-istore_4
+istore 4
 
 
 ldc "sum of array elements = "

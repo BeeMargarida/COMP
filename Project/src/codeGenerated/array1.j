@@ -22,12 +22,7 @@ aload_1
 iload_2
 iload_2
 iastore
-iload_2
-iconst_1
-iadd
-istore_2
-
-
+iinc 2 1
 goto loop0
 
 loop0_end:
@@ -45,19 +40,14 @@ if_icmpge loop1_end
 aload_1
 iload_2
 iaload
-istore_5
+istore_3
 
 
 ldc "a: "
-iload 5
-invokestatic array1/print(Ljava/lang/String;I)V
+iload_3
+invokestatic io/print(Ljava/lang/String;I)V
 
-iload_2
-iconst_1
-iadd
-istore_2
-
-
+iinc 2 1
 goto loop1
 
 loop1_end:
@@ -68,7 +58,7 @@ return
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 0
+.limit locals 2
 .limit stack 1
 bipush 10
 invokestatic array1/print_array(I)V
@@ -81,5 +71,6 @@ return
 .method static public <clinit>()V
 .limit stack 0
 .limit locals 0
+
 return
 .end method

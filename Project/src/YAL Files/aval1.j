@@ -8,9 +8,9 @@ iconst_2
 iconst_3
 invokestatic aval1/f(II)I
 
-istore_1
+istore_0
 
-iload_1
+iload_0
 invokestatic io/println(I)V
 
 return

@@ -11,7 +11,7 @@ function det(d[]) {
 		a=d[i];
 		i=i+1;
 		b=d[i];
-		mx= library1.max(a,b); // fazer isto!
+		mx= library1.max(a,b);
 		mn= library1.min(a,b);
 	}
 }

@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 4
 .limit stack 2
 iconst_2
 iconst_3
@@ -12,7 +12,7 @@ istore_1
 
 
 iload_1
-invokestatic aval1/println(I)V
+invokestatic io/println(I)V
 
 
 return
@@ -37,5 +37,6 @@ ireturn
 .method static public <clinit>()V
 .limit stack 0
 .limit locals 0
+
 return
 .end method

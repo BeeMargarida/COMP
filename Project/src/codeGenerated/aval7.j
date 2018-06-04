@@ -8,7 +8,7 @@ iconst_0
 istore_1
 
 
-iconst_1
+bipush -1
 istore_2
 
 
@@ -28,12 +28,7 @@ iload_3
 iconst_1
 if_icmpne loop1_end
 
-iload_1
-iconst_1
-iadd
-istore_1
-
-
+iinc 1 1
 loop1_end:
 iload_0
 iconst_1
@@ -41,12 +36,7 @@ ishr
 istore_0
 
 
-iload_2
-iconst_1
-iadd
-istore_2
-
-
+iinc 2 1
 goto loop0
 
 loop0_end:
@@ -67,7 +57,7 @@ istore_1
 
 
 iload_1
-invokestatic aval7/println(I)V
+invokestatic io/println(I)V
 
 
 return
@@ -77,5 +67,6 @@ return
 .method static public <clinit>()V
 .limit stack 0
 .limit locals 0
+
 return
 .end method
