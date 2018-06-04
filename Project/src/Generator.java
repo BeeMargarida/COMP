@@ -104,6 +104,7 @@ public class Generator {
             // if the function is the main one
             sampler.functionBegin(node.functionName, Utils.VOID, null);
 
+            
             //ocupy first position of stack
             ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
             arr.add(null);
@@ -122,6 +123,9 @@ public class Generator {
 
         // Get locals values
         int locals = table.getSymbolTrees().get(node.functionName).size();
+        // NOT SURE!!
+        if(node.functionName.equals("main"))
+            locals++;
         sampler.printLocalsLimit(locals);
         //function += ".limit locals " + locals + "\n";
 
@@ -280,6 +284,7 @@ public class Generator {
                             params[i] = "[I";
     
                     } else {
+
                         String type = globalVariables.get(arg.content);
                         if(type != null){
                             function += sampler.getLoadStatic(this.moduleName, arg.content, type) + "\n";
@@ -486,6 +491,9 @@ public class Generator {
 
                     if(term.toString().equals("ArrayAccess")){
                         // If RHS is an array access
+
+                        stackLimit++;
+                        stackLimit++;
 
                         ASTArrayAccess arrAcc = (ASTArrayAccess) term;
 
