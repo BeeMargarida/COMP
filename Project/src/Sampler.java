@@ -101,14 +101,16 @@ public class Sampler {
         println(".limit stack " + limit);
     }
 
-    /*public void printConst(String arg){
-        println("iconst_" + arg);
-    }*/
-
-    public String getConst(String arg){
-        if(Integer.parseInt(arg) >= 10){
+    public String getConst(String arg, boolean isNegative){
+        if(Integer.parseInt(arg) >= 5){
+            if(isNegative){
+                return "bipush " + "-" + arg;
+            }
             return "bipush " + arg;
         } else {
+            if(isNegative){
+                return "bipush " + "-" + arg;
+            }
             return "iconst_" + arg;
         }
     }
@@ -145,8 +147,14 @@ public class Sampler {
         if(type.equals(Utils.ARRAY)){
             return "astore_" + arg;
         }
-        return "istore_"+arg+"\n";
+        if(arg <= 3){
+            return "istore_"+arg+"\n";
+        }
+        else{
+            return "istore "+arg+"\n";
+        }
     }
+
 
     public String getOperator(String op){
         return "" + arith.get(op);
@@ -206,9 +214,11 @@ public class Sampler {
     public String getFunctionInvocation(String moduleName, String functionName, String[] params, String returnType){
         String res = "";
         res += "invokestatic " + moduleName+ "/" + functionName + "(";
-        for(int i = 0; i < params.length; i++){
-            res += params[i];
-        }   
+        if(params != null){
+            for(int i = 0; i < params.length; i++){
+                res += params[i];
+            }   
+        }
         res += ")" + returnType + "\n";
         return res;
     }

@@ -17,65 +17,65 @@ istore_3
 
 
 iconst_0
-istore_4
+istore 4
 
 
 iconst_0
-istore_5
+istore 5
 
 
 loop0:
 
-iload_-1
-iconst_6
+iload 5
+bipush 6
 if_icmpge loop0_end
 
 iload_2
 iload_3
 iadd
-istore_6
+istore 6
 
 
 iload 6
 iconst_2
 ishl
-istore_7
+istore 7
 
 
 iload 7
 iconst_1
 ior
-istore_8
+istore 8
 
 
 iload_3
 iconst_1
 ishl
-istore_9
+istore 9
 
 
 iload 4
 iconst_2
 ishl
-istore_10
+istore 10
 
 
 iload_1
 bipush 10
 ishr
-istore_11
+istore 11
 
 
 iload 11
 iconst_3
 iand
-istore_12
+istore 12
 
 
 iload 10
 iload 12
 ior
-istore_4
+istore 4
 
 
 iload_1

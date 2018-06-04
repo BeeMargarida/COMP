@@ -58,7 +58,7 @@ return
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 2
 .limit stack 1
 bipush 10
 invokestatic array1/print_array(I)V

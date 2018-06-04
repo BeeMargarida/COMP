@@ -33,5 +33,8 @@ class ASTTerm extends SimpleNode {
       isNegative = false;
   }
 
+  public boolean getNegative(){
+    return isNegative;
+  }
 }
 /* JavaCC - OriginalChecksum=83d1bbf70069cf6a66041edc517e41db (do not edit this line) */

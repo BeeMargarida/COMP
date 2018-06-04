@@ -55,7 +55,7 @@ istore_1
 
 
 iload_1
-invokestatic aval5/println(I)V
+invokestatic io/println(I)V
 
 iconst_2
 iconst_2
@@ -65,7 +65,7 @@ istore_1
 
 
 iload_1
-invokestatic aval5/println(I)V
+invokestatic io/println(I)V
 
 
 return
