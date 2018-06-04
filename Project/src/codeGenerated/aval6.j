@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static sqrt(I)I
-.limit locals 6
+.limit locals 13
 .limit stack 3
 iload_0
 istore_1
@@ -26,7 +26,7 @@ istore_5
 
 loop0:
 
-iload_-1
+iload 5
 iconst_6
 if_icmpge loop0_end
 

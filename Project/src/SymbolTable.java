@@ -255,7 +255,7 @@ public class SymbolTable {
 			}
 
 			else {
-				return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
+					return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
 			}
 		}
 		// Direct check between two operatives
@@ -363,8 +363,8 @@ public class SymbolTable {
 		if (rightType.equals(Utils.ARRAY_ACCESS))
 			rightType = Utils.SCALAR;
 
-		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
-
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType + " "
+		// + needToBeInitialized);
 		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
@@ -395,12 +395,7 @@ public class SymbolTable {
 				hasErrors = true;
 				return null;
 			}
-		} else {
-			if (leftType != Utils.NUMBER) {
-				leftChild.setInitialization(Utils.DEFIN_INIT);
-				return leftChild;
-			}
-		}
+		} 
 
 		//Utils.printNode(leftChild);
 		// Left node needs to be initialized (in case of it being on the rhs of some op)
@@ -419,25 +414,22 @@ public class SymbolTable {
 			} 
 		}
 
-		// Was already declared
-		else if (leftChild != null) {
-			// If they are scalars or arrays
-			if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
+		// If they are scalars or arrays
+		if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
 			&& (rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
-				if (!leftType.equals(rightType)) {
-					hasErrors = true;
-					System.out.println("Semantic Error: Incompatible operation between " + "left Hand Side Value "
-					+ leftChild.getValue() + " type " + leftType + " and Right Hand Side Value " + rightChild.getValue() + " type " + rightType);
-					return null;
-				} else { // Was not present, new initialization
-					leftChild.setType(rightChild.getType());
-					leftChild.setInitialization(Utils.DEFIN_INIT);
-					return leftChild;
-				}
-			}
-			else if (rightType.equals(Utils.NUMBER))
-				leftChild.setInitialization(Utils.DEFIN_INIT);
+			if (!leftType.equals(rightType)) {
+				hasErrors = true;
+				System.out.println("Semantic Error: Incompatible operation between " + "left Hand Side Value "
+				+ leftChild.getValue() + " type " + leftType + " and Right Hand Side Value " + rightChild.getValue() + " type " + rightType);
+				return null;
+			} 
 		}
+		if (leftType.equals(Utils.SCALAR) && !rightType.equals(Utils.ARRAY) && !needToBeInitialized) {
+			leftChild.setInitialization(Utils.DEFIN_INIT);
+			leftChild.setType(Utils.SCALAR);
+			return leftChild;
+		}
+			
 		//System.out.println("End analysing\n");
 
 		return leftChild;
@@ -488,11 +480,11 @@ public class SymbolTable {
 								+ resultNode.getValue() + " was found.");
 						hasErrors = true;
 					} else {
-						nodesScope.add(resultNode);
+						push(resultNode);
 					}
 
 				} else { // Had no node in scope, can add safely
-					nodesScope.add(resultNode);
+					push(resultNode);
 				}
 			} // Had else, need to analyse that next
 			else if (child.getType().equals(Utils.ELSE))
