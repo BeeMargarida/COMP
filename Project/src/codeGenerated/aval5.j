@@ -20,7 +20,6 @@ if_icmpge loop1_end
 
 iload_0
 iconst_1
-iadd
 istore_0
 
 
@@ -30,7 +29,6 @@ loop1_end:
 
 iload_0
 iconst_2
-ishl
 istore_1
 
 
@@ -38,7 +36,6 @@ goto loop0_next
 loop0_end:
 iload_1
 iload_0
-iadd
 istore_1
 
 
@@ -80,5 +77,6 @@ return
 .method static public <clinit>()V
 .limit stack 0
 .limit locals 0
+
 return
 .end method

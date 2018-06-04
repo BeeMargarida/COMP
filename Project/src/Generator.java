@@ -198,12 +198,30 @@ public class Generator {
     // returns type of Var
     public String visit(ASTVar node, String functionName) {
 
-        if (stack.get(functionName) == null) {
-            ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
-            arr.add(node);
-            stack.put(functionName, arr);
-        } else
-            stack.get(functionName).add(node);
+        if(node.jjtGetNumChildren() > 0){
+            
+            for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+
+                if (stack.get(functionName) == null) {
+                    ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
+                    arr.add((SimpleNode) node.jjtGetChild(i));
+                    stack.put(functionName, arr);
+                } else{
+                    stack.get(functionName).add((SimpleNode) node.jjtGetChild(i));
+                }
+            }
+
+        }
+        else {
+            if (stack.get(functionName) == null) {
+                ArrayList<SimpleNode> arr = new ArrayList<SimpleNode>();
+                arr.add(node);
+                stack.put(functionName, arr);
+            } else
+                stack.get(functionName).add(node);
+    
+            return node.getType();
+        }
 
         return node.getType();
     }
@@ -276,8 +294,8 @@ public class Generator {
         String returnType;
         if (!node.getValue().equals("println") && !node.getValue().equals("print")) {
 
-            ASTFunction function = this.table.getFunction(node.getValue());
-
+            ASTFunction function = this.table.getFunction(node.getValue()); 
+            
             if (function == null) {
                 // It's from another module
                 System.out.println("Function doesn't exist");
@@ -333,6 +351,7 @@ public class Generator {
         boolean isOp = answer[0];
         boolean wasArray = answer[1];
 
+        System.out.println("OPPP:: " + rhs.getValue());
         // print operator
         if (isOp && rhs.getValue() != null){
             System.out.println("OP! " + rhs.getValue());
@@ -391,6 +410,7 @@ public class Generator {
 
         boolean isOp = false;
         boolean wasArray = false;
+        boolean isInc = false;
 
         System.out.println("RHS");
 
@@ -435,7 +455,8 @@ public class Generator {
                     System.out.println("Term: " + term.toString() + " : " + term.getValue());
 
                     if(term.toString().equals("ArrayAccess")){
-                        // If RHS is a function call
+                        // If RHS is an array access
+
                         ASTArrayAccess arrAcc = (ASTArrayAccess) term;
 
                         System.out.println("ARRAY ACCESS " + arrAcc.getValue());
@@ -472,9 +493,10 @@ public class Generator {
                         visit((ASTCall) chil.jjtGetChild(a), functionName);
 
                     } else if (term.toString().equals("ScalarAccess")) {
+                        
                         isOp = true;
                         if(term.getType().equals(Utils.SIZE)){
-
+                            //if it is an access to an array size
                             System.out.println("SCALARACCESS SIZE ");
                             int numStack = getFromStack(term.getValue(), functionName);
                             if(numStack != -1){
@@ -494,19 +516,24 @@ public class Generator {
                             // Scalar 
                             int numStack = getFromStack(term.getValue(), functionName);
                             stackLimit++;
-    
-                            if(numStack != -1){
-                                function += sampler.getLoad(numStack, term.getType()) + "\n";
+                            
+                            // TODO: Check if operation like a = a + 1-> it will be iinc <stack_n> 1
+                            if(rhs.getValue() != null){ // TODO - Check if SUM
+                                function += sampler.getInc(numStack, term.getValue()) + "\n";
                             }
                             else {
-                                String type = globalVariables.get(term.getValue());
-                                if(type != null){
-                                    function += sampler.getLoadStatic(this.moduleName, term.getValue(), type);
+
+                                if(numStack != -1){
+                                    function += sampler.getLoad(numStack, term.getType()) + "\n";
                                 }
+                                else {
+                                    String type = globalVariables.get(term.getValue());
+                                    if(type != null){
+                                        function += sampler.getLoadStatic(this.moduleName, term.getValue(), type);
+                                    }
+                                }
+
                             }
-    
-                            // TODO: Check if operation like a = a + 1-> it will be iinc <stack_n> 1
-    
                         }
                     }
                 }
@@ -606,11 +633,12 @@ public class Generator {
     // Gets the position of the variable in the stack
     public int getFromStack(String arg, String functionName) {
         ArrayList<SimpleNode> arr = stack.get(functionName);
-
         for (int i = 0; i < arr.size(); i++) {
 
-            if (arr.get(i) != null && arr.get(i).getValue().equals(arg)) {
-                return i;
+            if (arr.get(i) != null) {
+                if(arr.get(i).getValue().equals(arg)) {
+                    return i;
+                }
             }
 
         }

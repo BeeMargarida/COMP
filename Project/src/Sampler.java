@@ -152,6 +152,10 @@ public class Sampler {
         return "" + arith.get(op);
     }
 
+    public String getInc(int stack, String num){
+        return "iinc " + stack + " " + num;
+    }
+
     public String getNewArray(){
         return "newarray int\n";
     }

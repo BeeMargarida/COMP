@@ -5,7 +5,7 @@
 .field static mx I
 .field static mn I
 .method public static det([I)V
-.limit locals 6
+.limit locals 2
 .limit stack 2
 iconst_0
 istore_1
@@ -32,7 +32,6 @@ istore_3
 
 iload_1
 iconst_1
-iadd
 istore_1
 
 
@@ -42,13 +41,13 @@ iaload
 istore_5
 
 
-aload_3
-aload 5
+iload_3
+iload 5
 istore_6
 
 
-aload_3
-aload 5
+iload_3
+iload 5
 istore_7
 
 
