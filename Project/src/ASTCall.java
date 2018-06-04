@@ -25,11 +25,11 @@ public class ASTCall extends SimpleNode {
   }
 
   public String getPackage() { 
-    return packageName; 
+    return packageName.toLowerCase(); 
   }
 
   public String getCalledFunction() {
-    return calledFunction;
+    return calledFunction.toLowerCase();
   }
 
 }
