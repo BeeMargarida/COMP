@@ -15,7 +15,7 @@ public class ASTFunction extends SimpleNode {
 	}
 
 	public String toString(String prefix) {
-		value = functionName;
+		value = functionName.toLowerCase();
 		return prefix + "Function " + functionName;
 	}
 	
