@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class SymbolTable {
 
 	private String currentScope;
@@ -11,12 +10,12 @@ public class SymbolTable {
 	private HashMap<String, ArrayList<SimpleNode>> symbolTrees;
 	private ArrayList<SimpleNode> declarations;
 	private ArrayList<SimpleNode> functions;
-	
+
 	public SymbolTable() {
 		symbolTrees = new HashMap<>();
 		declarations = new ArrayList<>();
 		functions = new ArrayList<>();
-	
+
 		currentScope = "";
 		hasErrors = false;
 	}
@@ -32,7 +31,8 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 
-		//System.out.println("Node to Add " + nodeToAdd.getType() + " value " + nodeToAdd.getValue() + " scope " + currentScope);
+		// System.out.println("Node to Add " + nodeToAdd.getType() + " value " +
+		// nodeToAdd.getValue() + " scope " + currentScope);
 
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
@@ -72,34 +72,31 @@ public class SymbolTable {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
 
-			
 			if (nodeToAnalyse.getType().equals(Utils.FUNCTION)) {
 				currentScope = nodeToAnalyse.getValue();
-				
+
 				// Create new symbol tree for this scope
 				ArrayList<SimpleNode> newNodesInScope = new ArrayList<>();
 				symbolTrees.put(currentScope, newNodesInScope);
-				
+
 				// Function Name was already encountered before
 				if (Utils.contains(functions, nodeToAnalyse) != null) {
 					System.out.println("Semantic Error : " + "There are more than one function with name "
-						+ nodeToAnalyse.getValue() + ".");
-				}
-				else
-					functions.add(nodeToAnalyse);					
+							+ nodeToAnalyse.getValue() + ".");
+				} else
+					functions.add(nodeToAnalyse);
 
 				nodeToAnalyse = (SimpleNode) nodeToAnalyse.jjtGetChild(0);
-				// If it is the function argument list, need to store that for check	  
-				if (nodeToAnalyse.getType().equals(Utils.VARLIST)) {				
+				// If it is the function argument list, need to store that for check
+				if (nodeToAnalyse.getType().equals(Utils.VARLIST)) {
 					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
 						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
-			 
+
 						newNode.setInitialization(Utils.DEFIN_INIT);
 						push(newNode);
-					}	
+					}
 				}
-			}
-			else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
+			} else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
 				System.out.println("\n\nMERDA MERDA");
 				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
 
@@ -111,8 +108,6 @@ public class SymbolTable {
 				}
 			}
 
-			
-			
 			System.out.println("functions " + functions);
 		}
 
@@ -120,17 +115,17 @@ public class SymbolTable {
 			currentScope = functions.get(i).getValue();
 
 			boolean needsToBeInitializedAfterAnalysis = false;
-					
+
 			if (((ASTFunction) functions.get(i)).getReturnValue() != null) {
 				SimpleNode returnNode = new SimpleNode(0);
 				returnNode.setType(((ASTFunction) functions.get(i)).getReturnType());
 				returnNode.jjtSetValue(((ASTFunction) functions.get(i)).getReturnValue());
 
-				push(returnNode);				
+				push(returnNode);
 
 				needsToBeInitializedAfterAnalysis = true;
 			}
-			
+
 			analyseFunctions(functions.get(i));
 
 			if (needsToBeInitializedAfterAnalysis) {
@@ -139,16 +134,17 @@ public class SymbolTable {
 
 				if (check != null) {
 					if (check.isInitialized() != Utils.DEFIN_INIT) {
-						System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
+						System.out.println("Semantic Error : Variable " + valueToAnalyse
+								+ " needed to be initialized and wasn't.");
 						hasErrors = true;
 					}
-				}
-				else  {
-					System.out.println("Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
+				} else {
+					System.out.println(
+							"Semantic Error : Variable " + valueToAnalyse + " needed to be initialized and wasn't.");
 					hasErrors = true;
 				}
 			}
-			
+
 		}
 
 	}
@@ -157,13 +153,13 @@ public class SymbolTable {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
 
-			//System.out.println("Going through node " + nodeToAnalyse + " value " + nodeToAnalyse.getValue() + " type " + nodeToAnalyse.getType());
-			
+			// System.out.println("Going through node " + nodeToAnalyse + " value " +
+			// nodeToAnalyse.getValue() + " type " + nodeToAnalyse.getType());
+
 			// If it is a conditional, analyse everything inside
 			if (nodeToAnalyse.getType() == Utils.COND) {
 				analyseConditional(nodeToAnalyse);
-			}
-			else {
+			} else {
 				if (nodeToAnalyse.getType() == Utils.CALL) {
 					SimpleNode newNode = analyseCalls(nodeToAnalyse, false);
 					if (newNode != null) {
@@ -175,20 +171,19 @@ public class SymbolTable {
 					if (newNode != null) {
 						symbolTrees.get(currentScope).add(newNode);
 					}
+				} else if (nodeToAnalyse.getType() == Utils.OP) {
+					// Is operation
+					SimpleNode newNode = analyseOperation(nodeToAnalyse);
+
+					// If it is something worth adding, add it
+					if (newNode != null) {
+						if (newNode.getType().equals(Utils.ARRAY) || newNode.getType().equals(Utils.SCALAR)) {
+							push(newNode);
+						}
+					}
 				}
-				else if (nodeToAnalyse.getType() == Utils.OP) {
-				   // Is operation
-				   SimpleNode newNode = analyseOperation(nodeToAnalyse);
-   
-				   // If it is something worth adding, add it
-				   if (newNode != null) {
-					    if (newNode.getType().equals(Utils.ARRAY) || newNode.getType().equals(Utils.SCALAR))  {
-					   		push(newNode);
-					   }
-				   }
-			   } 
-			   
-			   analyseFunctions(nodeToAnalyse);
+
+				analyseFunctions(nodeToAnalyse);
 			}
 		}
 	}
@@ -203,7 +198,7 @@ public class SymbolTable {
 			hasErrors = true;
 			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
 			return null;
-		}	
+		}
 
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
@@ -214,12 +209,12 @@ public class SymbolTable {
 		else if (Utils.checkFor(Utils.EXTERNAL_CALL, leftChild) || Utils.checkFor(Utils.EXTERNAL_CALL, rightChild)) {
 			SimpleNode callNode = analyseCalls(node, true);
 			return callNode;
-		}		
+		}
 
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
 			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
-				if (leftChild.getType().equals(Utils.ARRAY)){
+				if (leftChild.getType().equals(Utils.ARRAY)) {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					return leftChild;
 				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
@@ -227,13 +222,13 @@ public class SymbolTable {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					return leftChild;
 				} else {
-					System.out.println("Semantic Error : Attempted to instantiate scalar variable " + 
-						leftChild.getValue());
+					System.out.println(
+							"Semantic Error : Attempted to instantiate scalar variable " + leftChild.getValue());
 					hasErrors = true;
 					return null;
 				}
 			}
-		
+
 			// Check for array instantiations, with a scalar for size
 			else if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
 				// Do lookup of scalar value
@@ -263,12 +258,10 @@ public class SymbolTable {
 		}
 		// Direct check between two operatives
 		else {
-			return analyseTwoNodesOperation(leftChild, rightChild, false, null);
-
+			return analyseTwoNodesOperation(leftChild, rightChild, false, node);
 		}
-
 	}
-	
+
 	/**
 	 * Recursive operations, in case of nested ops.
 	 */
@@ -293,9 +286,7 @@ public class SymbolTable {
 			// Are scalar or array, start analysing here
 			return analyseTwoNodesOperation(leftNode, rightNode, true, rightChild);
 		}
-
 	}
-
 
 	/**
 	 * Compares between two nodes. Needs to know the operation and whether the left
@@ -322,7 +313,6 @@ public class SymbolTable {
 			leftType = leftChild.getType();
 		}
 
-		
 		//System.out.println("Before L " + leftType + " value " + leftChild.getValue() + " needs " + needToBeInitialized);
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
@@ -387,37 +377,46 @@ public class SymbolTable {
 		
 		//Utils.printNode(rightChild);
 		// Right Hand Side variable was not initialized, semantic error
-		if (rightChild.isInitialized() == Utils.NOT_INIT && rightType != Utils.NUMBER) {
-			hasErrors = true;
-			System.out.println("Semantic Error : Variable " + rightChild.getValue() + " was not initialized.");
-			return null;
-		} // Right Hand Side may not be initialized, semantic warning
-		else if (rightChild.isInitialized() == Utils.MAYBE_INIT && rightType != Utils.NUMBER) {
-			System.out.println("Semantic Warning : Variable " + rightChild.getValue() + " may not be initialized.");
-		} // Right Hand Side has had incompatible initializations, and is trying to be
+		if (rightType != Utils.NUMBER) {
+			if (rightChild.isInitialized() == Utils.NOT_INIT) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Variable " + rightChild.getValue() + " was not initialized.");
+				return null;
+			} // Right Hand Side may not be initialized, semantic warning
+			else if (rightChild.isInitialized() == Utils.MAYBE_INIT) {
+				System.out.println("Semantic Warning : Variable " + rightChild.getValue() + " may not be initialized.");
+			} // Right Hand Side has had incompatible initializations, and is trying to be
 			// accessed
-		else if (rightChild.isInitialized() == Utils.INCOMPAT_INIT && rightType != Utils.NUMBER) {
-			System.out.println("Semantic Error : Variable " + rightChild.getValue()
-					+ " has incompatible previous declaration" + " in previous 'if' structure.");
-			hasErrors = true;
-			return null;
+			else if (rightChild.isInitialized() == Utils.INCOMPAT_INIT) {
+				System.out.println("Semantic Error : Variable " + rightChild.getValue()
+						+ " has incompatible previous declaration" + " in previous 'if' structure.");
+				hasErrors = true;
+				return null;
+			}
+		} else {
+			if (!needToBeInitialized && leftType != Utils.NUMBER) {
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				return leftChild;
+			}
 		}
 
 		//Utils.printNode(leftChild);
 		// Left node needs to be initialized (in case of it being on the rhs of some op)
-		if (leftChild.isInitialized() == Utils.NOT_INIT && needToBeInitialized) {
-			hasErrors = true;
-			System.out.println("Semantic Error : Variable " + leftChild.getValue() + " was not initialized.");
-			return null;
-		} else if (leftChild.isInitialized() == Utils.MAYBE_INIT) {
-			System.out.println("Semantic Warning : Variable " + leftChild.getValue() + " was maybe not initialized.");
-			return leftChild;
-		} else if (leftChild.isInitialized() == Utils.INCOMPAT_INIT) {
-			System.out.println(
-					"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
-			return leftChild;
-		} 
-		
+		if (!leftType.equals(Utils.NUMBER)) {
+			if (leftChild.isInitialized() == Utils.NOT_INIT && needToBeInitialized) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Variable " + leftChild.getValue() + " was not initialized.");
+				return null;
+			} else if (leftChild.isInitialized() == Utils.MAYBE_INIT) {
+				System.out.println("Semantic Warning : Variable " + leftChild.getValue() + " was maybe not initialized.");
+				return leftChild;
+			} else if (leftChild.isInitialized() == Utils.INCOMPAT_INIT) {
+				System.out.println(
+						"Semantic Warning : Variable " + leftChild.getValue() + " could be either scalar or array.");
+				return leftChild;
+			} 
+		}
+
 		// Was already declared
 		else if (leftChild != null) {
 			// If they are scalars or arrays
@@ -434,11 +433,11 @@ public class SymbolTable {
 					return leftChild;
 				}
 			}
-			else if (rightType.equals(Utils.NUMBER) && leftType.equals(Utils.SCALAR))
+			else if (rightType.equals(Utils.NUMBER))
 				leftChild.setInitialization(Utils.DEFIN_INIT);
 		}
 		//System.out.println("End analysing\n");
-		
+
 		return leftChild;
 	}
 
@@ -448,32 +447,32 @@ public class SymbolTable {
 	public void analyseConditional(SimpleNode nodeToAnalyse) {
 		// Nodes in new scope
 		ArrayList<SimpleNode> nodesScope = new ArrayList<>();
-		
+
 		SimpleNode elseNode = null;
-		
+
 		// Analyse ExprTest
 		SimpleNode exprTest = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
-		
+
 		boolean isValid = analyseExprTest(exprTest);
 
-		if (!isValid) 
+		if (!isValid)
 			return;
 
 		// Analyse all the nodes inside the if
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
-			
+
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
 
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
 				SimpleNode resultNode = analyseOperation(child);
-				
-				if(resultNode == null)
+
+				if (resultNode == null)
 					return;
 
 				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
-				
+
 				if (previousNode == null) {
 					previousNode = lookup(resultNode);
 				}
@@ -511,9 +510,9 @@ public class SymbolTable {
 
 				if (child.getType().equals(Utils.OP)) {
 					SimpleNode resultNode = analyseOperation(child);
-					
+
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
-					
+
 					// Was nowhere to be found
 					if (previousNode == null && lookup(resultNode) == null) {
 						if (resultNode != null) {
@@ -535,13 +534,13 @@ public class SymbolTable {
 							nodesScope.add(previousNode);
 						}
 					}
-				} 
+				}
 			}
 		}
-		
+
 		// Merge the previous array with the new, replacing all the old instantiations
 		ArrayList<SimpleNode> mergedNodesInScope = Utils.mergeArrays(symbolTrees.get(currentScope), nodesScope);
-		symbolTrees.replace(currentScope, mergedNodesInScope);		
+		symbolTrees.replace(currentScope, mergedNodesInScope);
 	}
 
 	public boolean analyseExprTest(SimpleNode exprTest) {
@@ -551,20 +550,20 @@ public class SymbolTable {
 		if (!leftChildExpr.getType().equals(Utils.NUMBER)) {
 			// Check for previous declaration
 			SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
-			
+
 			if (previousLeftNode == null) {
 				previousLeftNode = lookup(leftChildExpr);
 			}
 			if (previousLeftNode != null)
-			leftChildExpr = previousLeftNode;
+				leftChildExpr = previousLeftNode;
 		}
 
 		if (rightChildExpr.getType().equals(Utils.RHS))
 			rightChildExpr = (SimpleNode) rightChildExpr.jjtGetChild(0);
-		
+
 		if (!rightChildExpr.getType().equals(Utils.NUMBER)) {
 			SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChildExpr);
-			
+
 			if (previousRightNode == null) {
 				previousRightNode = lookup(leftChildExpr);
 			}
@@ -580,12 +579,12 @@ public class SymbolTable {
 		}
 
 		else if (rightChildExpr.getType().equals(Utils.ARRAY)) {
-			 System.out.println("Semantic Error : Array cannot compare with " + leftChildExpr.getValue());
-			 hasErrors = true;
-			 return false;
-		 }	 
-		
-		 return true;
+			System.out.println("Semantic Error : Array cannot compare with " + leftChildExpr.getValue());
+			hasErrors = true;
+			return false;
+		}
+
+		return true;
 
 	}
 
@@ -599,70 +598,68 @@ public class SymbolTable {
 		if (isExternal) {
 			callToBeAnalysed = new SimpleNode(0);
 			callToBeAnalysed.setInitialization(Utils.DEFIN_INIT);
-			callToBeAnalysed.setType(Utils.SCALAR);			
-		}
-		else 
+			callToBeAnalysed.setType(Utils.SCALAR);
+		} else
 			callToBeAnalysed = Utils.extractOfType(Utils.CALL, nodeToAnalyse);
 
 		SimpleNode function = Utils.containsValue(functions, callToBeAnalysed);
 
 		// Has no function and isn't external call
 		if (function == null && !isExternal) {
-			System.out.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
+			System.out
+					.println("Semantic Error : There was no function associated named " + callToBeAnalysed.getValue());
 			hasErrors = true;
 			return null;
 		} else {
 			// Call is correct, checking types
 			if (nodeToAnalyse.getType().equals(Utils.OP)) {
 				// Had operation in call
-				
+
 				SimpleNode leftNode = Utils.extractOfType(Utils.SCALAR, (SimpleNode) nodeToAnalyse.jjtGetChild(0));
-				
+
 				if (leftNode == null)
 					leftNode = Utils.extractOfType(Utils.ARRAY, (SimpleNode) nodeToAnalyse.jjtGetChild(0));
-					
+
 				// Check previous declarations of node
 				SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftNode);
 
 				if (previousLeftNode != null)
 					leftNode = previousLeftNode;
 				// Semantic check of return type
-				if(isExternal) {
+				if (isExternal) {
 					if (!leftNode.getType().equals(Utils.SCALAR)) {
 						hasErrors = true;
-						System.out.println("Semantic Error : External package, by default " + 
-						 " return scalar, variable " +
-							leftNode.getValue() + " was already initialized with type " +  leftNode.getType() + ".");
+						System.out.println("Semantic Error : External package, by default "
+								+ " return scalar, variable " + leftNode.getValue()
+								+ " was already initialized with type " + leftNode.getType() + ".");
 						return null;
 					} else {
 						leftNode.setInitialization(Utils.DEFIN_INIT);
 						return leftNode;
 					}
-				}
-				else {
+				} else {
 					if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
 						hasErrors = true;
-						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " " +leftNode.getValue() 
-						+ " and " + function.getValue() + " -> " + leftNode.getType() + " opposed to "
-						+ ((ASTFunction) function).getReturnType());
+						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " "
+								+ leftNode.getValue() + " and " + function.getValue() + " -> " + leftNode.getType()
+								+ " opposed to " + ((ASTFunction) function).getReturnType());
 						return null;
 					}
 					// Checking argslist to see if the size and types are correct
-					if (callToBeAnalysed.jjtGetNumChildren() > 0 &&
-						callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
+					if (callToBeAnalysed.jjtGetNumChildren() > 0 && callToBeAnalysed.jjtGetChild(0)
+							.jjtGetNumChildren() != function.jjtGetChild(0).jjtGetNumChildren()) {
 						System.out.println("Semantic Error : Mismatching number of arguments in call "
-							+ callToBeAnalysed.getValue() + " -> " + callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren()
-							+ " opposed to " + function.jjtGetChild(0).jjtGetNumChildren());
+								+ callToBeAnalysed.getValue() + " -> "
+								+ callToBeAnalysed.jjtGetChild(0).jjtGetNumChildren() + " opposed to "
+								+ function.jjtGetChild(0).jjtGetNumChildren());
 						hasErrors = true;
 						return null;
-					}
-					 else {
+					} else {
 						return leftNode;
 					}
 				}
 			}
 
-			
 			return null;
 		}
 	}
