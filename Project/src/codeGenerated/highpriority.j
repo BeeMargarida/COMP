@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 2
+.limit locals 4
 .limit stack 2
 loop0:
 

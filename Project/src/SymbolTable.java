@@ -92,7 +92,9 @@ public class SymbolTable {
 					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
 						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
 
-						System.out.println("What have we here? " + newNode.getValue() + " type " + newNode.getType());
+						if (newNode.getValue() == null) 
+							newNode = (SimpleNode) newNode.jjtGetChild(0);
+
 						newNode.setInitialization(Utils.DEFIN_INIT);
 						push(newNode);
 					}
@@ -337,12 +339,7 @@ public class SymbolTable {
 		}
 		
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
-		System.out.println("Damn it, o que e que la tens? " + symbolTrees.get(currentScope));
-
-		for (int i = 0; i < symbolTrees.get(currentScope).size() ; i++) {
-			System.out.println("Test " + symbolTrees.get(currentScope).get(i).getValue());
-		}
-		
+			
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
 				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable " + rightChild.getValue());
@@ -366,7 +363,7 @@ public class SymbolTable {
 		if (rightType.equals(Utils.ARRAY_ACCESS))
 			rightType = Utils.SCALAR;
 
-		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
 
 		
 		if (operation != null) {

@@ -1185,7 +1185,6 @@ if (jjtc000) {
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
     try {
-System.out.println("Entro aqui com o que? " + t.image);
       jj_consume_token(32);
       jj_consume_token(33);
 jjtree.closeNodeScope(jjtn000, true);

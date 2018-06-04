@@ -953,7 +953,6 @@ void ArrayElement(Token t): {/*@bgen(jjtree) ArrayElement */
 /*@egen*/ } {/*@bgen(jjtree) ArrayElement */
         try {
 /*@egen*/
-	{System.out.println("Entro aqui com o que? " + t.image);}
 	"[" "]"/*@bgen(jjtree)*/
                 {
                   jjtree.closeNodeScope(jjtn000, true);
