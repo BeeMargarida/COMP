@@ -314,7 +314,7 @@ public class Generator {
         String returnType;
         String moduleString = this.moduleName;
         if (!node.getValue().equals("println") && !node.getValue().equals("print")) {
-
+            System.out.println("FACKKKKK: " + node.getValue());
             ASTFunction function = this.table.getFunction(node.getValue()); 
             
             if (function == null) {
