@@ -3,7 +3,7 @@
 
 .method public static f(II)I
 .limit locals 3
-.limit stack 4
+.limit stack 2
 bipush 10
 istore_2
 
@@ -18,17 +18,14 @@ iload_0
 iload_2
 if_icmpge loop1_end
 
-iload_0
-iconst_1
-istore_0
-
-
+iinc 0 1
 goto loop1
 
 loop1_end:
 
 iload_0
 iconst_2
+ishl
 istore_1
 
 
@@ -36,6 +33,7 @@ goto loop0_next
 loop0_end:
 iload_1
 iload_0
+iadd
 istore_1
 
 

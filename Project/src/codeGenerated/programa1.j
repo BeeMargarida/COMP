@@ -30,27 +30,23 @@ iaload
 istore_3
 
 
-iload_1
-iconst_1
-istore_1
-
-
+iinc 1 1
 aload_0
 iload_1
 iaload
-istore_5
+istore_4
 
 
 iload_3
-iload 5
-istore_6
+iload 4
+invokestatic library1/max(II)I
 
-
+putstatic programa1/mx I 
 iload_3
-iload 5
-istore_7
+iload 4
+invokestatic library1/min(II)I
 
-
+putstatic programa1/mn I 
 goto loop0
 
 loop0_end:
@@ -63,13 +59,16 @@ return
 .method public static main([Ljava/lang/String;)V
 .limit locals 0
 .limit stack 0
-getstatic programa1/data [I invokestatic programa1/det(null)V
+getstatic programa1/data [I 
+invokestatic programa1/det([I)V
 
 ldc "max: "
-getstatic programa1/mx I invokestatic programa1/println(Ljava/lang/String;null)V
+getstatic programa1/mx I 
+invokestatic io/println(Ljava/lang/String;I)V
 
 ldc "min: "
-getstatic programa1/mn I invokestatic programa1/println(Ljava/lang/String;null)V
+getstatic programa1/mn I 
+invokestatic io/println(Ljava/lang/String;I)V
 
 
 return

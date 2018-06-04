@@ -337,7 +337,7 @@ void Rhs() : {Token t; String tmp;} {
 	(
 		(
 		Term()((t=<ARITH_OP > | t=<BITWISE_OP> | t=< ADDSUB_OP > | t=<RELA_OP>) Term() 
-			{jjtThis.setType(Utils.OP); jjtThis.setOperator(t.image);})?
+			{jjtThis.setType(Utils.OP); jjtThis.jjtSetValue(t.image);})?
 		) 
 		|
 		 ( ArrayInstantion() {jjtThis.setType(Utils.ARRAY); } )
