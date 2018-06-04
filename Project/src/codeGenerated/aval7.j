@@ -51,7 +51,7 @@ ireturn
 .limit locals 3
 .limit stack 1
 iconst_3
-invokestatic null/count(I)I
+invokestatic aval7/count(I)I
 
 istore_1
 

@@ -284,6 +284,8 @@ public class Generator {
         
                             stackLimit++;
                             String type = stack.get(currentFunctionName).get(numStack).getType();
+                            System.out.println("FDSD: " + stack.get(currentFunctionName).get(numStack));
+                            System.out.println("TYPEEEE_: " + type);
                             function += sampler.getLoad(numStack, type) + "\n";
         
                             // check type of parameters - TODO: Make this more readable
@@ -314,9 +316,9 @@ public class Generator {
         String returnType;
         String moduleString = this.moduleName;
         if (!node.getValue().equals("println") && !node.getValue().equals("print")) {
-            System.out.println("FACKKKKK: " + node.getValue());
+
             ASTFunction function = this.table.getFunction(node.getValue()); 
-            
+
             if (function == null) {
                 // It's from another module
                 moduleString = node.getPackage();
@@ -421,6 +423,7 @@ public class Generator {
                         arr.add(lhs);
                         stack.put(functionName, arr);
                     } else {
+                        System.out.println("LHS FDS: " + lhs.getValue() + " safasd :: "  + lhs.getType());
                         stack.get(functionName).add(lhs);
                     }
 
@@ -471,19 +474,26 @@ public class Generator {
             }
             else if(chil.toString().equals("ArrayInstantion")) {
 
-                // array instatiation
-                int numStack = getFromStack(chil.getValue(), functionName);
-                if(numStack != -1){
-                    function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
-    
-                    //stack.get(functionName).add(chil);                    
-                }
-                else {
-                    String type = globalVariables.get(chil.getValue());
-                    if(type != null){
-                        function += sampler.getLoadStatic(this.moduleName, chil.getValue(), type) + "\n";
+                try {
+                    Integer.parseInt(chil.getValue());
+                    function += sampler.getConst(chil.getValue(), false) + "\n";
+
+                } catch (NumberFormatException e) {
+                    // array instatiation
+                    int numStack = getFromStack(chil.getValue(), functionName);
+                    if(numStack != -1){
+                        function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+        
+                        //stack.get(functionName).add(chil);                    
+                    }
+                    else {
+                        String type = globalVariables.get(chil.getValue());
+                        if(type != null){
+                            function += sampler.getLoadStatic(this.moduleName, chil.getValue(), type) + "\n";
+                        }
                     }
                 }
+                
 
                 function += sampler.getNewArray();
                 wasArray = true;
@@ -517,14 +527,20 @@ public class Generator {
                             }
                         }
 
-                        numStack = getFromStack(arrAcc.getIndex(), functionName);
-                        if(numStack != -1){
-                            function += sampler.getLoad(numStack, Utils.SCALAR)  + "\n";
-                        }
-                        else {
-                            String type = globalVariables.get(arrAcc.getIndex());
-                            if(type != null){
-                                function += sampler.getLoadStatic(this.moduleName, arrAcc.getIndex(), type) + "\n";
+                        try {
+                            Integer.parseInt(arrAcc.getIndex());
+                            function += sampler.getConst(arrAcc.getIndex(), false) + "\n";
+
+                        } catch (NumberFormatException e) {
+                            numStack = getFromStack(arrAcc.getIndex(), functionName);
+                            if(numStack != -1){
+                                function += sampler.getLoad(numStack, Utils.SCALAR)  + "\n";
+                            }
+                            else {
+                                String type = globalVariables.get(arrAcc.getIndex());
+                                if(type != null){
+                                    function += sampler.getLoadStatic(this.moduleName, arrAcc.getIndex(), type) + "\n";
+                                }
                             }
                         }
 

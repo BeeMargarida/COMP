@@ -102,17 +102,37 @@ public class Sampler {
     }
 
     public String getConst(String arg, boolean isNegative){
-        if(Integer.parseInt(arg) >= 5){
-            if(isNegative){
-                return "bipush " + "-" + arg;
+
+        if(isNegative){
+            if(Integer.parseInt(arg) > 32768){
+                return "ldc " + "-" + arg;
             }
-            return "bipush " + arg;
-        } else {
-            if(isNegative){
-                return "bipush " + "-" + arg;
+            else if(Integer.parseInt(arg) >= 129){               
+                return "sipush " + "-" + arg;  
             }
-            return "iconst_" + arg;
+            else if(Integer.parseInt(arg) > 5){                
+                return "bipush " + "-" + arg;               
+            }
+            else {
+                return "iconst_" + "m" + arg;
+            }
         }
+        else {
+            if(Integer.parseInt(arg) > 32767){
+                return "ldc " + arg;
+            }
+            else if(Integer.parseInt(arg) >= 128){
+                return "sipush " + arg;
+            }
+            else if(Integer.parseInt(arg) > 5){
+                return "bipush " + arg;
+                
+            }
+            else {
+                return "iconst_" + arg;
+            }
+        }
+        
     }
 
     public void printLoad(int arg){

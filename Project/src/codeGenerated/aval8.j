@@ -65,7 +65,7 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 1
+.limit locals 2
 .limit stack 1
 invokestatic aval8/max1()I
 
