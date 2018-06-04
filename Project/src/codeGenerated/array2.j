@@ -3,7 +3,7 @@
 
 .method public static sum_array([I)I
 .limit locals 3
-.limit stack 2
+.limit stack 1
 iconst_0
 istore_1
 
@@ -27,12 +27,7 @@ iadd
 istore_2
 
 
-iload_1
-iconst_1
-iadd
-istore_1
-
-
+iinc 1 1
 goto loop0
 
 loop0_end:
@@ -68,12 +63,7 @@ aload_2
 iload_3
 iconst_1
 iastore
-iload_3
-iconst_1
-iadd
-istore_3
-
-
+iinc 3 1
 goto loop0
 
 loop0_end:
@@ -81,12 +71,12 @@ loop0_end:
 aload_2
 invokestatic array2/sum_array([I)I
 
-istore_5
+istore_4
 
 
 ldc "sum of array elements = "
-iload 5
-invokestatic array2/println(Ljava/lang/String;I)V
+iload 4
+invokestatic io/println(Ljava/lang/String;I)V
 
 
 return
@@ -96,5 +86,6 @@ return
 .method static public <clinit>()V
 .limit stack 0
 .limit locals 0
+
 return
 .end method
