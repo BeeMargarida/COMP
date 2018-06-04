@@ -65,8 +65,10 @@ public class Utils {
 	public static SimpleNode containsValueString(ArrayList<SimpleNode> array, String string) {
 		if (array != null) {
 			for (int i = 0; i < array.size(); i++) {
-				if (array.get(i).getValue().equals(string)) {
-					return array.get(i);
+				if (array.get(i) != null && array.get(i).getValue() != null) {
+					if (array.get(i).getValue().equals(string)) {
+						return array.get(i);
+					}
 				}
 
 			}

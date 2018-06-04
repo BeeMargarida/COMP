@@ -92,12 +92,12 @@ public class SymbolTable {
 					for (int j = 0; j < nodeToAnalyse.jjtGetNumChildren(); j++) {
 						SimpleNode newNode = (SimpleNode) nodeToAnalyse.jjtGetChild(j);
 
+						System.out.println("What have we here? " + newNode.getValue() + " type " + newNode.getType());
 						newNode.setInitialization(Utils.DEFIN_INIT);
 						push(newNode);
 					}
 				}
 			} else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
-				System.out.println("\n\nMERDA MERDA");
 				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
 
 					SimpleNode nodeToAdd = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
@@ -313,7 +313,6 @@ public class SymbolTable {
 			leftType = leftChild.getType();
 		}
 
-		//System.out.println("Before L " + leftType + " value " + leftChild.getValue() + " needs " + needToBeInitialized);
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
 
@@ -329,19 +328,21 @@ public class SymbolTable {
 				return null;
 			}
 		}
-
+		
 		if (previousLeftNode != null) {
 			if (leftChild.getType().equals(Utils.ARRAY_ACCESS) || leftChild.getType().equals(Utils.SIZE)) {
 				leftType = Utils.SCALAR;
 			} 
 			leftChild = previousLeftNode;
 		}
-
-		//System.out.println("After L " + leftType + " value " + leftChild.getValue() + " needs " + needToBeInitialized);
 		
-		//System.out.println("Before R " + rightType + " value " + rightChild.getValue() + " needs " + needToBeInitialized);
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		System.out.println("Damn it, o que e que la tens? " + symbolTrees.get(currentScope));
 
+		for (int i = 0; i < symbolTrees.get(currentScope).size() ; i++) {
+			System.out.println("Test " + symbolTrees.get(currentScope).get(i).getValue());
+		}
+		
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
 				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable " + rightChild.getValue());
@@ -354,16 +355,20 @@ public class SymbolTable {
 				return null;
 			}
 		}
-
+		
 		if (previousRightNode != null) {
 			if (rightChild.getType().equals(Utils.ARRAY_ACCESS) || rightChild.getType().equals(Utils.SIZE)) {
 				rightType = Utils.SCALAR;
 			} 
 			rightChild = previousRightNode;
 		}
+		
+		if (rightType.equals(Utils.ARRAY_ACCESS))
+			rightType = Utils.SCALAR;
 
-		//System.out.println("After R " + rightType + " value " + rightChild.getValue() + " needs " + needToBeInitialized);
+		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
 
+		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
@@ -394,7 +399,7 @@ public class SymbolTable {
 				return null;
 			}
 		} else {
-			if (!needToBeInitialized && leftType != Utils.NUMBER) {
+			if (leftType != Utils.NUMBER) {
 				leftChild.setInitialization(Utils.DEFIN_INIT);
 				return leftChild;
 			}

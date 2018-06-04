@@ -2,16 +2,28 @@
 .super java/lang/Object
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 3
+.limit locals 2
 .limit stack 2
+loop0:
+
+iload_-1
 iconst_1
-iconst_3
+if_icmpge loop0_end
+
+iaload
+iadd
 istore_1
 
 
 iload_1
+iconst_2
+ishl
 istore_2
 
+
+goto loop0
+
+loop0_end:
 
 
 return
