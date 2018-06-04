@@ -24,7 +24,10 @@ public class ASTFunction extends SimpleNode {
 	}
 
 	public String getReturnValue(){
-		return returnValue.toLowerCase();
+		if (returnValue != null)
+			return returnValue.toLowerCase();
+		
+		return returnValue;
 	}
 
 }
