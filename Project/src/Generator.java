@@ -379,7 +379,6 @@ public class Generator {
 
 
         // print operator
-        System.out.println("OPPPP:: " + rhs.getValue());
         if (isOp && rhs.getValue() != null){
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
@@ -423,7 +422,7 @@ public class Generator {
                         arr.add(lhs);
                         stack.put(functionName, arr);
                     } else {
-                        System.out.println("LHS FDS: " + lhs.getValue() + " safasd :: "  + lhs.getType());
+
                         stack.get(functionName).add(lhs);
                     }
 
