@@ -661,7 +661,7 @@ public class SymbolTable {
 	public ASTFunction getFunction(String functionName) {
 		for (int i = 0; i < functions.size(); i++) {
 			ASTFunction function = (ASTFunction) functions.get(i);
-			if (function.functionName.equals(functionName)) {
+			if (function.functionName.equals(functionName.toLowerCase())) {
 				return function;
 			}
 		}
