@@ -24,7 +24,7 @@ public class ASTFunction extends SimpleNode {
 	}
 
 	public String getReturnValue(){
-		return returnValue;
+		return returnValue.toLowerCase();
 	}
 
 }
