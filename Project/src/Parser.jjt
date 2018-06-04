@@ -488,7 +488,6 @@ void Var() : {Token t; String tmp;} {
  * error recovery.
 */
 void ArrayElement(Token t): { } {
-	{System.out.println("Entro aqui com o que? " + t.image);}
 	"[" "]" {jjtThis.value = t.image;}
 }
 

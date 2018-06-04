@@ -118,6 +118,9 @@ class SimpleNode implements Node {
   }
 
   public String getValue() {
+    if (value != null)
+      return value.toString().toLowerCase();
+  
     return (String) value;
   }
 
