@@ -146,7 +146,7 @@ void Function(): {Token name;} {
 	} 
 	
 	Stmtlst() 
-}
+} 
 
 /** 
  * Declaration, handling definitions and assignment of variables outside functions.
