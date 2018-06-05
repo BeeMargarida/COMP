@@ -23,7 +23,6 @@ iload_2
 iload_2
 iastore
 iinc 2 1
-iadd
 goto loop0
 
 loop0_end:
@@ -49,7 +48,6 @@ iload_3
 invokestatic io/print(Ljava/lang/String;I)V
 
 iinc 2 1
-iadd
 goto loop1
 
 loop1_end:

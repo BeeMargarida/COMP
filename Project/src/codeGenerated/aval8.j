@@ -3,7 +3,7 @@
 
 .method public static max1()I
 .limit locals 5
-.limit stack 3
+.limit stack 4
 invokestatic io/read()I
 
 istore_0

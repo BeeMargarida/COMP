@@ -3,7 +3,7 @@
 
 .method public static max(II)I
 .limit locals 3
-.limit stack 2
+.limit stack 3
 iload_0
 iload_1
 if_icmple loop0_end
@@ -27,7 +27,7 @@ ireturn
 
 .method public static min(II)I
 .limit locals 3
-.limit stack 2
+.limit stack 3
 iload_0
 iload_1
 if_icmple loop0_end

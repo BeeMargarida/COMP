@@ -76,15 +76,18 @@ public class Generator {
         if(node.jjtGetNumChildren() == 0){
 
             sampler.printStaticField(node.getValue(), Utils.SCALAR, node.getAssignedValue());
-            globalVariables.put(node.getValue(), Utils.SCALAR);
+            if(globalVariables.get(node.getValue()) == null){
+                globalVariables.put(node.getValue(), Utils.SCALAR);
+            }
         }
         else {
             // array initialization
             sampler.printStaticField(node.getValue(), Utils.ARRAY, null);
-            stackDeclaration++;
             localDeclaration++;
 
-            globalVariables.put(node.getValue(), Utils.ARRAY);
+            if(globalVariables.get(node.getValue()) == null){
+                globalVariables.put(node.getValue(), Utils.ARRAY);
+            }
             SimpleNode chil = (SimpleNode) node.jjtGetChild(0);
             processDeclaration(node.getValue(), chil);
         }
@@ -92,10 +95,10 @@ public class Generator {
     }
 
     public void processDeclaration(String variableName, SimpleNode node){
-        
-        if (!node.getType().equals(Utils.ARRAY_INST)) {
-            boolean isNegative = ((ASTTerm) node).getNegative();
-            clinitCode += sampler.getConst(node.getValue(), isNegative) + "\n";
+
+        if (node.getType().equals(Utils.ARRAY_INST)) { 
+            stackDeclaration++;
+            clinitCode += sampler.getConst(node.getValue(), false) + "\n";
             clinitCode += sampler.getNewArray();
             clinitCode += sampler.getStoreStatic(this.moduleName, variableName, Utils.ARRAY) + "\n";
         }
@@ -105,6 +108,7 @@ public class Generator {
     public Object visit(ASTFunction node) {
 
         System.out.println("FUNCTION: " + node.getValue());
+        String[] vars = null;
 
         if (node.functionName.equals("main")) {
             // if the function is the main one
@@ -121,13 +125,15 @@ public class Generator {
                 sampler.functionBegin(node.getValue(), node.getReturnType(), null);
             } else {
                 // Get types of vars
-                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
+                vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
+                System.out.println("VARS: " + vars.toString());
                 sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
             }
         }
 
-        // Get locals values
+        
         localLimit = table.getSymbolTrees().get(node.getValue()).size();
+        
         if(node.getValue().equals("main")){
             localLimit++;
         }
@@ -274,6 +280,7 @@ public class Generator {
 
                     if(arg.content.contains("\"")){
                         // if the content is a string
+                        stackLimit++;
                         function += sampler.getLdc(arg.content);
                         params[i] = "Ljava/lang/String;";
                     }
@@ -326,7 +333,7 @@ public class Generator {
                 returnType = "I";
             }
             else {
-                params = (String[]) visit((ASTVarList) function.jjtGetChild(0), currentFunctionName);
+                //params = (String[]) visit((ASTVarList) function.jjtGetChild(0), currentFunctionName);
                 if (function.getReturnType().equals(Utils.VOID)) {
                     returnType = "V";
                 } else{
@@ -380,7 +387,7 @@ public class Generator {
 
 
         // print operator
-        if (rhs.getValue() != null){
+        if (rhs.getValue() != null && !isInc){
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
         }

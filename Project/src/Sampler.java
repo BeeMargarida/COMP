@@ -111,16 +111,17 @@ public class Sampler {
     public String getConst(String arg, boolean isNegative){
 
         if(isNegative){
+            
             if(Integer.parseInt(arg) > 32768){
                 return "ldc " + "-" + arg;
             }
             else if(Integer.parseInt(arg) >= 129){               
                 return "sipush " + "-" + arg;  
             }
-            else if(Integer.parseInt(arg) > 5){                
+            else if(Integer.parseInt(arg) > 1){                
                 return "bipush " + "-" + arg;               
             }
-            else {
+            else{
                 return "iconst_" + "m" + arg;
             }
         }
