@@ -32,6 +32,7 @@ public class SymbolTable {
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
 	
+
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
 			previousNode = Utils.containsValue(declarations, nodeToAdd);
@@ -217,13 +218,19 @@ public class SymbolTable {
 
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
-			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
-			leftChild.setType(Utils.ARRAY);
+			if (rightChild.getType().equals(Utils.RHS) && rightChild.jjtGetChild(0).jjtGetNumChildren() > 0)
+				rightChild =  (SimpleNode) rightChild.jjtGetChild(0);
+
+			
+			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST) ||
+				rightChild.getType().equals(Utils.ARRAY_INST)) {
 				if (leftChild.getType().equals(Utils.ARRAY)) {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					push(leftChild);
 					return leftChild;
 				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
+					
+					leftChild.setType(Utils.ARRAY);
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					push(leftChild);
 					return leftChild;
@@ -305,8 +312,6 @@ public class SymbolTable {
 		String rightType = rightChild.getType();
 		
 		
-		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
-		// If RightType is RHS or term
 		if (rightType == Utils.RHS) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
 			rightType = rightChild.getType();
@@ -315,11 +320,31 @@ public class SymbolTable {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
 			rightType = rightChild.getType();
 		}
-
+		
+		if (rightType.equals(Utils.ARRAY_INST) || rightType.equals(Utils.ARRAY_INST)) {
+			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
+			rightType = rightChild.getType();
+		}
+		
 		if (leftType == Utils.TERM) {
 			leftChild = (SimpleNode) leftChild.jjtGetChild(0);
 			leftType = leftChild.getType();
 		}
+		
+		if (leftType.equals(Utils.ARRAY_INST) || leftType.equals(Utils.ARRAY_INST)) {
+			leftChild = (SimpleNode) leftChild.jjtGetChild(0);
+			leftType = leftChild.getType();
+		}
+		
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType
+		//	+ " and isInit left " + leftChild.isInitialized() + " isInit right " + rightChild.isInitialized());
+		// If RightType is RHS or term
+		
+		/*System.out.println("TESTE");
+		for (int i = 0 ; i < symbolTrees.get(currentScope).size() ;i++) {
+			SimpleNode yo = symbolTrees.get(currentScope).get(i);
+			System.out.println("Yo " + yo.getValue() + " " + yo.getType() + " isInit " + yo.isInitialized());
+		} */
 
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
@@ -341,15 +366,17 @@ public class SymbolTable {
 		
 		if (previousLeftNode != null) {
 			leftType = previousLeftNode.getType();
+
 			if (leftChild.getType().equals(Utils.ARRAY_ACCESS) || leftChild.getType().equals(Utils.SIZE)) {
 				leftType = Utils.SCALAR;
 			} 
+
 			leftChild = previousLeftNode;
 		}
 		
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
 		if (previousRightNode == null)
-					previousLeftNode = Utils.containsValue(declarations, rightChild);
+				previousRightNode = Utils.containsValue(declarations, rightChild);
 			
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
@@ -372,11 +399,8 @@ public class SymbolTable {
 			} 
 			rightChild = previousRightNode;
 		}
-		
-		if (rightType.equals(Utils.ARRAY_ACCESS))
-			rightType = Utils.SCALAR;
+			
 
-		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY)
@@ -475,22 +499,22 @@ public class SymbolTable {
 
 		SimpleNode elseNode = null;
 
+		
 		// Analyse ExprTest
 		SimpleNode exprTest = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
 
 		boolean isValid = analyseExprTest(exprTest);
 
-		if (!isValid)
+		if (!isValid) {
 			return;
+		}
 
 		// Analyse all the nodes inside the if
 		for (int i = 1; i < nodeToAnalyse.jjtGetNumChildren(); i++) {
-
 			SimpleNode child = (SimpleNode) nodeToAnalyse.jjtGetChild(i);
-
+			
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
-				System.out.println("1");
 				SimpleNode resultNode = analyseOperation(child);
 
 				if (resultNode == null)
@@ -702,6 +726,7 @@ public class SymbolTable {
 	}
 
 	public ASTFunction getFunction(String functionName) {
+
 		for (int i = 0; i < functions.size(); i++) {
 			ASTFunction function = (ASTFunction) functions.get(i);
 			if (function.functionName.toLowerCase().equals(functionName.toLowerCase())) {

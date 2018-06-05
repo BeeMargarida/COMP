@@ -92,6 +92,7 @@ public class Generator {
     }
 
     public void processDeclaration(String variableName, SimpleNode node){
+        
         if (!node.getType().equals(Utils.ARRAY_INST)) {
             boolean isNegative = ((ASTTerm) node).getNegative();
             clinitCode += sampler.getConst(node.getValue(), isNegative) + "\n";

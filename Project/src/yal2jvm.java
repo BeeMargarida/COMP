@@ -738,7 +738,6 @@ jjtn000.setType(Utils.OP); jjtn000.jjtSetValue(t.image);
           }
         case 32:{
           ArrayInstantion();
-jjtn000.setType(Utils.ARRAY);
           break;
           }
         default:

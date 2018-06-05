@@ -340,7 +340,7 @@ void Rhs() : {Token t; String tmp;} {
 			{jjtThis.setType(Utils.OP); jjtThis.jjtSetValue(t.image);})?
 		) 
 		|
-		 ( ArrayInstantion() {jjtThis.setType(Utils.ARRAY); } )
+		 ( ArrayInstantion()  )
 	)
 	 
 	/*

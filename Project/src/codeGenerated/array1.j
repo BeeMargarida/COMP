@@ -3,7 +3,7 @@
 
 .method public static print_array(I)V
 .limit locals 4
-.limit stack 3
+.limit stack 4
 iload_0
 newarray int
 astore_1
@@ -23,6 +23,7 @@ iload_2
 iload_2
 iastore
 iinc 2 1
+iadd
 goto loop0
 
 loop0_end:
@@ -48,6 +49,7 @@ iload_3
 invokestatic io/print(Ljava/lang/String;I)V
 
 iinc 2 1
+iadd
 goto loop1
 
 loop1_end:
