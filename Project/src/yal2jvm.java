@@ -723,7 +723,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
           break;
         case 32:
           ArrayInstantion();
-                                      jjtn000.setType(Utils.ARRAY);
           break;
         default:
           jj_la1[20] = jj_gen;
