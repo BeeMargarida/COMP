@@ -216,11 +216,12 @@ public class SymbolTable {
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
 			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
+				leftChild.setType(Utils.ARRAY);
 				if (leftChild.getType().equals(Utils.ARRAY)) {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					return leftChild;
 				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
-					leftChild.setType(Utils.ARRAY);
+					
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					return leftChild;
 				} else {

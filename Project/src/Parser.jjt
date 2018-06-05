@@ -443,7 +443,7 @@ void Argument() : {Token t; } {
  * @return String with the information of the array size.
 */
 void ArraySize() #void: { Token tmp; Token tmp2;} {
-	(LOOKAHEAD(2) ("[" tmp=<ID> ScalarAccess(tmp) "]") | ArrayInstantion())
+	(LOOKAHEAD(2) ArrayInstantion() | ("[" tmp=<ID> ScalarAccess(tmp) "]"))
 }
 
 /**
