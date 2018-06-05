@@ -239,6 +239,10 @@ public class Sampler {
                 res += params[i];
             }   
         }
+
+        if(functionName.equals("main")){
+            res += "[Ljava/lang/String;";
+        }
         res += ")" + returnType + "\n";
         return res;
     }

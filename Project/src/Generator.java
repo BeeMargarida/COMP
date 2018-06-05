@@ -284,14 +284,13 @@ public class Generator {
         
                             stackLimit++;
                             String type = stack.get(currentFunctionName).get(numStack).getType();
-                            System.out.println("FDSD: " + stack.get(currentFunctionName).get(numStack));
-                            System.out.println("TYPEEEE_: " + type);
+                            
                             function += sampler.getLoad(numStack, type) + "\n";
         
-                            // check type of parameters - TODO: Make this more readable
-                            if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.SCALAR)) {
+                            // check type of parameters
+                            if (type.equals(Utils.SCALAR)) {
                                 params[i] = "I";
-                            } else if (stack.get(currentFunctionName).get(numStack).getType().equals(Utils.ARRAY))
+                            } else if (type.equals(Utils.ARRAY))
                                 params[i] = "[I";
         
                         } else {
@@ -373,13 +372,12 @@ public class Generator {
         
         //Process RHS
         boolean[] answer = (boolean[]) visit(rhs, functionName);
-        boolean isOp = answer[0];
-        boolean wasArray = answer[1];
-        boolean isInc = answer[2];
+        boolean wasArray = answer[0];
+        boolean isInc = answer[1];
 
 
         // print operator
-        if (isOp && rhs.getValue() != null){
+        if (rhs.getValue() != null){
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
         }
@@ -448,14 +446,13 @@ public class Generator {
 
     public Object visit(ASTRhs rhs, String functionName){
 
-        boolean isOp = false;
         boolean wasArray = false;
         boolean isInc = false;
         System.out.println("RHS");
 
         if(checkIfInc(rhs, functionName)){
             isInc = true;
-            boolean[] answer = {isOp, wasArray, isInc};
+            boolean[] answer = {wasArray, isInc};
             return answer;
         }
 
@@ -466,7 +463,6 @@ public class Generator {
             System.out.println("RHS CHILD " + chil.toString());
 
             if(chil.jjtGetNumChildren() == 0 && chil.toString().equals(Utils.TERM)){
-                isOp = true;
                 stackLimit++;
                 boolean isNegative = ((ASTTerm) chil).getNegative();
                 function += sampler.getConst(chil.getValue(), isNegative) + "\n";
@@ -499,7 +495,6 @@ public class Generator {
             }
             else {
 
-                // TODO : POR ISTO MAIS BONITO
                 for (int a = 0; a < chil.jjtGetNumChildren(); a++) {
 
                     SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
@@ -549,12 +544,10 @@ public class Generator {
                     else if (term.toString().equals(Utils.CALL)) {
                         // If RHS is a function call
 
-                        isOp = false;
                         visit((ASTCall) chil.jjtGetChild(a), functionName);
 
                     } else if (term.toString().equals("ScalarAccess")) {
                         
-                        isOp = true;
                         if(term.getType().equals(Utils.SIZE)){
 
                             //if it is an access to an array size                            
@@ -592,7 +585,7 @@ public class Generator {
             }
         }
 
-        boolean[] answer = {isOp, wasArray, isInc};
+        boolean[] answer = {wasArray, isInc};
         return answer;
     }
 
@@ -687,11 +680,19 @@ public class Generator {
 
     public Object visit(ASTExprtest node, String functionName){
 
-        System.out.println("ASTEXPRTEST: " + node.getValue());
 
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         int numStack = getFromStack(lhs.getValue(), functionName);
-        function += sampler.getLoad(numStack, lhs.getType()) + "\n";
+        if(numStack != -1){
+            stackLimit++;
+            function += sampler.getLoad(numStack, lhs.getType()) + "\n";
+        }
+        else {
+            String type = globalVariables.get(lhs.getValue());
+            if(type != null){
+                function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
+            }
+        }
 
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         visit(rhs, functionName);

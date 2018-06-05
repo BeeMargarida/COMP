@@ -5,7 +5,7 @@
 .method public static f()V
 .limit locals 0
 .limit stack 3
-iload_-1
+getstatic callMain/x I 
 iconst_0
 if_icmple loop0_end
 
@@ -13,7 +13,7 @@ getstatic callMain/x I
 iconst_1
 isub
 putstatic callMain/x I 
-invokestatic callMain/main()V
+invokestatic callMain/main([Ljava/lang/String;)V
 
 loop0_end:
 
