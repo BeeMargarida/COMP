@@ -1,3 +1,4 @@
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,10 +31,7 @@ public class SymbolTable {
 
 	public void push(SimpleNode nodeToAdd) {
 		SimpleNode previousNode;
-
-		// System.out.println("Node to Add " + nodeToAdd.getType() + " value " +
-		// nodeToAdd.getValue() + " scope " + currentScope);
-
+	
 		// Is outside all functions, is a declaration
 		if (currentScope == "") {
 			previousNode = Utils.containsValue(declarations, nodeToAdd);
@@ -72,6 +70,8 @@ public class SymbolTable {
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			SimpleNode nodeToAnalyse = (SimpleNode) node.jjtGetChild(i);
 
+			//System.out.println("Node to analyse " + nodeToAnalyse.getType());
+
 			if (nodeToAnalyse.getType().equals(Utils.FUNCTION)) {
 				currentScope = nodeToAnalyse.getValue();
 
@@ -99,18 +99,18 @@ public class SymbolTable {
 						push(newNode);
 					}
 				}
-			} else if (nodeToAnalyse.getType().equals(Utils.DECLARATION)) {
-				if (nodeToAnalyse.jjtGetNumChildren() > 0) { // Has Array Children
+			} else if (nodeToAnalyse.getType().equals(Utils.DECLARATION_SCALAR) || nodeToAnalyse.getType().equals(Utils.DECLARATION_ARRAY)) {
+				if (Utils.containsValue(declarations, nodeToAnalyse) == null) {
+					if (nodeToAnalyse.getType().equals(Utils.DECLARATION_SCALAR))
+						nodeToAnalyse.setType(Utils.SCALAR);
+					else 
+						nodeToAnalyse.setType(Utils.ARRAY);
 
-					SimpleNode nodeToAdd = ((SimpleNode) nodeToAnalyse.jjtGetChild(0));
-					declarations.add(nodeToAdd);
-				} else { // Is scalar
-					nodeToAnalyse.setType(Utils.SCALAR);
-					declarations.add(nodeToAnalyse);
+					declarations.add(nodeToAnalyse);				
 				}
 			}
 
-			System.out.println("functions " + functions);
+			//System.out.println("functions " + functions);
 		}
 
 		for (int i = 0; i < functions.size(); i++) {
@@ -133,6 +133,8 @@ public class SymbolTable {
 			if (needsToBeInitializedAfterAnalysis) {
 				String valueToAnalyse = ((ASTFunction) functions.get(i)).getReturnValue();
 				SimpleNode check = Utils.containsValueString(symbolTrees.get(currentScope), valueToAnalyse);
+				if (check == null)
+					check = Utils.containsValueString(declarations, valueToAnalyse);
 
 				if (check != null) {
 					if (check.isInitialized() != Utils.DEFIN_INIT) {
@@ -321,6 +323,8 @@ public class SymbolTable {
 
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+		if (previousLeftNode == null)
+				previousLeftNode = Utils.containsValue(declarations, leftChild);
 
 		if (leftChild.getType().equals(Utils.SIZE)) {
 			if (previousLeftNode == null) {
@@ -344,6 +348,8 @@ public class SymbolTable {
 		}
 		
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
+		if (previousRightNode == null)
+					previousLeftNode = Utils.containsValue(declarations, rightChild);
 			
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
@@ -379,6 +385,10 @@ public class SymbolTable {
 				System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
 						+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
 				return null;
+			}
+			if (leftType.equals(Utils.ARRAY) && rightType.equals(Utils.NUMBER) && !needToBeInitialized) {
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				return leftChild;
 			}
 		}
 		
@@ -488,6 +498,8 @@ public class SymbolTable {
 
 				// Check previous instanciations of resultNode
 				SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
+				if (previousNode == null)
+					previousNode = Utils.containsValue(declarations, resultNode);
 
 				if (previousNode == null) {
 					previousNode = lookup(resultNode);
@@ -529,6 +541,8 @@ public class SymbolTable {
 					SimpleNode resultNode = analyseOperation(child);
 
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
+					if (previousNode == null)
+						previousNode = Utils.containsValue(declarations, resultNode);
 
 					// Was nowhere to be found
 					if (previousNode == null && lookup(resultNode) == null) {
@@ -567,6 +581,8 @@ public class SymbolTable {
 		if (!leftChildExpr.getType().equals(Utils.NUMBER)) {
 			// Check for previous declaration
 			SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChildExpr);
+			if (previousLeftNode == null)
+					previousLeftNode = Utils.containsValue(declarations, leftChildExpr);
 
 			if (previousLeftNode == null) {
 				previousLeftNode = lookup(leftChildExpr);
@@ -580,6 +596,8 @@ public class SymbolTable {
 
 		if (!rightChildExpr.getType().equals(Utils.NUMBER)) {
 			SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChildExpr);
+			if (previousRightNode == null)
+					previousRightNode = Utils.containsValue(declarations, rightChildExpr);
 
 			if (previousRightNode == null) {
 				previousRightNode = lookup(leftChildExpr);
@@ -639,6 +657,8 @@ public class SymbolTable {
 
 				// Check previous declarations of node
 				SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftNode);
+				if (previousLeftNode == null)
+					previousLeftNode = Utils.containsValue(declarations, leftNode);
 
 				if (previousLeftNode != null)
 					leftNode = previousLeftNode;

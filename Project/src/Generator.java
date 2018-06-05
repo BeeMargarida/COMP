@@ -92,11 +92,12 @@ public class Generator {
     }
 
     public void processDeclaration(String variableName, SimpleNode node){
-        boolean isNegative = ((ASTTerm) node).getNegative();
-        clinitCode += sampler.getConst(node.getValue(), isNegative) + "\n";
-        clinitCode += sampler.getNewArray();
-        clinitCode += sampler.getStoreStatic(this.moduleName, variableName, Utils.ARRAY) + "\n";
-        
+        if (!node.getType().equals(Utils.ARRAY_INST)) {
+            boolean isNegative = ((ASTTerm) node).getNegative();
+            clinitCode += sampler.getConst(node.getValue(), isNegative) + "\n";
+            clinitCode += sampler.getNewArray();
+            clinitCode += sampler.getStoreStatic(this.moduleName, variableName, Utils.ARRAY) + "\n";
+        }
     }
 
     // Function Node
