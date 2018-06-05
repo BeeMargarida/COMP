@@ -5,8 +5,8 @@
 .field static mx I
 .field static mn I
 .method public static det([I)V
-.limit locals 7
-.limit stack 2
+.limit locals 6
+.limit stack 4
 iconst_0
 istore_1
 
@@ -31,10 +31,11 @@ istore_3
 
 
 iinc 1 1
+iadd
 aload_0
 iload_1
 iaload
-istore_4
+istore 4
 
 
 iload_3
@@ -57,7 +58,7 @@ return
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 0
+.limit locals 1
 .limit stack 0
 getstatic programa1/data [I 
 invokestatic programa1/det([I)V
@@ -78,9 +79,6 @@ return
 .method static public <clinit>()V
 .limit stack 1
 .limit locals 1
-bipush 100
-newarray int
-putstatic programa1/data [I 
 
 return
 .end method
