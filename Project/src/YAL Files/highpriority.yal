@@ -1,6 +1,6 @@
 module aval1 {
+    a = 1;
    function main(b,c[]) {
-        a=[10];
-        c = a + 1;
+     
     }
 }

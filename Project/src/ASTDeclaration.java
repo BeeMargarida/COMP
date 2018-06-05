@@ -3,6 +3,7 @@
 public
 class ASTDeclaration extends SimpleNode {
   private boolean isNegative = false;
+  private String assignedValue;
 
   public ASTDeclaration(int id) {
     super(id);
@@ -22,6 +23,14 @@ class ASTDeclaration extends SimpleNode {
       isNegative = true;
     else 
       isNegative = false;
+  }
+
+  public void setAssigned(String toAssign) {
+    assignedValue = toAssign;
+  }
+
+  public String getAssignedValue() {
+    return assignedValue;
   }
 
 }

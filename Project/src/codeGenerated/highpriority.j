@@ -1,19 +1,10 @@
 .class public aval1
 .super java/lang/Object
 
+.field static a I
 .method public static main([Ljava/lang/String;)V
-.limit locals 4
-.limit stack 2
-bipush 10
-newarray int
-astore_1
-
-iload_1
-iconst_1
-iadd
-istore_2
-
-
+.limit locals 3
+.limit stack 0
 
 return
 .end method
