@@ -7,6 +7,7 @@ class ASTDeclaration extends SimpleNode {
 
   public ASTDeclaration(int id) {
     super(id);
+    type = Utils.DECLARATION;
   }
 
   public ASTDeclaration(yal2jvm p, int id) {
@@ -18,7 +19,6 @@ class ASTDeclaration extends SimpleNode {
   }
 
   public void setOperator(String operator) {
-    System.out.println("SET OPERATOR DECLARATION");
     if (operator.equals("-")) 
       isNegative = true;
     else 

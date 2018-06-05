@@ -18,6 +18,8 @@ public class Utils {
 	public static String ARRAY_INST_SCALAR = "Array Instantion Scalar"; // for [d]
 	public static String SIZE = "Size";
 	public static String DECLARATION = "Declaration";
+	public static String DECLARATION_SCALAR = "Declaration Scalar";
+	public static String DECLARATION_ARRAY = "Declaration Array";
 	public static String ARRAY_ACCESS = "Array Access";
 	public static String WAS_CALLED = "WasCalled";
 

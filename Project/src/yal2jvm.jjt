@@ -154,11 +154,11 @@ void Function(): {Token name;} {
 void Declaration(): {String declaration; Token tmp; Token tmp2;} {
 	
 	try {	
-		
-		tmp=<ID>  {jjtThis.setType(Utils.SCALAR);}
-		 (ArrayElement(tmp)  {jjtThis.setType(Utils.ARRAY);})?  {jjtThis.value = tmp.image;}
-		(< ASSIGN > ((ArraySize()) | (tmp=< ADDSUB_OP > 
-			{jjtThis.setOperator(tmp.image);})? tmp2=< INTEGER >{jjtThis.setAssigned(tmp2.image);}) )? < PVIRG >
+		tmp=<ID>  
+		 (ArrayElement(tmp)  {jjtThis.setType(Utils.DECLARATION_ARRAY);})?  {jjtThis.value = tmp.image;}
+		(< ASSIGN > ((ArraySize()  {jjtThis.setType(Utils.DECLARATION_ARRAY);} ) | (tmp=< ADDSUB_OP > 
+			{jjtThis.setOperator(tmp.image);})? tmp2=< INTEGER >{jjtThis.setAssigned(tmp2.image); jjtThis.setType(Utils.DECLARATION_SCALAR);}))?
+			 < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Error on declaration, with Exception thrown " + e.toString());
