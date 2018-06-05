@@ -202,7 +202,7 @@ void Function(): {/*@bgen(jjtree) Function */
           }
         }
 /*@egen*/ 
-}
+} 
 
 /** 
  * Declaration, handling definitions and assignment of variables outside functions.
@@ -1042,3 +1042,4 @@ try {
 }
 /*@egen*/
 }
+

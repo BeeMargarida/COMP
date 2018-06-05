@@ -3,7 +3,7 @@
 
 .method public static print_array(I)V
 .limit locals 4
-.limit stack 3
+.limit stack 4
 iload_0
 newarray int
 astore_1

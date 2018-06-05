@@ -76,7 +76,9 @@ public class Generator {
         if(node.jjtGetNumChildren() == 0){
 
             sampler.printStaticField(node.getValue(), Utils.SCALAR, node.getAssignedValue());
-            globalVariables.put(node.getValue(), Utils.SCALAR);
+            if(globalVariables.get(node.getValue()) == null){
+                globalVariables.put(node.getValue(), Utils.SCALAR);
+            }
         }
         else {
             // array initialization
@@ -84,7 +86,9 @@ public class Generator {
             stackDeclaration++;
             localDeclaration++;
 
-            globalVariables.put(node.getValue(), Utils.ARRAY);
+            if(globalVariables.get(node.getValue()) == null){
+                globalVariables.put(node.getValue(), Utils.ARRAY);
+            }
             SimpleNode chil = (SimpleNode) node.jjtGetChild(0);
             processDeclaration(node.getValue(), chil);
         }
@@ -104,6 +108,7 @@ public class Generator {
     public Object visit(ASTFunction node) {
 
         System.out.println("FUNCTION: " + node.getValue());
+        String[] vars = null;
 
         if (node.functionName.equals("main")) {
             // if the function is the main one
@@ -120,13 +125,18 @@ public class Generator {
                 sampler.functionBegin(node.getValue(), node.getReturnType(), null);
             } else {
                 // Get types of vars
-                String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
+                vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
                 sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
             }
         }
 
         // Get locals values
-        localLimit = table.getSymbolTrees().get(node.getValue()).size();
+        /*if(vars != null){
+            localLimit = table.getSymbolTrees().get(node.getValue()).size() + vars.length;
+        }
+        else {*/
+            localLimit = table.getSymbolTrees().get(node.getValue()).size();
+        //}
         if(node.getValue().equals("main")){
             localLimit++;
         }
@@ -379,7 +389,7 @@ public class Generator {
 
 
         // print operator
-        if (rhs.getValue() != null){
+        if (rhs.getValue() != null && !isInc){
             function += sampler.getOperator(rhs.getValue()) + "\n";
             
         }
