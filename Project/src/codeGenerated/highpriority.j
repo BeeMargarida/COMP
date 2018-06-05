@@ -3,12 +3,14 @@
 
 .method public static main([Ljava/lang/String;)V
 .limit locals 4
-.limit stack 1
+.limit stack 2
 bipush 10
 newarray int
 astore_1
 
 iload_1
+iconst_1
+iadd
 istore_2
 
 
