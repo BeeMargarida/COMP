@@ -74,13 +74,13 @@ public class Generator {
         System.out.println("DECLARATION");
 
         if(node.jjtGetNumChildren() == 0){
-            System.out.println("DECA : " + node.getValue() + " " + node.jjtGetNumChildren());
-            sampler.printStaticField(node.getValue(), Utils.SCALAR);
+
+            sampler.printStaticField(node.getValue(), Utils.SCALAR, node.getAssignedValue());
             globalVariables.put(node.getValue(), Utils.SCALAR);
         }
         else {
             // array initialization
-            sampler.printStaticField(node.getValue(), Utils.ARRAY);
+            sampler.printStaticField(node.getValue(), Utils.ARRAY, null);
             stackDeclaration++;
             localDeclaration++;
 

@@ -59,12 +59,17 @@ public class Sampler {
         println("");
     }
 
-    public void printStaticField(String name, String type){
+    public void printStaticField(String name, String type, String assignedValue){
         if(type.equals(Utils.ARRAY)){
             println(".field static " + name + " [I");
         }
         else if(type.equals(Utils.SCALAR)){
-            println(".field static " + name + " I");
+            if(assignedValue != null){
+                println(".field static " + name + " I = " + assignedValue);
+            }
+            else {
+                println(".field static " + name + " I");
+            }
         }
     }
 

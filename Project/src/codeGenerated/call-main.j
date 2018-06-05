@@ -1,7 +1,7 @@
 .class public callMain
 .super java/lang/Object
 
-.field static x I
+.field static x I = 1
 .method public static f()V
 .limit locals 0
 .limit stack 3
