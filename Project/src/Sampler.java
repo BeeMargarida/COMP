@@ -2,6 +2,8 @@ import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 
+import javax.lang.model.util.ElementScanner6;
+
 public class Sampler {
 
     private HashMap<String,String> arith;
@@ -235,9 +237,18 @@ public class Sampler {
         String res = "";
         res += "invokestatic " + moduleName+ "/" + functionName + "(";
         if(params != null){
+            
             for(int i = 0; i < params.length; i++){
-                res += params[i];
-            }   
+                if(params[i].equals("Scalar")){
+                    res += "I";
+                }
+                else if(params[i].equals("Array")){
+                    res += "[I";
+                }
+                else {
+                    res += params[i];
+                }
+            }  
         }
 
         if(functionName.equals("main")){

@@ -3,7 +3,7 @@
 
 .method public static maxarray([I)I
 .limit locals 3
-.limit stack 4
+.limit stack 6
 aload_0
 iconst_0
 iaload
@@ -35,6 +35,7 @@ istore_1
 
 loop1_end:
 iinc 2 1
+iadd
 goto loop0
 
 loop0_end:
@@ -51,7 +52,7 @@ ireturn
 
 .method public static main([Ljava/lang/String;)V
 .limit locals 4
-.limit stack 3
+.limit stack 4
 bipush 10
 newarray int
 astore_1
@@ -71,14 +72,15 @@ iload_2
 iload_2
 iastore
 iinc 2 1
+iadd
 goto loop0
 
 loop0_end:
 
 iload_1
-invokestatic max_array/maxarray(I)I
+invokestatic max_array/maxarray([I)I
 
-istore_3
+istore 4
 
 
 

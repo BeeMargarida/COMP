@@ -74,6 +74,7 @@ public class Generator {
         System.out.println("DECLARATION");
 
         if(node.jjtGetNumChildren() == 0){
+            System.out.println("DECA : " + node.getValue() + " " + node.jjtGetNumChildren());
             sampler.printStaticField(node.getValue(), Utils.SCALAR);
             globalVariables.put(node.getValue(), Utils.SCALAR);
         }
@@ -119,7 +120,6 @@ public class Generator {
             } else {
                 // Get types of vars
                 String[] vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
-                //localLimit += vars.length;
                 sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
             }
         }
@@ -271,7 +271,7 @@ public class Generator {
                 } else {
 
                     if(arg.content.contains("\"")){
-
+                        // if the content is a string
                         function += sampler.getLdc(arg.content);
                         params[i] = "Ljava/lang/String;";
                     }
@@ -298,12 +298,12 @@ public class Generator {
                             String type = globalVariables.get(arg.content);
                             if(type != null){
                                 function += sampler.getLoadStatic(this.moduleName, arg.content, type) + "\n";
-                            if(type.equals("Array")){
-                                params[i] = "[I";
-                            }
-                            else {
-                                params[i] = "I";
-                            }
+                                if(type.equals("Array")){
+                                    params[i] = "[I";
+                                }
+                                else {
+                                    params[i] = "I";
+                                }
                             }
                         }
                     }
@@ -324,6 +324,7 @@ public class Generator {
                 returnType = "I";
             }
             else {
+                params = (String[]) visit((ASTVarList) function.jjtGetChild(0), currentFunctionName);
                 if (function.getReturnType().equals(Utils.VOID)) {
                     returnType = "V";
                 } else{
