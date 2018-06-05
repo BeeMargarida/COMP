@@ -204,14 +204,14 @@ void Function(): {/*@bgen(jjtree) Function */
 /*@egen*/ 
 }
 
-/**
+/** 
  * Declaration, handling definitions and assignment of variables outside functions.
 */
 void Declaration(): {/*@bgen(jjtree) Declaration */
                      ASTDeclaration jjtn000 = new ASTDeclaration(JJTDECLARATION);
                      boolean jjtc000 = true;
                      jjtree.openNodeScope(jjtn000);
-/*@egen*/String declaration; Token tmp; } {/*@bgen(jjtree) Declaration */
+/*@egen*/String declaration; Token tmp; Token tmp2;} {/*@bgen(jjtree) Declaration */
         try {
 /*@egen*/
 	
@@ -220,7 +220,7 @@ void Declaration(): {/*@bgen(jjtree) Declaration */
 		tmp=<ID>  {jjtn000.setType(Utils.SCALAR);}
 		 (ArrayElement(tmp)  {jjtn000.setType(Utils.ARRAY);})?  {jjtn000.value = tmp.image;}
 		(< ASSIGN > ((ArraySize()) | (tmp=< ADDSUB_OP > 
-			{jjtn000.setOperator(tmp.image);})? < INTEGER >))? < PVIRG >
+			{jjtn000.setOperator(tmp.image);})? tmp2=< INTEGER >{jjtn000.setAssigned(tmp2.image);}) )? < PVIRG >
 	}
 	catch(ParseException e) {
 		System.out.println("Error on declaration, with Exception thrown " + e.toString());
