@@ -120,15 +120,32 @@ public class Generator {
             stack.put("main", arr);
 
         } else {
-            // If there is no Parameters (Var)
-            if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
-                sampler.functionBegin(node.getValue(), node.getReturnType(), null);
+
+            // TODO - CHECK THIS
+            if(node.jjtGetChild(0).toString().equals("VarList")){
+                if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
+                    // If there is no Parameters (Var)
+                    sampler.functionBegin(node.getValue(), node.getReturnType(), null);
+                } else {
+                    System.out.println("HERE!!!");
+                    // Get types of vars
+                    vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
+                    sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
+                }
+
             } else {
-                // Get types of vars
-                vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
-                System.out.println("VARS: " + vars.toString());
-                sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
+
+                if (node.jjtGetChild(1).jjtGetNumChildren() == 0) {
+                    // If there is no Parameters (Var)
+                    sampler.functionBegin(node.getValue(), node.getReturnType(), null);
+                } else {
+                    System.out.println("HERE!!!");
+                    // Get types of vars
+                    vars = (String[]) visit((ASTVarList) node.jjtGetChild(1), node.getValue());
+                    sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
+                }
             }
+            
         }
 
         
@@ -137,8 +154,6 @@ public class Generator {
         if(node.getValue().equals("main")){
             localLimit++;
         }
-
-        //sampler.printLocalsLimit(locals);
 
         // Checks the other children of the function
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
@@ -360,10 +375,17 @@ public class Generator {
         
         // LHS
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-
+        System.out.println("LHS FACK: " + lhs.getType());
+        
+        if(lhs.getType().equals("Array")){
+            if(checkArrayInstantiation(lhs, rhs)) {
+                return null;
+            }
+        }
         if(lhs.toString().equals("ArrayAccess")){
-
+            
             ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
+
             int numStack = getFromStack(lhs.getValue(), functionName);
             if(numStack != -1){
                 // prints commands
@@ -656,6 +678,13 @@ public class Generator {
         
         return false;
 
+    }
+
+    public boolean checkArrayInstantiation(SimpleNode lhs, ASTRhs rhs){
+
+        SimpleNode rhsChild = (SimpleNode) rhs.jjtGetChild(0);
+        System.out.println("NODE: " + rhsChild + " : " + rhsChild.getValue());
+        return false;
     }
 
 

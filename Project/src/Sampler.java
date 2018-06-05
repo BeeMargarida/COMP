@@ -79,6 +79,9 @@ public class Sampler {
         if(returnType.equals(Utils.VOID)){
             returnT = "V";
         }
+        else if(returnType.equals("Array")){
+            returnT = "[I";
+        }
 
         if(functionName.equals("main")){
             println(".method public static main([Ljava/lang/String;)" + returnT);
