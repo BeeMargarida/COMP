@@ -3,21 +3,21 @@ options {
 	MULTI=true;
 }
  
-PARSER_BEGIN(Parser)
+PARSER_BEGIN(yal2jvm)
 
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
-public class Parser {
+public class yal2jvm {
 	static java.util.Stack argStack;
 	public static void main(String[] args) throws ParseException{
 		argStack = new java.util.Stack(); 
 
 		File filename = new File(args[0]);
 		try { 
-			Parser parser = new Parser(new FileInputStream(filename));
+			yal2jvm parser = new yal2jvm(new FileInputStream(filename));
 			SimpleNode root = parser.Module();
 			
 			root.dump("");
@@ -50,7 +50,7 @@ public class Parser {
 	}
 }
 
-PARSER_END(Parser)
+PARSER_END(yal2jvm)
 
 SKIP : {
 	" "	| "\t"	| "\n" | "\r" | 

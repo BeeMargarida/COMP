@@ -9,7 +9,7 @@ class ASTScalarAccess extends SimpleNode {
     type = Utils.SCALAR;
   }
 
-  public ASTScalarAccess(Parser p, int id) {
+  public ASTScalarAccess(yal2jvm p, int id) {
     super(p, id);
   }
 

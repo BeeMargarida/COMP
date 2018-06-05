@@ -8,7 +8,7 @@ public class ASTExprtest extends SimpleNode {
     type = Utils.OP;
   }
 
-  public ASTExprtest(Parser p, int id) {
+  public ASTExprtest(yal2jvm p, int id) {
     super(p, id);
   }
 

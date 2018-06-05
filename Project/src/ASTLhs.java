@@ -6,7 +6,7 @@ class ASTLhs extends SimpleNode {
     super(id);
   }
 
-  public ASTLhs(Parser p, int id) {
+  public ASTLhs(yal2jvm p, int id) {
     super(p, id);
   }
 }

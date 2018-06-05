@@ -6,7 +6,7 @@ class ASTIndex extends SimpleNode {
     super(id);
   }
 
-  public ASTIndex(Parser p, int id) {
+  public ASTIndex(yal2jvm p, int id) {
     super(p, id);
   }
 

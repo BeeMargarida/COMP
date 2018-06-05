@@ -10,7 +10,7 @@ class ASTTerm extends SimpleNode {
     type = Utils.TERM;
   }
 
-  public ASTTerm(Parser p, int id) {
+  public ASTTerm(yal2jvm p, int id) {
     super(p, id);
     type = Utils.TERM;
   }

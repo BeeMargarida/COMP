@@ -9,7 +9,7 @@ class ASTArrayInstantion extends SimpleNode {
     type = Utils.ARRAY_INST;
   }
 
-  public ASTArrayInstantion(Parser p, int id) {
+  public ASTArrayInstantion(yal2jvm p, int id) {
     super(p, id);
   }
  

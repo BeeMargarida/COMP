@@ -1,6 +1,6 @@
 
 \.vscode/settings\.json
 
-Project/src/Parser\.java
+Project/src/yal2jvm\.java
 
-Project/src/ParserTreeConstants\.java
+Project/src/yal2jvmTreeConstants\.java

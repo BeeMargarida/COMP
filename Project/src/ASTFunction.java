@@ -10,7 +10,7 @@ public class ASTFunction extends SimpleNode {
 		type = Utils.FUNCTION;
 	}
 
-	public ASTFunction(Parser p, int id) {
+	public ASTFunction(yal2jvm p, int id) {
 		super(p, id);
 	}
 

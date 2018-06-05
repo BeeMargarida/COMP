@@ -6,7 +6,7 @@ class ASTerror_skipto_withoutconsuming extends SimpleNode {
     super(id);
   }
 
-  public ASTerror_skipto_withoutconsuming(Parser p, int id) {
+  public ASTerror_skipto_withoutconsuming(yal2jvm p, int id) {
     super(p, id);
   }
 

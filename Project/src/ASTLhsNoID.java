@@ -7,7 +7,7 @@ class ASTLhsNoID extends SimpleNode {
     super(id);
   }
 
-  public ASTLhsNoID(Parser p, int id) {
+  public ASTLhsNoID(yal2jvm p, int id) {
     super(p, id);
   }
 

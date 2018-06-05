@@ -6,7 +6,7 @@ class ASTerror_skipto_unless extends SimpleNode {
     super(id);
   }
 
-  public ASTerror_skipto_unless(Parser p, int id) {
+  public ASTerror_skipto_unless(yal2jvm p, int id) {
     super(p, id);
   }
 

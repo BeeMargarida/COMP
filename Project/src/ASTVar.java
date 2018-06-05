@@ -6,7 +6,7 @@ class ASTVar extends SimpleNode {
     super(id);
   }
 
-  public ASTVar(Parser p, int id) {
+  public ASTVar(yal2jvm p, int id) {
     super(p, id);
   }
 

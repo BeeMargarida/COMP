@@ -10,7 +10,7 @@ public class Main {
         
         File filename = new File(args[0]);
         try {
-                Parser parser = new Parser(new FileInputStream(filename));
+                yal2jvm parser = new yal2jvm(new FileInputStream(filename));
                 SimpleNode root = parser.Module();
                 root.dump("");
         } catch(FileNotFoundException e) {

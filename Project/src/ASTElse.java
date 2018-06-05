@@ -8,7 +8,7 @@ class ASTElse extends SimpleNode {
     type = Utils.ELSE;
   }
 
-  public ASTElse(Parser p, int id) {
+  public ASTElse(yal2jvm p, int id) {
     super(p, id);
   }
 

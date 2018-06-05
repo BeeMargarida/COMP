@@ -7,7 +7,7 @@ class SimpleNode implements Node {
   protected Node[] children;
   protected int id;
   protected Object value;
-  protected Parser parser;
+  protected yal2jvm parser;
 
   
   protected int isInitialized;
@@ -18,7 +18,7 @@ class SimpleNode implements Node {
     isInitialized = Utils.NOT_INIT;
   }
 
-  public SimpleNode(Parser p, int i) {
+  public SimpleNode(yal2jvm p, int i) {
     this(i);
     parser = p;
     isInitialized = Utils.NOT_INIT;
@@ -62,7 +62,7 @@ class SimpleNode implements Node {
      you need to do. */
 
   public String toString() {
-    return ParserTreeConstants.jjtNodeName[id];
+    return yal2jvmTreeConstants.jjtNodeName[id];
   }
   public String toString(String prefix) { return prefix + toString(); }
 

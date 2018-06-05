@@ -7,7 +7,7 @@ public class ASTVarList extends SimpleNode {
     type = Utils.VARLIST;
   }
 
-  public ASTVarList(Parser p, int id) {
+  public ASTVarList(yal2jvm p, int id) {
     super(p, id);
   }
 
