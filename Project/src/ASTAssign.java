@@ -8,7 +8,7 @@ class ASTAssign extends SimpleNode {
 
   }
 
-  public ASTAssign(Parser p, int id) {
+  public ASTAssign(yal2jvm p, int id) {
     super(p, id);
   }
 

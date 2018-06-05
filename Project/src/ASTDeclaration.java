@@ -8,7 +8,7 @@ class ASTDeclaration extends SimpleNode {
     super(id);
   }
 
-  public ASTDeclaration(Parser p, int id) {
+  public ASTDeclaration(yal2jvm p, int id) {
     super(p, id);
   }
 

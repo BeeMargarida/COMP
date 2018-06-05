@@ -1,8 +1,6 @@
 module aval1 {
    function main(b,c[]) {
-        while(b < 1) {
-            nasq1 = b + c[1];
-            nasq2 = nasq1 << 2;
-    	}   
+        a=[10];
+        c = a + 1;
     }
 }

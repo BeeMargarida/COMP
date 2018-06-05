@@ -8,7 +8,7 @@ class ASTRhs extends SimpleNode {
     type = Utils.RHS;
   }
 
-  public ASTRhs(Parser p, int id) {
+  public ASTRhs(yal2jvm p, int id) {
     super(p, id);
   }
     

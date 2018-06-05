@@ -7,7 +7,7 @@ public class ASTStmt extends SimpleNode {
     super(id);
   }
 
-  public ASTStmt(Parser p, int id) {
+  public ASTStmt(yal2jvm p, int id) {
     super(p, id);
   }
 

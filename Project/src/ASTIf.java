@@ -8,7 +8,7 @@ class ASTIf extends SimpleNode {
     setType(Utils.COND);
   }
 
-  public ASTIf(Parser p, int id) {
+  public ASTIf(yal2jvm p, int id) {
     super(p, id);
   }
 

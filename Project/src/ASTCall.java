@@ -10,7 +10,7 @@ public class ASTCall extends SimpleNode {
     setType(Utils.CALL);
   }
 
-  public ASTCall(Parser p, int id) {
+  public ASTCall(yal2jvm p, int id) {
     super(p, id);
   }
 

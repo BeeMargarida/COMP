@@ -9,7 +9,7 @@ class ASTModule extends SimpleNode {
     super(id);
   }
 
-  public ASTModule(Parser p, int id) {
+  public ASTModule(yal2jvm p, int id) {
     super(p, id);
   }
 

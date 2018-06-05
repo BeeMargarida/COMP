@@ -6,7 +6,7 @@ class ASTArgumentList extends SimpleNode {
     super(id);
   }
 
-  public ASTArgumentList(Parser p, int id) {
+  public ASTArgumentList(yal2jvm p, int id) {
     super(p, id);
   }
 

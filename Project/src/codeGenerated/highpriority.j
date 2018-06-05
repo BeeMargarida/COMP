@@ -4,26 +4,15 @@
 .method public static main([Ljava/lang/String;)V
 .limit locals 4
 .limit stack 2
-loop0:
-
-iload_-1
-iconst_1
-if_icmpge loop0_end
-
-iaload
-iadd
-istore_1
-
+bipush 10
+newarray int
+astore_1
 
 iload_1
-iconst_2
-ishl
+iconst_1
+iadd
 istore_2
 
-
-goto loop0
-
-loop0_end:
 
 
 return

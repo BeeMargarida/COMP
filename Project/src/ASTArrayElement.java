@@ -6,7 +6,7 @@ public class ASTArrayElement extends SimpleNode {
     type = Utils.ARRAY;
   }
 
-  public ASTArrayElement(Parser p, int id) {
+  public ASTArrayElement(yal2jvm p, int id) {
     super(p, id);
   }
 

@@ -9,7 +9,7 @@ class ASTWhile extends SimpleNode {
 
   }
 
-  public ASTWhile(Parser p, int id) {
+  public ASTWhile(yal2jvm p, int id) {
     super(p, id);
   }
  

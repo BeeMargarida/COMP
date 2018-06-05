@@ -9,7 +9,7 @@ class ASTArrayInstantion extends SimpleNode {
     type = Utils.ARRAY_INST;
   }
 
-  public ASTArrayInstantion(Parser p, int id) {
+  public ASTArrayInstantion(yal2jvm p, int id) {
     super(p, id);
   }
  
@@ -17,7 +17,7 @@ class ASTArrayInstantion extends SimpleNode {
     try  {
         Integer.parseInt(size);
     } catch (NumberFormatException ex)  {
-    
+      type = Utils.ARRAY_INST_SCALAR;
     }
     value = size;
     return prefix + "[" + value + "]";

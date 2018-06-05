@@ -9,7 +9,7 @@ class ASTArrayAccess extends SimpleNode {
     type = Utils.ARRAY_ACCESS;
   }
 
-  public ASTArrayAccess(Parser p, int id) {
+  public ASTArrayAccess(yal2jvm p, int id) {
     super(p, id);
   }
 

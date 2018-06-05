@@ -7,7 +7,7 @@ class ASTArraySize extends SimpleNode {
     type = Utils.ARRAY;
   }
 
-  public ASTArraySize(Parser p, int id) {
+  public ASTArraySize(yal2jvm p, int id) {
     super(p, id);
   }
 

@@ -190,7 +190,7 @@ public class SymbolTable {
 		}
 	}
 
-	// Semantically analise operations
+	// Semantically analyse operations
 	public SimpleNode analyseOperation(SimpleNode node) {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
@@ -216,12 +216,14 @@ public class SymbolTable {
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
 			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)) {
+			leftChild.setType(Utils.ARRAY);
 				if (leftChild.getType().equals(Utils.ARRAY)) {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
+					push(leftChild);
 					return leftChild;
 				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
-					leftChild.setType(Utils.ARRAY);
 					leftChild.setInitialization(Utils.DEFIN_INIT);
+					push(leftChild);
 					return leftChild;
 				} else {
 					System.out.println(
@@ -246,7 +248,7 @@ public class SymbolTable {
 		// In case RHS has some hidden operations or calls
 		if (rightChild.getType() == Utils.OP
 				|| (rightChild.getType() == Utils.RHS && rightChild.jjtGetNumChildren() > 1)) {
-
+			
 			SimpleNode rightRecursive = recursiveOperationAnalysis(rightChild);
 
 			// Error was detected in rhs, was already reported
@@ -255,13 +257,12 @@ public class SymbolTable {
 			}
 
 			else {
-					return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
+				return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
 			}
 		}
 		// Direct check between two operatives
-		else {
-			return analyseTwoNodesOperation(leftChild, rightChild, false, node);
-		}
+		return analyseTwoNodesOperation(leftChild, rightChild, false, node);
+		
 	}
 
 	/**
@@ -279,6 +280,7 @@ public class SymbolTable {
 			// If type is term, inside it may contain scalar or array
 			if (leftNode.getType() == Utils.TERM)
 				leftNode = (SimpleNode) leftNode.jjtGetChild(0);
+				//return null;
 
 			SimpleNode rightNode = (SimpleNode) rightChild.jjtGetChild(1);
 
@@ -299,7 +301,9 @@ public class SymbolTable {
 
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
-
+		
+		
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
 		// If RightType is RHS or term
 		if (rightType == Utils.RHS) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
@@ -332,6 +336,7 @@ public class SymbolTable {
 		}
 		
 		if (previousLeftNode != null) {
+			leftType = previousLeftNode.getType();
 			if (leftChild.getType().equals(Utils.ARRAY_ACCESS) || leftChild.getType().equals(Utils.SIZE)) {
 				leftType = Utils.SCALAR;
 			} 
@@ -354,6 +359,8 @@ public class SymbolTable {
 		}
 		
 		if (previousRightNode != null) {
+			rightType = previousRightNode.getType();
+
 			if (rightChild.getType().equals(Utils.ARRAY_ACCESS) || rightChild.getType().equals(Utils.SIZE)) {
 				rightType = Utils.SCALAR;
 			} 
@@ -363,8 +370,6 @@ public class SymbolTable {
 		if (rightType.equals(Utils.ARRAY_ACCESS))
 			rightType = Utils.SCALAR;
 
-		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType + " "
-		// + needToBeInitialized);
 		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
@@ -396,8 +401,14 @@ public class SymbolTable {
 				return null;
 			}
 		} 
+		else {
+			if (leftType.equals(Utils.ARRAY)) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Variable " + leftChild.getValue() + " is in operation with number.");
+				return null;
+			}
+		}
 
-		//Utils.printNode(leftChild);
 		// Left node needs to be initialized (in case of it being on the rhs of some op)
 		if (!leftType.equals(Utils.NUMBER)) {
 			if (leftChild.isInitialized() == Utils.NOT_INIT && needToBeInitialized) {
@@ -413,6 +424,15 @@ public class SymbolTable {
 				return leftChild;
 			} 
 		}
+		else {
+			if (rightType.equals(Utils.ARRAY)) {
+				hasErrors = true;
+				System.out.println("Semantic Error : Variable " + rightChild.getValue() + " is in operation with number.");
+				return null;
+			}
+		}
+
+		
 
 		// If they are scalars or arrays
 		if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
@@ -429,6 +449,7 @@ public class SymbolTable {
 			leftChild.setType(Utils.SCALAR);
 			return leftChild;
 		}
+		
 			
 		//System.out.println("End analysing\n");
 
@@ -459,6 +480,7 @@ public class SymbolTable {
 
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
+				System.out.println("1");
 				SimpleNode resultNode = analyseOperation(child);
 
 				if (resultNode == null)
@@ -503,6 +525,7 @@ public class SymbolTable {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
 
 				if (child.getType().equals(Utils.OP)) {
+					System.out.println("2");
 					SimpleNode resultNode = analyseOperation(child);
 
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);

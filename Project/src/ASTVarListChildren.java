@@ -9,7 +9,7 @@ class ASTVarListChildren extends SimpleNode {
 		super(id);
 	}
 
-	public ASTVarListChildren(Parser p, int id) {
+	public ASTVarListChildren(yal2jvm p, int id) {
 		super(p, id);
 	}
 
