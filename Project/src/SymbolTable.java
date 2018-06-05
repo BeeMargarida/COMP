@@ -195,9 +195,6 @@ public class SymbolTable {
 		SimpleNode leftChild = (SimpleNode) node.jjtGetChild(0);
 		SimpleNode rightChild = (SimpleNode) node.jjtGetChild(1);
 
-		System.out.println("Dang it " + leftChild.getValue() + " " + leftChild.getType() +" " + leftChild.isInitialized() + 
-			" " +rightChild.getValue() + " " + rightChild.getType() + " " + rightChild.isInitialized());
-
 		// .size semantic check
 		if (leftChild.getType().equals(Utils.SIZE)) {
 			hasErrors = true;
@@ -260,11 +257,10 @@ public class SymbolTable {
 			}
 
 			else {
-					return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
+				return analyseTwoNodesOperation(leftChild, rightRecursive, false, node);
 			}
 		}
 		// Direct check between two operatives
-		
 		return analyseTwoNodesOperation(leftChild, rightChild, false, node);
 		
 	}
@@ -284,6 +280,7 @@ public class SymbolTable {
 			// If type is term, inside it may contain scalar or array
 			if (leftNode.getType() == Utils.TERM)
 				leftNode = (SimpleNode) leftNode.jjtGetChild(0);
+				//return null;
 
 			SimpleNode rightNode = (SimpleNode) rightChild.jjtGetChild(1);
 
@@ -304,12 +301,9 @@ public class SymbolTable {
 
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
-
-		/*System.out.println("OH PUTA FODASSE");
-		for (int i = 0 ; i < symbolTrees.get(currentScope).size() ; i++) {
-			Utils.printNode(symbolTrees.get(currentScope).get(i));
-		} */
-
+		
+		
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType);
 		// If RightType is RHS or term
 		if (rightType == Utils.RHS) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
@@ -376,8 +370,6 @@ public class SymbolTable {
 		if (rightType.equals(Utils.ARRAY_ACCESS))
 			rightType = Utils.SCALAR;
 
-		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType + " "
-		 + needToBeInitialized);
 		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
@@ -488,6 +480,7 @@ public class SymbolTable {
 
 			// If there are operations inside 'if'
 			if (child.getType().equals(Utils.OP)) {
+				System.out.println("1");
 				SimpleNode resultNode = analyseOperation(child);
 
 				if (resultNode == null)
@@ -532,6 +525,7 @@ public class SymbolTable {
 				SimpleNode child = (SimpleNode) elseNode.jjtGetChild(i);
 
 				if (child.getType().equals(Utils.OP)) {
+					System.out.println("2");
 					SimpleNode resultNode = analyseOperation(child);
 
 					SimpleNode previousNode = Utils.containsValue(nodesScope, resultNode);
