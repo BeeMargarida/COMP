@@ -31,6 +31,7 @@ istore_3
 
 
 iinc 1 1
+iadd
 aload_0
 iload_1
 iaload
@@ -58,7 +59,7 @@ return
 
 .method public static main([Ljava/lang/String;)V
 .limit locals 1
-.limit stack 2
+.limit stack 0
 getstatic programa1/data [I 
 invokestatic programa1/det([I)V
 
@@ -78,9 +79,6 @@ return
 .method static public <clinit>()V
 .limit stack 1
 .limit locals 1
-bipush 100
-newarray int
-putstatic programa1/data [I 
 
 return
 .end method
