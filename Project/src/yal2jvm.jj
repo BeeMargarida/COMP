@@ -45,8 +45,8 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants/*@egen*/ {/
 			
 				ASTModule rootModule = (ASTModule) root;
 				rootModule.generatorVisit(generator);
+				System.out.println("\nCode Generation Done. \n");
 			}
-			System.out.println("\n Code Generation Done. \n");
 
 		} catch(FileNotFoundException e) {
 			System.out.println("Exception found");

@@ -133,7 +133,6 @@ public class Generator {
                     // If there is no Parameters (Var)
                     sampler.functionBegin(node.getValue(), node.getReturnType(), null);
                 } else {
-                    System.out.println("HERE!!!");
                     // Get types of vars
                     vars = (String[]) visit((ASTVarList) node.jjtGetChild(1), node.getValue());
                     sampler.functionBegin(node.getValue(), node.getReturnType(), vars);

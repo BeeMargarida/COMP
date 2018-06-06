@@ -391,42 +391,43 @@ public class SymbolTable {
 			leftChild = previousLeftNode;
 		}
 
+		
 		SimpleNode previousRightNode = Utils.containsValue(symbolTrees.get(currentScope), rightChild);
 		if (previousRightNode == null)
-			previousRightNode = Utils.containsValue(declarations, rightChild);
-
+		previousRightNode = Utils.containsValue(declarations, rightChild);
+		
 		if (rightChild.getType().equals(Utils.SIZE)) {
 			if (previousRightNode == null) {
 				System.out.println("Semantic Error : Attempt to utilize '.size' without from unitialized variable "
-						+ rightChild.getValue());
+				+ rightChild.getValue());
 				hasErrors = true;
 				return null;
 			}
 			if (!previousRightNode.getType().equals(Utils.ARRAY)) {
 				System.out.println("Semantic Error : Attempt to utilize '.size' without being array, with variable "
-						+ rightChild.getValue());
+				+ rightChild.getValue());
 				hasErrors = true;
 				return null;
 			}
 		}
-
+		
 		if (previousRightNode != null) {
 			rightType = previousRightNode.getType();
-
+			
 			if (rightChild.getType().equals(Utils.ARRAY_ACCESS) || rightChild.getType().equals(Utils.SIZE)) {
 				rightType = Utils.SCALAR;
 			}
 			rightChild = previousRightNode;
 		}
 
-
+		
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
 			if ((leftType == Utils.ARRAY || rightType == Utils.ARRAY) && (operation.getValue() != null
-					&& (operation.getValue().equals("<") || operation.getValue().equals(">")))) {
+			&& (operation.getValue().equals("<") || operation.getValue().equals(">")))) {
 				hasErrors = true;
 				System.out.println("Semantic Error : Imcompatible operation ('" + operation.getValue()
-						+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
+				+ "') between two arrays, " + leftChild.getValue() + " and " + rightChild.getValue() + ".");
 				return null;
 			}
 			if (leftType.equals(Utils.ARRAY) && rightType.equals(Utils.NUMBER) && !needToBeInitialized) {
@@ -434,7 +435,7 @@ public class SymbolTable {
 				return leftChild;
 			}
 		}
-
+		
 		// Utils.printNode(rightChild);
 		// Right Hand Side variable was not initialized, semantic error
 		if (rightType != Utils.NUMBER) {
@@ -495,6 +496,11 @@ public class SymbolTable {
 						+ leftChild.getValue() + " type " + leftType + " and Right Hand Side Value "
 						+ rightChild.getValue() + " type " + rightType);
 				return null;
+			} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
+				leftChild.setInitialization(Utils.DEFIN_INIT);
+				leftChild.setType(rightType);
+				push(leftChild);
+				return leftChild;
 			}
 		}
 		if (leftType.equals(Utils.SCALAR) && !rightType.equals(Utils.ARRAY) && !needToBeInitialized) {
@@ -555,7 +561,6 @@ public class SymbolTable {
 								+ resultNode.getValue() + " was found.");
 						hasErrors = true;
 					} else {
-						resultNode.setInitialization(Utils.MAYBE_INIT);
 						nodesScope.add(resultNode);
 					}
 
@@ -586,7 +591,7 @@ public class SymbolTable {
 						previousNode = Utils.containsValue(declarations, resultNode);
 
 					// Was nowhere to be found
-					if (previousNode == null && lookup(resultNode) == null) {
+					if (previousNode == null) {
 						if (resultNode != null) {
 							resultNode.setInitialization(Utils.MAYBE_INIT);
 							nodesScope.add(resultNode);
@@ -594,7 +599,7 @@ public class SymbolTable {
 					}
 
 					// Was already the same node in scope
-					if (previousNode != null) {
+					else {
 						// Was not the same type as previous declaration
 						if (!previousNode.getType().equals(resultNode.getType())) {
 							nodesScope.remove(previousNode);
