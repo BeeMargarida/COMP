@@ -335,13 +335,6 @@ public class SymbolTable {
 		String leftType = leftChild.getType();
 		String rightType = rightChild.getType();
 
-		/*
-		 * System.out.println("Teste"); for (int i = 0; i <
-		 * symbolTrees.get(currentScope).size(); i++) { SimpleNode yo =
-		 * symbolTrees.get(currentScope).get(i); System.out.println("Yo " +
-		 * yo.getValue() + " type " + yo.getType() + " init " + yo.isInitialized()); }
-		 */
-
 		if (rightType == Utils.RHS) {
 			rightChild = (SimpleNode) rightChild.jjtGetChild(0);
 			rightType = rightChild.getType();
@@ -426,11 +419,6 @@ public class SymbolTable {
 			rightChild = previousRightNode;
 		}
 
-		// System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType
-		// + " e " + rightChild.getValue()
-		// + " " + rightType + " and isInit left " + leftChild.isInitialized() + "
-		// isInit right "
-		// + rightChild.isInitialized());
 
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays

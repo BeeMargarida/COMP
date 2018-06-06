@@ -3,7 +3,7 @@
 
 .method public static sqrt(I)I
 .limit locals 13
-.limit stack 3
+.limit stack 4
 iload_0
 istore_1
 

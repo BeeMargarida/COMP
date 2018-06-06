@@ -71,8 +71,6 @@ public class Generator {
     }
 
     public Object visit(ASTDeclaration node) {
-        System.out.println("DECLARATION");
-
         if(node.jjtGetNumChildren() == 0){
 
             sampler.printStaticField(node.getValue(), Utils.SCALAR, node.getAssignedValue());
@@ -107,7 +105,6 @@ public class Generator {
     // Function Node
     public Object visit(ASTFunction node) {
 
-        System.out.println("FUNCTION: " + node.getValue());
         String[] vars = null;
 
         if (node.functionName.equals("main")) {
@@ -120,7 +117,6 @@ public class Generator {
             stack.put("main", arr);
 
         } else {
-            // TODO - CHECK THIS
             if(node.jjtGetChild(0).toString().equals("VarList")){
                 if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
                     // If there is no Parameters (Var)
@@ -155,7 +151,6 @@ public class Generator {
 
         // Checks the other children of the function
         for (int i = 1; i < node.jjtGetNumChildren(); i++) {
-            System.out.println("\nFUNCTION CHILDREN: " + node.jjtGetChild(i).toString());
             checkFunctionChildren((SimpleNode) node.jjtGetChild(i), node.getValue());
         }
 
@@ -198,7 +193,6 @@ public class Generator {
     }
 
     public void checkFunctionChildren(SimpleNode node, String functionName) {
-        System.out.println("Function CHILDREN TYPES: " + node.toString());
         
         if (node.toString().equals("Call")) {
             visit((ASTCall) node, functionName);
@@ -362,8 +356,6 @@ public class Generator {
             returnType = "V";
         }
 
-
-        System.out.println("FUNCTION CALL: " + node.getValue());
         function += sampler.getFunctionInvocation(moduleString, node.getValue(), params, returnType) + "\n";
 
         return returnType;
@@ -384,8 +376,6 @@ public class Generator {
             lhs.setType(previousNode.getType());
             lhs.setInitialization(previousNode.isInitialized());
         }
-
-        System.out.println("LHS: string " + lhs.toString() + " value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
         if(lhs.getType().equals(Utils.ARRAY) && !lhs.toString().equals("ArrayAccess")){
             if(checkArrayInstantiation(lhs, rhs, functionName)) {
@@ -398,7 +388,7 @@ public class Generator {
             ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
 
             int numStack = getFromStack(lhs.getValue(), functionName);
-            System.out.println("ARRAYACCEESS: " + numStack + " : " + lhs.getValue() + " : " + lhsArr.getIndex());
+
             if(numStack != -1){
                 // prints commands
                 function += sampler.getLoad(numStack, Utils.ARRAY) + "\n";
@@ -434,8 +424,6 @@ public class Generator {
         }
 
         // LHS
-        System.out.println("LHS: " + lhs.toString());
-
         // check if arrayAccess or not
         if(lhs.toString().equals("ArrayAccess")){
 
@@ -455,9 +443,8 @@ public class Generator {
                     function += sampler.getStore(numStack, Utils.SCALAR) + "\n\n";
                 }
             }
-            else { // TODO: verify this
+            else { 
                 // check if global variable
-
                 String type = globalVariables.get(lhs.getValue());
                 if(type != null){
 
@@ -499,7 +486,6 @@ public class Generator {
 
         boolean wasArray = false;
         boolean isInc = false;
-        System.out.println("RHS");
 
         if(checkIfInc(rhs, functionName)){
             isInc = true;
@@ -510,8 +496,6 @@ public class Generator {
         for (int i = 0; i < rhs.jjtGetNumChildren(); i++) {
             
             SimpleNode chil = (SimpleNode) rhs.jjtGetChild(i);
-
-            System.out.println("RHS CHILD " + chil.toString());
 
             if(chil.jjtGetNumChildren() == 0 && chil.toString().equals(Utils.TERM)){
                 stackLimit++;
@@ -528,9 +512,7 @@ public class Generator {
                     // array instatiation
                     int numStack = getFromStack(chil.getValue(), functionName);
                     if(numStack != -1){
-                        function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
-        
-                        //stack.get(functionName).add(chil);                    
+                        function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";        
                     }
                     else {
                         String type = globalVariables.get(chil.getValue());
@@ -550,16 +532,12 @@ public class Generator {
 
                     SimpleNode term = (SimpleNode) chil.jjtGetChild(a);
 
-                    System.out.println("Term: " + term.toString() + " : " + term.getValue());
-
                     if(term.toString().equals("ArrayAccess")){
                         // If RHS is an array access
 
                         stackLimit += 2;
 
                         ASTArrayAccess arrAcc = (ASTArrayAccess) term;
-
-                        System.out.println("ARRAY ACCESS " + arrAcc.getValue());
                         
                         int numStack = getFromStack(arrAcc.getValue(), functionName);
                         if(numStack != -1){
@@ -810,7 +788,6 @@ public class Generator {
 
 
     public Object visit(ASTIf node, String functionName){
-        System.out.println("IF NODE");
 
         loopCount++;
         int currentLoopCount = loopCount;
@@ -818,7 +795,6 @@ public class Generator {
         boolean hasElse = false;
 
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
-            System.out.println("IF NODE CHILDREN: " + node.jjtGetChild(i).toString());
 
             if(node.jjtGetChild(i).toString().equals("Exprtest")){
                 visit((ASTExprtest) node.jjtGetChild(i), functionName);
@@ -864,8 +840,6 @@ public class Generator {
 
     public void visitElse(ASTElse node, String functionName, int currentLoopCount){
         
-        System.out.println("ELSE");
-
         function += sampler.getIfElse(currentLoopCount);
 
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
@@ -876,8 +850,6 @@ public class Generator {
 
     public Object visit(ASTWhile node, String functionName){
         
-        System.out.println("WHILE");
-
         loopCount++;
 
         int currentLoopCount = loopCount;
@@ -885,7 +857,6 @@ public class Generator {
         function += sampler.getWhileBegin(currentLoopCount);
 
         for(int i = 0; i < node.jjtGetNumChildren(); i++){
-            System.out.println("WHILE CHIL: " + node.jjtGetChild(i).toString());
 
             if(node.jjtGetChild(i).toString().equals("Exprtest")){
                 visit((ASTExprtest) node.jjtGetChild(i), functionName);

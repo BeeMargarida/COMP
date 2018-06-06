@@ -1,0 +1,30 @@
+aval8.yal
+
+    - This example shows the code generation for structures like If and Else, as well as assigns and 
+    function calls.
+
+    - java -jar yal2jvm examples/aval8.yal
+
+array1.yal
+
+    - This example shows the code generation for While loops, as well as array instantiation and
+    access. It also has a loop inside one, so it is possible to verify the code generation in that specific situation.
+
+    - java -jar yal2jvm examples/array1.yal
+
+constant-ranges.yal
+
+    - This example shows the code generation for the different sizes of a constant. 
+
+    - java -jar yal2jvm examples/constant-ranges.yal
+
+aval6.yal
+
+    - This example shows the code generation of different types of operators between variables or constants.
+
+    - java -jar yal2jvm examples/aval6.yal
+
+
+
+NOTE: 
+    The code generated from this files is one the folder codeGenerated, with the path src/codeGenerated
