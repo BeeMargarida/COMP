@@ -142,4 +142,5 @@ being made with the specific situation in mind (see program2.yal in the testsuit
 
 -- GLOBAL PROJECT FINAL GRADE --
 
-Due to the fact taht we didn't implement any optimizations, our maximum grade for this project is 18.
+Due to the fact that we didn't implement any optimizations, our maximum grade for this project is 18.
+Putting in perspective our work and code, we think we deserve, at least, 16. 
