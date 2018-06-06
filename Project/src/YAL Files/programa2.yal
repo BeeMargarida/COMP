@@ -14,6 +14,10 @@ function a[]=f2(N) {
 		 a = [N];
 		 
 		 a = 1; // initialize all the N elements of a with value 1
+		 
+		 t = 1;
+		 b = [N];
+		 b = t;
 }
 
 function main() {
