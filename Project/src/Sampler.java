@@ -32,7 +32,6 @@ public class Sampler {
         arith.put("|", "ior");
         arith.put(">>", "ishr");
         arith.put("<<", "ishl");
-        //missing some
 
         compare.put("==", "icmpne");
         compare.put("!=", "icmpeq");
@@ -88,7 +87,6 @@ public class Sampler {
         }
         else if(params == null){
             println(".method public static " + functionName + "()" + returnT);
-            //missing stack
         }
         else {
             print(".method public static " + functionName + "(");

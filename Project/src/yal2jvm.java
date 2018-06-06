@@ -25,7 +25,7 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
 
                         System.out.println("Checking Calls.\u005cn");
 
-                        //if (!symbolTable.hasErrors()) {
+                        if (!symbolTable.hasErrors()) {
                                 System.out.println("\u005cn\u005cnCommencing Code Generation.\u005cn\u005cn");
 
                                 String filenameWthExt = filename.getName().replaceFirst("[.][^.]+$","");
@@ -35,7 +35,7 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
 
                                 ASTModule rootModule = (ASTModule) root;
                                 rootModule.generatorVisit(generator);
-                        //}
+                        }
 
                 } catch(FileNotFoundException e) {
                         System.out.println("Exception found");
