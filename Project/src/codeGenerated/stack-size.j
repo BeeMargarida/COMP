@@ -3,7 +3,7 @@
 
 .method public static f(I)V
 .limit locals 1
-.limit stack 5
+.limit stack 7
 iload_0
 iload_0
 iload_0

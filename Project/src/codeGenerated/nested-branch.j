@@ -3,7 +3,7 @@
 
 .method public static sign(I)I
 .limit locals 2
-.limit stack 2
+.limit stack 3
 iload_0
 iconst_0
 if_icmpge loop0_end
