@@ -180,7 +180,7 @@ public class Generator {
         } else {
             int numStack = getFromStack(node.getReturnValue(), node.getValue());
             if(numStack != -1){
-                sampler.printLoad(numStack, node.getType());
+                sampler.printLoad(numStack, node.getReturnType());
                 sampler.printIntReturn();
             }
             else {
@@ -349,7 +349,10 @@ public class Generator {
                 //params = (String[]) visit((ASTVarList) function.jjtGetChild(0), currentFunctionName);
                 if (function.getReturnType().equals(Utils.VOID)) {
                     returnType = "V";
-                } else{
+                }else if(function.getReturnType().equals(Utils.ARRAY)){
+                    returnType = "[I";
+                }
+                 else{
                     returnType = "I";
                 }
             }
@@ -363,25 +366,28 @@ public class Generator {
         System.out.println("FUNCTION CALL: " + node.getValue());
         function += sampler.getFunctionInvocation(moduleString, node.getValue(), params, returnType) + "\n";
 
-        return null;
+        return returnType;
     }
 
     public Object visit(ASTAssign node, String functionName) {
-
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         
+        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         // LHS
-        SimpleNode lhs = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
-        if (lhs == null){
-            lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
-        } 
-        if (lhs == null) 
-           lhs = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode previousNode = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
+        if (previousNode == null){
+            previousNode = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
+        }
+        
+        if (previousNode != null) {
+            lhs.setType(previousNode.getType());
+            lhs.setInitialization(previousNode.isInitialized());
+        }
 
         System.out.println("LHS: string " + lhs.toString() + " value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
-        if(lhs.getType().equals(Utils.ARRAY)){
+        if(lhs.getType().equals(Utils.ARRAY) && !lhs.toString().equals("ArrayAccess")){
             if(checkArrayInstantiation(lhs, rhs, functionName)) {
                 return null;
             }
@@ -392,12 +398,19 @@ public class Generator {
             ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
 
             int numStack = getFromStack(lhs.getValue(), functionName);
+            System.out.println("ARRAYACCEESS: " + numStack + " : " + lhs.getValue() + " : " + lhsArr.getIndex());
             if(numStack != -1){
                 // prints commands
                 function += sampler.getLoad(numStack, Utils.ARRAY) + "\n";
-    
-                numStack = getFromStack(lhsArr.getIndex(), functionName);
-                function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+                
+                try {
+                    int index = Integer.parseInt(lhsArr.getIndex());
+                    function += sampler.getConst(lhsArr.getIndex(), false) + "\n";
+                }
+                catch(Exception e) {
+                    numStack = getFromStack(lhsArr.getIndex(), functionName);
+                    function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+                }
             }
             else {
                 String type = globalVariables.get(lhs.getValue());
@@ -405,6 +418,7 @@ public class Generator {
                     function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
                 }
             }
+            
         }
         
         //Process RHS
@@ -581,7 +595,13 @@ public class Generator {
                     else if (term.toString().equals(Utils.CALL)) {
                         // If RHS is a function call
 
-                        visit((ASTCall) chil.jjtGetChild(a), functionName);
+                        ASTCall nodeCall = (ASTCall) chil.jjtGetChild(a);
+                        
+                        String returnType = (String) visit(nodeCall, functionName);
+                        
+                        if(returnType.equals("[I")){
+                            wasArray = true;
+                        }
 
                     } else if (term.toString().equals("ScalarAccess")) {
                         
@@ -688,13 +708,13 @@ public class Generator {
     public boolean checkArrayInstantiation(SimpleNode lhs, ASTRhs rhs, String functionName){
 
         SimpleNode rhsChild = (SimpleNode) rhs.jjtGetChild(0);
-        System.out.println("NODE: " + rhsChild + " : " + rhsChild.getValue());
         // its a constant
-        if(rhsChild.toString().equals("ArrayInstantion")){
+        if(rhsChild.toString().equals("ArrayInstantion") || rhsChild.jjtGetNumChildren() > 0){
             return false;
         }
         if(rhsChild.getValue() != null){
-            
+            stackLimit += 2;
+            localLimit++;
             int numStack = stack.get(functionName).size();
             function += sampler.getConst("0", false) + "\n";
             function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
@@ -702,12 +722,35 @@ public class Generator {
             loopCount++;
             function += sampler.getWhileBegin(loopCount) + "\n";
             function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
-            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+            
+            int numStackArray = getFromStack(lhs.getValue(), functionName);
+            //check if local variable or global
+            if(numStackArray != -1){
+                function += sampler.getLoad(numStackArray, Utils.ARRAY) + "\n";
+            }
+            else {
+                String type = globalVariables.get(lhs.getValue());
+                if(type != null){
+                    function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
+                }
+            }
+
             function += sampler.getArraySize() + "\n";
             function += sampler.getIfStart("<", loopCount) + "\n";
-            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+
+            //check if local variable or global
+            if(numStackArray != -1){
+                function += sampler.getLoad(numStackArray, Utils.ARRAY) + "\n";
+            }
+            else {
+                String type = globalVariables.get(lhs.getValue());
+                if(type != null){
+                    function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
+                }
+            }
+
             function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
-            function += sampler.getConst(rhsChild.getValue(), false); // verificar isto depois
+            function += sampler.getConst(rhsChild.getValue(), false) + "\n"; // verificar isto depois
             function += sampler.getIStore() + "\n";
             function += sampler.getInc(numStack, "1") + "\n";
             function += sampler.getWhileLoop(loopCount) + "\n";
@@ -715,8 +758,9 @@ public class Generator {
             return true;
         }
         else {
+            stackLimit += 2;
+            localLimit++;
             SimpleNode var = (SimpleNode) rhsChild.jjtGetChild(0);
-            System.out.println("NOT A CONST: " +var.getValue());
 
             int numStack = stack.get(functionName).size();
             function += sampler.getConst("0", false) + "\n";
@@ -725,10 +769,32 @@ public class Generator {
             loopCount++;
             function += sampler.getWhileBegin(loopCount) + "\n";
             function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
-            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+
+            //check if local variable or global
+            int numStackArray = getFromStack(lhs.getValue(), functionName);
+            if(numStackArray != -1){
+                function += sampler.getLoad(numStackArray, Utils.ARRAY) + "\n";
+            }
+            else {
+                String type = globalVariables.get(lhs.getValue());
+                if(type != null){
+                    function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
+                }
+            }
+
             function += sampler.getArraySize() + "\n";
             function += sampler.getIfStart("<", loopCount) + "\n";
-            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+
+            if(numStackArray != -1){
+                function += sampler.getLoad(numStackArray, Utils.ARRAY) + "\n";
+            }
+            else {
+                String type = globalVariables.get(lhs.getValue());
+                if(type != null){
+                    function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), type) + "\n";
+                }
+            }
+
             function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
 
             //get variable

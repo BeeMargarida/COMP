@@ -36,24 +36,45 @@ goto loop0
 loop0_end:
 
 
-iload_3
+aload_3
 ireturn
 .end method
 
 
 .method public static f2(I)[I
-.limit locals 2
-.limit stack 1
+.limit locals 3
+.limit stack 3
 iload_0
 newarray int
 astore_1
 
+iconst_0
+istore_2
+
+loop0:
+
+
+iload_2
+aload_1
+arraylength
+
+if_icmpge loop0_end
+
+
+aload_1
+iload_2
 iconst_1
-istore_1
+iastore
+
+iinc 2 1
+goto loop0
+
+
+loop0_end:
 
 
 
-iload_1
+aload_1
 ireturn
 .end method
 
@@ -66,80 +87,61 @@ newarray int
 astore_1
 
 aload_1
-iload_-1
+iconst_0
 iconst_1
 iastore
 aload_1
-iload_-1
+bipush 99
 iconst_2
 iastore
+aload_1
+invokestatic programa2/f1([I)[I
+
+astore_2
+
+aload_2
 iconst_0
-istore_2
-
-loop0:
-
-
-iload_2
-getstatic programa2/a [I 
-arraylength
-
-if_icmpge loop0_end
-
-
-getstatic programa2/a [I 
-iload_2
-iload_-1
-iastore
-
-iinc 2 1
-goto loop0
-
-
-loop0_end:
-
-
-iconst_0
-iaload
-istore_2
-
-
-bipush 99
 iaload
 istore_3
 
 
-ldc "first: "
-iload_2
-invokestatic io/println(Ljava/lang/String;I)V
-
-ldc "last: "
-iload_3
-invokestatic io/println(Ljava/lang/String;I)V
-
-bipush 100
-invokestatic programa2/f2(I)I
-
+aload_2
+bipush 99
+iaload
 istore 4
 
 
-aload 4
+ldc "first: "
+iload_3
+invokestatic io/println(Ljava/lang/String;I)V
+
+ldc "last: "
+iload 4
+invokestatic io/println(Ljava/lang/String;I)V
+
+bipush 100
+invokestatic programa2/f2(I)[I
+
+astore_2
+
+aload_2
 iconst_0
-iaload
-istore_2
-
-
-aload 4
-bipush 99
 iaload
 istore_3
 
 
+aload_2
+bipush 99
+iaload
+istore 4
+
+
 ldc "first: "
-iload_2
+iload_3
 invokestatic io/println(Ljava/lang/String;I)V
 
 ldc "last: "
-iload_3
+iload 4
 invokestatic io/println(Ljava/lang/String;I)V
 
 
