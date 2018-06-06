@@ -1,4 +1,4 @@
-Yal2JVM Compiler
+﻿Yal2JVM Compiler
 Group 31
 
 -- Names, Numbers, Grades, Contributions --
@@ -110,7 +110,7 @@ Pedro Reis
     -
 
 Vicente Espinha
-    -
+    Worked on error detection and code generation, with the help of Margarida Silva in some aspects.
 
 -- TASK DISTRIBUTION -- (Identify the set of tasks done by each member of the project.)
 
