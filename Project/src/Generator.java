@@ -372,11 +372,16 @@ public class Generator {
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         
         // LHS
-        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-        System.out.println("LHS FACK: " + lhs.getType());
+        SimpleNode lhs = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
+        if (lhs == null){
+            lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
+            System.out.println("HERE!!!!" + lhs);
+        }
+
+        System.out.println("LHS: value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
-        if(lhs.getType().equals("Array Access")){
-            if(checkArrayInstantiation(lhs, rhs)) {
+        if(lhs.getType().equals(Utils.ARRAY)){
+            if(checkArrayInstantiation(lhs, rhs, functionName)) {
                 return null;
             }
         }
@@ -678,10 +683,59 @@ public class Generator {
 
     }
 
-    public boolean checkArrayInstantiation(SimpleNode lhs, ASTRhs rhs){
+    public boolean checkArrayInstantiation(SimpleNode lhs, ASTRhs rhs, String functionName){
 
         SimpleNode rhsChild = (SimpleNode) rhs.jjtGetChild(0);
         System.out.println("NODE: " + rhsChild + " : " + rhsChild.getValue());
+        // its a constant
+        if(rhsChild.toString().equals("ArrayInstantion")){
+            return false;
+        }
+        if(rhsChild.getValue() != null){
+            
+            int numStack = stack.get(functionName).size();
+            function += sampler.getConst("0", false) + "\n";
+            function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+
+            loopCount++;
+            function += sampler.getWhileBegin(loopCount) + "\n";
+            function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+            function += sampler.getArraySize() + "\n";
+            function += sampler.getIfStart("<", loopCount) + "\n";
+            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+            function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+            function += sampler.getConst(rhsChild.getValue(), false); // verificar isto depois
+            function += sampler.getIStore() + "\n";
+            function += sampler.getInc(numStack, "1") + "\n";
+            function += sampler.getWhileLoop(loopCount) + "\n";
+            function += sampler.getWhileEnd(loopCount) + "\n";
+        }
+        else {
+            SimpleNode var = (SimpleNode) rhsChild.jjtGetChild(0);
+            System.out.println("NOT A CONST: " +var.getValue());
+
+            int numStack = stack.get(functionName).size();
+            function += sampler.getConst("0", false) + "\n";
+            function += sampler.getStore(numStack, Utils.SCALAR) + "\n";
+
+            loopCount++;
+            function += sampler.getWhileBegin(loopCount) + "\n";
+            function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+            function += sampler.getArraySize() + "\n";
+            function += sampler.getIfStart("<", loopCount) + "\n";
+            function += sampler.getLoadStatic(this.moduleName, lhs.getValue(), Utils.ARRAY) + "\n";
+            function += sampler.getLoad(numStack, Utils.SCALAR) + "\n";
+
+            //get variable
+            int numStackVar = getFromStack(var.getValue(), functionName);
+            function += sampler.getLoad(numStackVar, Utils.SCALAR) + "\n"; // verificar isto depois
+            function += sampler.getIStore() + "\n";
+            function += sampler.getInc(numStack, "1") + "\n";
+            function += sampler.getWhileLoop(loopCount) + "\n";
+            function += sampler.getWhileEnd(loopCount) + "\n";
+        }
         return false;
     }
 

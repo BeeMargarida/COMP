@@ -208,7 +208,14 @@ public class SymbolTable {
 
 				analyseFunctions(nodeToAnalyse);
 			}
+			for (int k = 0; k < symbolTrees.get(currentScope).size() ; k++) {
+				SimpleNode yo = symbolTrees.get(currentScope).get(k);
+				System.out.println("Yo " + yo.getValue() + " type " + yo.getType() + " init " + yo.isInitialized());
+			}
+			System.out.println("\n\n");
 		}
+
+		
 	}
 
 	// Semantically analyse operations
@@ -812,6 +819,10 @@ public class SymbolTable {
 
 	public HashMap<String, ArrayList<SimpleNode>> getSymbolTrees() {
 		return symbolTrees;
+	}
+
+	public ArrayList<SimpleNode> getDeclarations() {
+		return declarations;
 	}
 
 	public boolean hasErrors() {
