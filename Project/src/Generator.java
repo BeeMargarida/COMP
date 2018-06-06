@@ -367,17 +367,20 @@ public class Generator {
     }
 
     public Object visit(ASTAssign node, String functionName) {
-
         // RHS
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         
+        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         // LHS
-        SimpleNode lhs = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
-        if (lhs == null){
-            lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
-        } 
-        if (lhs == null) 
-            lhs = (SimpleNode) node.jjtGetChild(0);
+        SimpleNode previousNode = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
+        if (previousNode == null){
+            previousNode = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
+        }
+        
+        if (previousNode != null) {
+            lhs.setType(previousNode.getType());
+            lhs.setInitialization(previousNode.isInitialized());
+        }
 
         System.out.println("LHS: string " + lhs.toString() + " value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         

@@ -208,11 +208,11 @@ public class SymbolTable {
 
 				analyseFunctions(nodeToAnalyse);
 			}
-			/*for (int k = 0; k < symbolTrees.get(currentScope).size() ; k++) {
+			for (int k = 0; k < symbolTrees.get(currentScope).size() ; k++) {
 				SimpleNode yo = symbolTrees.get(currentScope).get(k);
-				System.out.println("Yo " + yo.getValue() + " type " + yo.getType() + " init " + yo.isInitialized());
+				System.out.println("Yo " + yo.toString() + " value " + yo.getValue() + " type " + yo.getType() + " init " + yo.isInitialized());
 			}
-			System.out.println("\n");*/
+			System.out.println("\n");
 		}
 
 		
@@ -432,9 +432,9 @@ public class SymbolTable {
 			rightChild = previousRightNode;
 		}
 
-		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue()
-				+ " " + rightType + " and isInit left " + leftChild.isInitialized() + " isInit right "
-				+ rightChild.isInitialized());
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue()
+				//+ " " + rightType + " and isInit left " + leftChild.isInitialized() + " isInit right "
+				//+ rightChild.isInitialized());
 
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
@@ -779,14 +779,11 @@ public class SymbolTable {
 						for (int i = 0; i < varlistCall.jjtGetNumChildren() ; i++ ) {
 							typeCall = ((SimpleNode) varlistCall.jjtGetChild(i)).getType();
 							typeFunction = ((SimpleNode) varlistFunction.jjtGetChild(i)).getType();
-
-							System.out.println("DAMN IT " + varlistCall.jjtGetChild(i));
 							
 							if (typeCall != null) {
 								if (typeCall.equals(Utils.NUMBER))
 									typeCall = Utils.SCALAR;
 							} else {
-								System.out.println("Analysing " + ((SimpleNode) varlistCall.jjtGetChild(i)).getType());
 								SimpleNode previousNode = Utils.containsValue(symbolTrees.get(currentScope),
 									 ((SimpleNode) varlistCall.jjtGetChild(i)));
 								
@@ -801,8 +798,6 @@ public class SymbolTable {
 									+ " was not initialized before being passed as argument.");
 									return null;
 								}				
-								
-								System.out.println("After " + previousNode.getType());
 								
 								typeCall = previousNode.getType();
 							}
