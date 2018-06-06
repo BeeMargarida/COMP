@@ -376,7 +376,9 @@ public class Generator {
         if (lhs == null){
             lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
             System.out.println("HERE!!!!" + lhs);
-        }
+        } 
+        if (lhs == null) 
+            lhs = (SimpleNode) node.jjtGetChild(0);
 
         System.out.println("LHS: value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
