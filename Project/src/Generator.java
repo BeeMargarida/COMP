@@ -120,14 +120,12 @@ public class Generator {
             stack.put("main", arr);
 
         } else {
-
             // TODO - CHECK THIS
             if(node.jjtGetChild(0).toString().equals("VarList")){
                 if (node.jjtGetChild(0).jjtGetNumChildren() == 0) {
                     // If there is no Parameters (Var)
                     sampler.functionBegin(node.getValue(), node.getReturnType(), null);
                 } else {
-                    System.out.println("HERE!!!");
                     // Get types of vars
                     vars = (String[]) visit((ASTVarList) node.jjtGetChild(0), node.getValue());
                     sampler.functionBegin(node.getValue(), node.getReturnType(), vars);
@@ -377,7 +375,7 @@ public class Generator {
         SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
         System.out.println("LHS FACK: " + lhs.getType());
         
-        if(lhs.getType().equals("Array")){
+        if(lhs.getType().equals("Array Access")){
             if(checkArrayInstantiation(lhs, rhs)) {
                 return null;
             }

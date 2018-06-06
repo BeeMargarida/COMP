@@ -2,7 +2,7 @@
 .super java/lang/Object
 
 .method public static f1([I)[I
-.limit locals 2
+.limit locals 4
 .limit stack 4
 iconst_0
 istore_1
@@ -42,7 +42,7 @@ ireturn
 
 
 .method public static f2(I)[I
-.limit locals 3
+.limit locals 4
 .limit stack 1
 iload_0
 newarray int
