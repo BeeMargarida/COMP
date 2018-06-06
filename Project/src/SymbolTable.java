@@ -102,7 +102,6 @@ public class SymbolTable {
 				}
 			} else if (nodeToAnalyse.getType().equals(Utils.DECLARATION_SCALAR) || nodeToAnalyse.getType().equals(Utils.DECLARATION_ARRAY)) {
 				SimpleNode test = Utils.containsValue(declarations, nodeToAnalyse);
-				System.out.println("Test is " + test);
 				if (test == null) {
 					if (nodeToAnalyse.getType().equals(Utils.DECLARATION_SCALAR))
 						nodeToAnalyse.setType(Utils.SCALAR);
@@ -112,10 +111,9 @@ public class SymbolTable {
 					nodeToAnalyse.setInitialization(Utils.DEFIN_INIT);
 					declarations.add(nodeToAnalyse);				
 				} else {
-					if (test.getType().equals(Utils.ARRAY)) {
-						System.out.println("WAAT");
-					}
-					//declarations.remove(test);
+					nodeToAnalyse.setType(test.getType());
+					nodeToAnalyse.setInitialization(test.isInitialized());
+					declarations.add(nodeToAnalyse);
 				}
 			}
 
@@ -346,16 +344,6 @@ public class SymbolTable {
 		
 		// If RightType is RHS or term
 		
-		System.out.println("TESTE");
-		for (int i = 0 ; i < declarations.size(); i++) {
-			SimpleNode yo = declarations.get(i);
-			System.out.println("Yo " + yo.getValue() + " " + yo.getType() + " isInit " + yo.isInitialized());
-		}
-		for (int i = 0 ; i < symbolTrees.get(currentScope).size() ;i++) {
-			SimpleNode yo = symbolTrees.get(currentScope).get(i);
-			System.out.println("Yo " + yo.getValue() + " " + yo.getType() + " isInit " + yo.isInitialized());
-		} 
-
 		// Check possible previous instantiations in symbol table
 		SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
 		if (previousLeftNode == null)
@@ -410,8 +398,8 @@ public class SymbolTable {
 			rightChild = previousRightNode;
 		}
 			
-		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType
-		+ " and isInit left " + leftChild.isInitialized() + " isInit right " + rightChild.isInitialized());
+		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue() + " " + rightType
+		//+ " and isInit left " + leftChild.isInitialized() + " isInit right " + rightChild.isInitialized());
 
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
