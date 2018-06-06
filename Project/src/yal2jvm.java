@@ -976,6 +976,7 @@ if (jjtc000) {
         }
       case INTEGER:{
         t = jj_consume_token(INTEGER);
+jjtn000.type = Utils.NUMBER;
         break;
         }
       default:
@@ -984,7 +985,7 @@ if (jjtc000) {
         throw new ParseException();
       }
 jjtree.closeNodeScope(jjtn000, true);
-                                               jjtc000 = false;
+                                                                              jjtc000 = false;
 jjtn000.content = t.image;
     } finally {
 if (jjtc000) {
@@ -1297,6 +1298,12 @@ try {Token t;
     return false;
   }
 
+  static private boolean jj_3R_13()
+ {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_12()
  {
     Token xsp;
@@ -1305,7 +1312,7 @@ try {Token t;
     jj_scanpos = xsp;
     if (jj_scan_token(31)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
+    if (jj_3R_13()) return true;
     }
     }
     return false;

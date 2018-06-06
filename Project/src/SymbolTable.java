@@ -748,8 +748,39 @@ public class SymbolTable {
 						return null;
 					} else {
 						// Check to see types of arguments ()
-						for (int i = 0; i < callToBeAnalysed.jjtGetNumChildren() ; i++ ) {
+						String typeCall, typeFunction;
+						for (int i = 0; i < varlistCall.jjtGetNumChildren() ; i++ ) {
+							typeCall = ((SimpleNode) varlistCall.jjtGetChild(i)).getType();
+							typeFunction = ((SimpleNode) varlistFunction.jjtGetChild(i)).getType();
+
+							System.out.println("DAMN IT " + varlistCall.jjtGetChild(i));
 							
+							if (typeCall != null) {
+								if (typeCall.equals(Utils.NUMBER))
+									typeCall = Utils.SCALAR;
+							} else {
+								SimpleNode previousNode = Utils.containsValue(symbolTrees.get(currentScope),
+									 ((SimpleNode) varlistCall.jjtGetChild(i)));
+								
+								if (previousNode == null)
+									previousNode = Utils.containsValue(declarations,
+										((SimpleNode) varlistCall.jjtGetChild(i)));
+
+								if (previousNode == null) {
+									hasErrors = true;
+									System.out.println("Semantic Error : Variable " + ((SimpleNode) varlistCall.jjtGetChild(i)).getValue() 
+									 + " was not initialized before being passed as argument.");
+									return null;
+								}				
+								
+								typeCall = previousNode.getType();
+							}
+							if (!typeCall.equals(typeFunction)) {
+								hasErrors = true;
+								System.out.println("Semantic Error : Invalid type passed as argument. Passed " +typeCall + ", expected "
+									+ typeFunction);
+								return null;
+							}
 						}
 
 						return leftNode;
