@@ -98,6 +98,20 @@ There are no automated tests present in this project.
 We tested our project using the the examples given to us by the professors and, after generating the code,
 we used the jasmin compiler to verify if our code was correct.
 
+-- INDIVIDUAL SELF-EVALUATION --
+
+Ana Margaria Silva
+    - 
+
+Luís Correia
+    -
+
+Pedro Reis
+    -
+
+Vicente Espinha
+    -
+
 -- TASK DISTRIBUTION -- (Identify the set of tasks done by each member of the project.)
 
 The tasks were evenly distributed between the four elements. 
@@ -113,7 +127,18 @@ We have a fairly robust error detection and output of warnings. It can handle mu
 and output specific messages to inform the user of where and why the error has occured.
 It can handle mutliple recursive operations embedded in the same line of code, while still checking for semantic errors.
 
-**CONS: (Identify the most negative aspects of your tool)
+-- CONS --(Identify the most negative aspects of your tool)
 
-Some of the code could be refactored, especially in the SymbolTable class and Generator class. Many bugs that were found during development lied
+Some of the code could be refactored, especially in the SymbolTable and Generator classes. Many bugs that were found during development lied
 in that part of the software, and it was usually related to minor tweaks in other areas. 
+
+The code generation for array operations of the example bellow don't work, even though the code generation is
+being made with the specific situation in mind (see program2.yal in the testsuite folder).
+    Situation:
+        a = [N];
+        a = 1; // assign the constant to every element of the array
+
+
+-- GLOBAL PROJECT FINAL GRADE --
+
+Due to the fact taht we didn't implement any optimizations, our maximum grade for this project is 18.
