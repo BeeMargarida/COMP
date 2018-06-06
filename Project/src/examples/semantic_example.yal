@@ -1,0 +1,36 @@
+module semantic
+{
+
+  function a[]=f1(b,c) {
+      // An error is reported since a is never initialized
+
+      f4(); // Error reported, no function has that name.
+  }
+
+  function f2(a,b,c) {
+      io.print();
+      a = 1;
+      a = f1(b,c); // Error is reported, invalid return type
+      d = [100];
+      e = 1;
+      e = d; // Error is reported, cannot assign an array to an initialized scalar variable. 
+
+      f = [100];
+      f3(f); // Error is reported, argument expected was scalar, sent array.
+  }
+
+  function f3(a) {
+      if (a > 0) {
+          b = 1;
+      } else {
+          b = [100];
+      }
+
+      d = 1;
+      b = d; // Error, b might be scalar or array.
+
+
+  }
+
+
+}
