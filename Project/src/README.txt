@@ -66,7 +66,12 @@ No intermediate representations were utilized.
 
 -- CODE GENERATION -- (when applicable, describe how the code generation of your tool works and identify the possible problems your tool has regarding code generation.)
 
-Yo Mergaruda, this is for u
+We generate jasmin code by going through the AST and generating code according to the action being made.
+Depending on the type of node, specific code is generated according to it. There is a loopCount and stack
+specific for each function of the module, so that we can keep variables in different stack positions, without creating
+conflicts. 
+All the code responsible for the generation of code is in Generator.java, and the code responsible for writing
+the instructions of the file ".j" is in Sampler.java.
 
 -- OVERVIEW -- (refer the approach used in your tool, the main algorithms, the third-party tools and/or packages, etc.)
 
@@ -79,13 +84,19 @@ no way to know which functions were declared later.
 The conditional structures and calls are analysed separately, and operations may be recursively analysed, to garantee that lines 
 such as "a = 1 + b +c;" can be properly interpreted.
 
-YO MERGARUDA FALA AQUI DA CODE GENERATION
+After a successful semantic analysis, the code generation begins. It starts by going through the AST and,
+for specific nodes, it creates the specific code. The ".limit locals" is extracted from the symbol table 
+and the ".limit stack" is extracted duting the generation. After each function, all the code generated is 
+is in a string called "function", which will be written on the ".j" file after the specification of the ".limit stack".
+
 
 No external tools or packages were used. 
 
 -- TESTSUITE AND TEST INFRASTRUCTURE -- (Describe the content of your testsuite regarding the number of examples, the approach to automate the test, etc.)
 
 There are no automated tests present in this project.
+We tested our project using the the examples given to us by the professors and, after generating the code,
+we used the jasmin compiler to verify if our code was correct.
 
 -- TASK DISTRIBUTION -- (Identify the set of tasks done by each member of the project.)
 
@@ -104,5 +115,5 @@ It can handle mutliple recursive operations embedded in the same line of code, w
 
 **CONS: (Identify the most negative aspects of your tool)
 
-Some of the code could be refactored, especially in the SymbolTable class. Many bugs that were found during development lied
+Some of the code could be refactored, especially in the SymbolTable class and Generator class. Many bugs that were found during development lied
 in that part of the software, and it was usually related to minor tweaks in other areas. 

@@ -43,7 +43,7 @@ ireturn
 
 .method public static f2(I)[I
 .limit locals 2
-.limit stack 1
+.limit stack 0
 iload_0
 newarray int
 astore_1
@@ -72,10 +72,6 @@ goto loop0
 loop0_end:
 
 
-iconst_1
-istore_1
-
-
 
 iload_1
 ireturn
@@ -83,8 +79,8 @@ ireturn
 
 
 .method public static main([Ljava/lang/String;)V
-.limit locals 3
-.limit stack 5
+.limit locals 5
+.limit stack 6
 bipush 100
 newarray int
 astore_1
@@ -97,10 +93,33 @@ iconst_2
 istore_1
 
 
-iload_1
-invokestatic programa2/f1(I)I
+bipush 100
+newarray int
+astore_2
 
-istore_2
+iconst_0
+istore_3
+
+loop0:
+
+
+iload_3
+getstatic programa2/a [I 
+arraylength
+
+if_icmpge loop0_end
+
+
+getstatic programa2/a [I 
+iload_3
+iload_-1
+iastore
+
+iinc 3 1
+goto loop0
+
+
+loop0_end:
 
 
 aload_2
@@ -123,10 +142,29 @@ ldc "last: "
 iload 4
 invokestatic io/println(Ljava/lang/String;I)V
 
-bipush 100
-invokestatic programa2/f2(I)I
+iconst_0
+istore 5
 
-istore_2
+loop1:
+
+
+iload 5
+getstatic programa2/a [I 
+arraylength
+
+if_icmpge loop1_end
+
+
+getstatic programa2/a [I 
+iload 5
+iload_-1
+iastore
+
+iinc 5 1
+goto loop1
+
+
+loop1_end:
 
 
 aload_2

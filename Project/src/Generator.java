@@ -375,18 +375,18 @@ public class Generator {
         SimpleNode lhs = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
         if (lhs == null){
             lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
-            System.out.println("HERE!!!!" + lhs);
         } 
         if (lhs == null) 
             lhs = (SimpleNode) node.jjtGetChild(0);
 
-        System.out.println("LHS: value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
+        System.out.println("LHS: string " + lhs.toString() + " value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
         if(lhs.getType().equals(Utils.ARRAY)){
             if(checkArrayInstantiation(lhs, rhs, functionName)) {
                 return null;
             }
         }
+
         if(lhs.toString().equals("ArrayAccess")){
             
             ASTArrayAccess lhsArr = (ASTArrayAccess) lhs;
@@ -712,6 +712,7 @@ public class Generator {
             function += sampler.getInc(numStack, "1") + "\n";
             function += sampler.getWhileLoop(loopCount) + "\n";
             function += sampler.getWhileEnd(loopCount) + "\n";
+            return true;
         }
         else {
             SimpleNode var = (SimpleNode) rhsChild.jjtGetChild(0);
@@ -737,8 +738,8 @@ public class Generator {
             function += sampler.getInc(numStack, "1") + "\n";
             function += sampler.getWhileLoop(loopCount) + "\n";
             function += sampler.getWhileEnd(loopCount) + "\n";
+            return true;
         }
-        return false;
     }
 
 
