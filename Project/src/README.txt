@@ -101,13 +101,14 @@ we used the jasmin compiler to verify if our code was correct.
 -- INDIVIDUAL SELF-EVALUATION --
 
 Ana Margaria Silva
-    - 
+    - According to the task distribution, I did error detection and code generation. I delivered
+    my work on time and always corrected mistakes when needed.
 
 Luís Correia
     -
 
 Pedro Reis
-    -
+    - I worked well, and in sync with my group's needs.
 
 Vicente Espinha
     -
