@@ -362,7 +362,7 @@ void Call(Token t): {/*@bgen(jjtree) Call */
 	try {
 		( < DOT > tmp=<ID > 
 		{jjtn000.setType(Utils.EXTERNAL_CALL); jjtn000.packageName = (String) jjtn000.value; jjtn000.calledFunction = tmp.image;})? 
-		 < LPAR > (ArgumentList() )? < RPAR >
+		 < LPAR > (ArgumentList() ) < RPAR >
 		
 	} catch (ParseException e) {
 		System.out.println("Error on call."
@@ -740,7 +740,7 @@ void ArgumentList(): {/*@bgen(jjtree) ArgumentList */
 /*@egen*/
 	try {
 
-	Argument() (< VIRG > Argument() )*
+	(Argument() (< VIRG > Argument() )*)?
 
 	} catch (ParseException e) {
 
@@ -1042,4 +1042,3 @@ try {
 }
 /*@egen*/
 }
-

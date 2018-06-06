@@ -248,7 +248,7 @@ void Call(Token t): {String string; Token tmp;} {
 	try {
 		( < DOT > tmp=<ID > 
 		{jjtThis.setType(Utils.EXTERNAL_CALL); jjtThis.packageName = (String) jjtThis.value; jjtThis.calledFunction = tmp.image;})? 
-		 < LPAR > (ArgumentList() )? < RPAR >
+		 < LPAR > (ArgumentList() ) < RPAR >
 		
 	} catch (ParseException e) {
 		System.out.println("Error on call."
@@ -418,7 +418,7 @@ void Exprtest(): {Token t; } {
 void ArgumentList(): {} {
 	try {
 
-	Argument() (< VIRG > Argument() )*
+	(Argument() (< VIRG > Argument() )*)?
 
 	} catch (ParseException e) {
 
