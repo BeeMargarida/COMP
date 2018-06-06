@@ -105,7 +105,7 @@ Ana Margaria Silva
     my work on time and always corrected mistakes when needed.
 
 Luís Correia
-    -
+    - I worked on the parser development and semantic analysis, me and Pedro helped each other in order to complete this part.
 
 Pedro Reis
     - I worked well, and in sync with my group's needs.
