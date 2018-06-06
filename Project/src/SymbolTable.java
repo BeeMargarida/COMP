@@ -222,31 +222,38 @@ public class SymbolTable {
 			System.out.println("Semantic Error : Improper use of '.size' with variable " + leftChild.getValue());
 			return null;
 		}
-
+		
 		// Check if there are any hidden calls
 		if (Utils.checkFor(Utils.CALL, leftChild) || Utils.checkFor(Utils.CALL, rightChild)) {
 			SimpleNode callNode = analyseCalls(node, false);
 			return callNode;
 		}
-
+		
 		else if (Utils.checkFor(Utils.EXTERNAL_CALL, leftChild) || Utils.checkFor(Utils.EXTERNAL_CALL, rightChild)) {
 			SimpleNode callNode = analyseCalls(node, true);
 			return callNode;
 		}
-
+		
 		// Check for array instantiations
 		if (rightChild.jjtGetNumChildren() > 0) {
 			if (rightChild.getType().equals(Utils.RHS) && rightChild.jjtGetChild(0).jjtGetNumChildren() > 0)
 				rightChild = (SimpleNode) rightChild.jjtGetChild(0);
-
+						
+			
 			if (((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST)
-					|| rightChild.getType().equals(Utils.ARRAY_INST)) {
-				if (leftChild.getType().equals(Utils.ARRAY)) {
+			|| ((SimpleNode) rightChild.jjtGetChild(0)).getType().equals(Utils.ARRAY_INST_SCALAR)) {
+				SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftChild);
+				if (previousLeftNode == null)
+					previousLeftNode = Utils.containsValue(declarations, leftChild);
+				
+				if (previousLeftNode != null)
+					leftChild = previousLeftNode;
+
+					if (leftChild.getType().equals(Utils.ARRAY)) {
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					push(leftChild);
 					return leftChild;
 				} else if (leftChild.isInitialized() == Utils.NOT_INIT) {
-
 					leftChild.setType(Utils.ARRAY);
 					leftChild.setInitialization(Utils.DEFIN_INIT);
 					push(leftChild);
@@ -491,7 +498,7 @@ public class SymbolTable {
 		// If they are scalars or arrays
 		if ((leftType.equals(Utils.SCALAR) || leftType.equals(Utils.ARRAY))
 				&& (rightType.equals(Utils.SCALAR) || rightType.equals(Utils.ARRAY))) {
-			if (!leftType.equals(rightType)) {
+			if (leftType.equals(Utils.SCALAR) && rightType.equals(Utils.ARRAY)) {
 				hasErrors = true;
 				System.out.println("Semantic Error: Incompatible operation between " + "left Hand Side Value "
 						+ leftChild.getValue() + " type " + leftType + " and Right Hand Side Value "
