@@ -374,10 +374,13 @@ public class Generator {
         ASTRhs rhs = (ASTRhs) node.jjtGetChild(1);
         
         // LHS
-        SimpleNode lhs = (SimpleNode) node.jjtGetChild(0);
-        System.out.println("LHS FACK: " + lhs.getType());
+        SimpleNode lhs = Utils.containsValue(table.getSymbolTrees().get(functionName), (SimpleNode) node.jjtGetChild(0));
+        if (lhs == null)
+            lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
+
+        System.out.println("LHS FACK: value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         
-        if(lhs.getType().equals("Array")){
+        if(lhs.getType().equals(Utils.ARRAY)){
             if(checkArrayInstantiation(lhs, rhs)) {
                 return null;
             }
