@@ -111,9 +111,16 @@ public class SymbolTable {
 					nodeToAnalyse.setInitialization(Utils.DEFIN_INIT);
 					declarations.add(nodeToAnalyse);				
 				} else {
-					nodeToAnalyse.setType(test.getType());
-					nodeToAnalyse.setInitialization(test.isInitialized());
-					declarations.add(nodeToAnalyse);
+					if (test.getType().equals(Utils.SCALAR) && nodeToAnalyse.getType().equals(Utils.DECLARATION_ARRAY)) {
+						hasErrors = true;
+						System.out.println("Semantic Error : Declaration of array " + test.getValue() 
+							+ " does not match previous declaration of scalar with the same value.");
+					}
+					else {
+						nodeToAnalyse.setType(test.getType());
+						nodeToAnalyse.setInitialization(test.isInitialized());
+						declarations.add(nodeToAnalyse);
+					}
 				}
 			}
 
