@@ -433,7 +433,7 @@ void ArgumentList(): {} {
  * @return String containing information of argument.
 */
 void Argument() : {Token t; } {
-	 (t=<ID> | t=<STRING> | t=<INTEGER> ){jjtThis.content = t.image;}
+	 (t=<ID> | t=<STRING> | t=<INTEGER> {jjtThis.type = Utils.NUMBER;} ){jjtThis.content = t.image;}
 }
 
 // ACCESS

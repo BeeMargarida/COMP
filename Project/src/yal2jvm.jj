@@ -781,11 +781,11 @@ void Argument() : {/*@bgen(jjtree) Argument */
 /*@egen*/Token t; } {/*@bgen(jjtree) Argument */
          try {
 /*@egen*/
-	 (t=<ID> | t=<STRING> | t=<INTEGER> )/*@bgen(jjtree)*/
-                                             {
-                                               jjtree.closeNodeScope(jjtn000, true);
-                                               jjtc000 = false;
-                                             }
+	 (t=<ID> | t=<STRING> | t=<INTEGER> {jjtn000.type = Utils.NUMBER;} )/*@bgen(jjtree)*/
+                                                                            {
+                                                                              jjtree.closeNodeScope(jjtn000, true);
+                                                                              jjtc000 = false;
+                                                                            }
 /*@egen*/{jjtn000.content = t.image;}/*@bgen(jjtree)*/
          } finally {
            if (jjtc000) {

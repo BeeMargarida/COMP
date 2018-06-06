@@ -955,15 +955,16 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
         break;
       case INTEGER:
         t = jj_consume_token(INTEGER);
+                                             jjtn000.type = Utils.NUMBER;
         break;
       default:
         jj_la1[26] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-                                               jjtree.closeNodeScope(jjtn000, true);
-                                               jjtc000 = false;
-                                              jjtn000.content = t.image;
+                                                                              jjtree.closeNodeScope(jjtn000, true);
+                                                                              jjtc000 = false;
+                                                                             jjtn000.content = t.image;
     } finally {
            if (jjtc000) {
              jjtree.closeNodeScope(jjtn000, true);
@@ -1273,6 +1274,11 @@ try {Token t;
     return false;
   }
 
+  static private boolean jj_3R_13() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_12() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1280,7 +1286,7 @@ try {Token t;
     jj_scanpos = xsp;
     if (jj_scan_token(31)) {
     jj_scanpos = xsp;
-    if (jj_scan_token(27)) return true;
+    if (jj_3R_13()) return true;
     }
     }
     return false;
