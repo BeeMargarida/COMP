@@ -748,7 +748,9 @@ public class SymbolTable {
 						return null;
 					} else {
 						// Check to see types of arguments ()
-						for (int i = 0; i < )
+						for (int i = 0; i < callToBeAnalysed.jjtGetNumChildren() ; i++ ) {
+							
+						}
 
 						return leftNode;
 					}
