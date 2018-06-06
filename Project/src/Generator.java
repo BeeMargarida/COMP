@@ -180,7 +180,7 @@ public class Generator {
         } else {
             int numStack = getFromStack(node.getReturnValue(), node.getValue());
             if(numStack != -1){
-                sampler.printLoad(numStack);
+                sampler.printLoad(numStack, node.getType());
                 sampler.printIntReturn();
             }
             else {
@@ -377,7 +377,7 @@ public class Generator {
             lhs = Utils.containsValue(table.getDeclarations(), (SimpleNode) node.jjtGetChild(0));
         } 
         if (lhs == null) 
-            lhs = (SimpleNode) node.jjtGetChild(0);
+           lhs = (SimpleNode) node.jjtGetChild(0);
 
         System.out.println("LHS: string " + lhs.toString() + " value " + lhs.getValue() + " type " + lhs.getType() + " is Init "+ lhs.isInitialized());
         

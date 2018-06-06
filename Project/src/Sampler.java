@@ -146,11 +146,21 @@ public class Sampler {
         
     }
 
-    public void printLoad(int arg){
-        if(arg <= 3)
-            println("iload_" + arg);
-        else 
-            println("iload " + arg);
+    public void printLoad(int arg, String type){
+        if(type.equals(Utils.ARRAY)){
+
+            if(arg <= 3)
+                println("aload_" + arg);
+            else 
+                println("aload " + arg);
+        }
+        else {
+
+            if(arg <= 3)
+                println("iload_"+arg);
+            else 
+                println("iload "+arg);
+        }
     }
 
     public String getLdc(String content) {

@@ -18,10 +18,10 @@ iload_2
 iload_0
 if_icmpge loop0_end
 
-aload_1
 iload_2
-iload_2
-iastore
+istore_1
+
+
 iinc 2 1
 goto loop0
 

@@ -21,7 +21,6 @@ function main() {
 	b[0] = 1;
 	b[99] = 2;
 
-	a = [100];
 	a = f1(b);
 
 	first = a[0];
