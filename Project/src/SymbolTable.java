@@ -208,11 +208,11 @@ public class SymbolTable {
 
 				analyseFunctions(nodeToAnalyse);
 			}
-			for (int k = 0; k < symbolTrees.get(currentScope).size() ; k++) {
+			/*for (int k = 0; k < symbolTrees.get(currentScope).size() ; k++) {
 				SimpleNode yo = symbolTrees.get(currentScope).get(k);
 				System.out.println("Yo " + yo.getValue() + " type " + yo.getType() + " init " + yo.isInitialized());
 			}
-			System.out.println("\n\n");
+			System.out.println("\n");*/
 		}
 
 		
@@ -396,11 +396,11 @@ public class SymbolTable {
 
 		if (previousLeftNode != null) {
 			leftType = previousLeftNode.getType();
-
-			if (leftChild.getType().equals(Utils.ARRAY_ACCESS) || leftChild.getType().equals(Utils.SIZE)) {
+			
+			if (leftChild.getType().equals(Utils.SIZE)) {
 				leftType = Utils.SCALAR;
 			}
-
+			
 			leftChild = previousLeftNode;
 		}
 
@@ -432,9 +432,9 @@ public class SymbolTable {
 			rightChild = previousRightNode;
 		}
 
-		//System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue()
-				//+ " " + rightType + " and isInit left " + leftChild.isInitialized() + " isInit right "
-				//+ rightChild.isInitialized());
+		System.out.println("Chego aqui com " + leftChild.getValue() + " " + leftType + " e " + rightChild.getValue()
+				+ " " + rightType + " and isInit left " + leftChild.isInitialized() + " isInit right "
+				+ rightChild.isInitialized());
 
 		if (operation != null) {
 			// In case of '<' or '>' comparison between arrays
@@ -711,6 +711,8 @@ public class SymbolTable {
 				if (leftNode == null)
 					leftNode = Utils.extractOfType(Utils.ARRAY, (SimpleNode) nodeToAnalyse.jjtGetChild(0));
 
+				String currentValue = leftNode.getValue();
+
 				// Check previous declarations of node
 				SimpleNode previousLeftNode = Utils.containsValue(symbolTrees.get(currentScope), leftNode);
 
@@ -732,12 +734,23 @@ public class SymbolTable {
 						return leftNode;
 					}
 				} else {
-					if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType())) {
+					if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType()) 
+							&& leftNode.isInitialized() == Utils.DEFIN_INIT) {
 						hasErrors = true;
 						System.out.println("Semantic Error : Mismatching types between " + leftNode.getType() + " "
 								+ leftNode.getValue() + " and " + function.getValue() + " -> " + leftNode.getType()
 								+ " opposed to " + ((ASTFunction) function).getReturnType());
 						return null;
+					} else if (leftNode != null && !((ASTFunction) function).getReturnType().equals(leftNode.getType()) 
+								&& leftNode.isInitialized() == Utils.NOT_INIT) {
+						leftNode.setType(((ASTFunction) function).getReturnType());
+						leftNode.setInitialization(Utils.DEFIN_INIT);
+					} else {
+						leftNode = new SimpleNode(0);
+						leftNode.jjtSetValue(currentValue);
+						leftNode.setType(((ASTFunction) function).getReturnType());
+						leftNode.setInitialization(Utils.DEFIN_INIT);
+						push(leftNode);	
 					}
 
 					SimpleNode varlistCall = (SimpleNode) callToBeAnalysed.jjtGetChild(0);
@@ -773,6 +786,7 @@ public class SymbolTable {
 								if (typeCall.equals(Utils.NUMBER))
 									typeCall = Utils.SCALAR;
 							} else {
+								System.out.println("Analysing " + ((SimpleNode) varlistCall.jjtGetChild(i)).getType());
 								SimpleNode previousNode = Utils.containsValue(symbolTrees.get(currentScope),
 									 ((SimpleNode) varlistCall.jjtGetChild(i)));
 								
@@ -780,12 +794,15 @@ public class SymbolTable {
 									previousNode = Utils.containsValue(declarations,
 										((SimpleNode) varlistCall.jjtGetChild(i)));
 
+										
 								if (previousNode == null) {
 									hasErrors = true;
 									System.out.println("Semantic Error : Variable " + ((SimpleNode) varlistCall.jjtGetChild(i)).getValue() 
-									 + " was not initialized before being passed as argument.");
+									+ " was not initialized before being passed as argument.");
 									return null;
 								}				
+								
+								System.out.println("After " + previousNode.getType());
 								
 								typeCall = previousNode.getType();
 							}
